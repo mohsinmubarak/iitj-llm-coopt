@@ -1,0 +1,40 @@
+CMD: python -m engine.server --model unsloth/Meta-Llama-3.1-8B-Instruct --draft unsloth/Llama-3.2-1B-Instruct --port 8000 --seed 0 --gamma 4 --trace /workspace/IITJ/results/rtx4090/C6/trace.jsonl --policy coopt --controllers gamma,kv,sched --kv-cpu-gb 32 --independent --gpu-memory-utilization 0.92 --max-model-len 16384
+
+/root/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:64: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 259.87it/s]
+Fetching 6 files:   0%|          | 0/6 [00:00<?, ?it/s]Fetching 6 files: 100%|██████████| 6/6 [00:00<00:00, 258.25it/s]
+[engine] memory: weights 17.36 GiB, prefill activations 0.32 GiB, graphs 0.84 GiB -> KV 2.87 GiB
+[engine] captured 56 target + 16 draft CUDA graphs (target strides [1, 2, 3, 4, 5, 7, 9]) in 6s
+[engine] hardware HardwareProfile(gpu_name='NVIDIA GeForce RTX 4090', vram_gb=23.5164794921875, hbm_bw_gbs=916.4272013212449, pcie_h2d_gbs=25.84849515300425, pcie_d2h_gbs=26.047866645337, cpu_cores=48, ram_gb=251.54829025268555)
+[engine] KV capacity 18800 tokens (1175 blocks), policy=coopt
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+[W1010 21:37:50.332111392 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 113246208 bytes (free: 71041024, total: 25250627584).
+[W1010 21:37:52.824513644 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 289406976 bytes (free: 217841664, total: 25250627584).
+[W1010 21:37:54.384253619 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 333447168 bytes (free: 238813184, total: 25250627584).
+[W1010 21:39:37.736324449 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 161480704 bytes (free: 64749568, total: 25250627584).
+[W1010 21:39:54.433758157 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 23068672 bytes (free: 6029312, total: 25250627584).
+[W1010 21:39:54.776565150 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 249561088 bytes (free: 157024256, total: 25250627584).
+[W1010 21:44:49.830344526 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 44040192 bytes (free: 18612224, total: 25250627584).
+[W1010 21:45:27.106254185 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 404750336 bytes (free: 104595456, total: 25250627584).
+[W1010 21:45:27.150956652 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 203423744 bytes (free: 85721088, total: 25250627584).
+[W1010 21:45:27.151190250 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 203423744 bytes (free: 85721088, total: 25250627584).
+Traceback (most recent call last):
+  File "/workspace/IITJ/engine/engine.py", line 462, in run_forever
+    self.step()
+  File "/workspace/IITJ/engine/engine.py", line 360, in step
+    drafts, dprobs = self._draft_phase(plan) if self.draft else ({}, {})
+                     ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/IITJ/engine/engine.py", line 326, in _draft_phase
+    logits, spans = self._run(self.draft, self.draft_graphs, self.dbm, items)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/IITJ/engine/engine.py", line 293, in _run
+    return model.forward(batch), spans
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/IITJ/engine/model.py", line 182, in forward
+    x = x + F.linear(F.silu(gate) * up, L["down"])
+                     ~~~~~~~~~~~~~^~~~
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 194.00 MiB. GPU 0 has a total capacity of 23.52 GiB of which 81.75 MiB is free. Including non-PyTorch memory, this process has 23.42 GiB memory in use. Of the allocated memory 21.80 GiB is allocated by PyTorch, with 353.00 MiB allocated in private pools (e.g., CUDA Graphs), and 529.12 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)

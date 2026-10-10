@@ -137,3 +137,35 @@ RuntimeError: server died (exit 1); see /workspace/IITJ/results/rtx4090/C2/serve
 === 2026-10-10T21:06:34Z END C2 (exit 1)
 === 2026-10-10T21:06:34Z START C3
 [C3] server healthy after 60s
+[C3] W1 rate=1 rep=0: 200/200 ok | out 246.5 tok/s | TTFT p99 0.21s | TPOT p99 23.9ms | goodput 0.95 req/s
+[C3] W1 rate=4 rep=0: 200/200 ok | out 920.5 tok/s | TTFT p99 0.21s | TPOT p99 25.4ms | goodput 3.53 req/s
+[C3] W1 rate=16 rep=0: 200/200 ok | out 1669.0 tok/s | TTFT p99 12.69s | TPOT p99 46.4ms | goodput 3.94 req/s
+[C3] W1 rate=inf rep=0: 200/200 ok | out 1671.2 tok/s | TTFT p99 24.83s | TPOT p99 47.0ms | goodput 1.32 req/s
+[C3] W2 rate=inf rep=0: 43/43 ok | out 47.6 tok/s | TTFT p99 106.62s | TPOT p99 29.2ms | goodput 0.01 req/s
+[C3] W3 rate=inf rep=0: 288/288 ok | out 190.1 tok/s | TTFT p99 160.08s | TPOT p99 50.4ms | goodput 0.19 req/s
+[C3] index rebuilt: 74 runs
+=== 2026-10-10T21:24:07Z END C3 (exit 0)
+=== 2026-10-10T21:24:07Z START C4
+[C4] server healthy after 57s
+[C4] W1 rate=1 rep=0: 200/200 ok | out 246.8 tok/s | TTFT p99 0.17s | TPOT p99 17.1ms | goodput 0.95 req/s
+[C4] W1 rate=4 rep=0: 200/200 ok | out 920.9 tok/s | TTFT p99 0.21s | TPOT p99 21.7ms | goodput 3.54 req/s
+[C4] W1 rate=16 rep=0: 200/200 ok | out 1661.7 tok/s | TTFT p99 12.11s | TPOT p99 48.3ms | goodput 3.86 req/s
+[C4] W1 rate=inf rep=0: 200/200 ok | out 1680.6 tok/s | TTFT p99 24.52s | TPOT p99 47.3ms | goodput 1.35 req/s
+[C4] W2 rate=inf rep=0: 8/43 ok | out 44.2 tok/s | TTFT p99 40.25s | TPOT p99 31.2ms | goodput 0.04 req/s
+[C4] index rebuilt: 68 runs
+Traceback (most recent call last):
+    raise RuntimeError(f"server died (exit {proc.returncode}); see {log_path}")
+RuntimeError: server died (exit 1); see /workspace/IITJ/results/rtx4090/C4/server.log
+=== 2026-10-10T21:32:02Z END C4 (exit 1)
+=== 2026-10-10T21:32:02Z START C6
+[C6] server healthy after 60s
+[C6] W1 rate=1 rep=0: 200/200 ok | out 246.4 tok/s | TTFT p99 0.17s | TPOT p99 19.1ms | goodput 0.95 req/s
+[C6] W1 rate=4 rep=0: 200/200 ok | out 916.9 tok/s | TTFT p99 0.20s | TPOT p99 24.4ms | goodput 3.52 req/s
+[C6] W1 rate=16 rep=0: 200/200 ok | out 1706.7 tok/s | TTFT p99 12.25s | TPOT p99 46.2ms | goodput 4.19 req/s
+[C6] W1 rate=inf rep=0: 200/200 ok | out 1760.8 tok/s | TTFT p99 23.18s | TPOT p99 46.9ms | goodput 2.03 req/s
+[C6] W2 rate=inf rep=0: 43/43 ok | out 47.9 tok/s | TTFT p99 107.26s | TPOT p99 28.5ms | goodput 0.01 req/s
+[C6] W3 rate=inf rep=0: 152/288 ok | out 163.9 tok/s | TTFT p99 30.05s | TPOT p99 56.5ms | goodput 0.31 req/s
+[C6] index rebuilt: 74 runs
+=== 2026-10-10T21:46:59Z END C6 (exit 0)
+=== 2026-10-10T21:46:59Z START C5_gk
+[C5_gk] server healthy after 60s

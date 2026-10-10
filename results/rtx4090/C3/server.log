@@ -9,3 +9,10 @@ CMD: python -m engine.server --model unsloth/Meta-Llama-3.1-8B-Instruct --draft 
 [engine] hardware HardwareProfile(gpu_name='NVIDIA GeForce RTX 4090', vram_gb=23.5164794921875, hbm_bw_gbs=915.9967474791666, pcie_h2d_gbs=25.95316095380725, pcie_d2h_gbs=25.995421982604178, cpu_cores=48, ram_gb=251.54829025268555)
 [engine] KV capacity 18800 tokens (1175 blocks), policy=coopt
 [transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+[W1010 21:12:22.358597079 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 94371840 bytes (free: 29097984, total: 25250627584).
+[W1010 21:12:23.663698748 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 127926272 bytes (free: 121372672, total: 25250627584).
+[W1010 21:12:24.385775475 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 157286400 bytes (free: 100401152, total: 25250627584).
+[W1010 21:12:25.962045048 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 174063616 bytes (free: 35389440, total: 25250627584).
+[W1010 21:12:27.575132283 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 197132288 bytes (free: 186384384, total: 25250627584).
+[W1010 21:13:01.160783933 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 211812352 bytes (free: 112984064, total: 25250627584).
+[W1010 21:13:02.689812691 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 247463936 bytes (free: 52166656, total: 25250627584).

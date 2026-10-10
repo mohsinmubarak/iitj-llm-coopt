@@ -1,0 +1,34 @@
+CMD: python -m engine.server --model unsloth/Meta-Llama-3.1-8B-Instruct --draft unsloth/Llama-3.2-1B-Instruct --port 8000 --seed 0 --gamma 4 --trace /workspace/IITJ/results/rtx4090/C5_gk/trace.jsonl --policy coopt --controllers gamma,kv --kv-cpu-gb 32 --gpu-memory-utilization 0.92 --max-model-len 16384
+
+/root/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:64: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 228.99it/s]
+Fetching 6 files:   0%|          | 0/6 [00:00<?, ?it/s]Fetching 6 files: 100%|██████████| 6/6 [00:00<00:00, 161.77it/s]
+[engine] memory: weights 17.36 GiB, prefill activations 0.32 GiB, graphs 0.84 GiB -> KV 2.87 GiB
+[engine] captured 56 target + 16 draft CUDA graphs (target strides [1, 2, 3, 4, 5, 7, 9]) in 6s
+[engine] hardware HardwareProfile(gpu_name='NVIDIA GeForce RTX 4090', vram_gb=23.5164794921875, hbm_bw_gbs=914.2087904874951, pcie_h2d_gbs=25.992502913767385, pcie_d2h_gbs=25.81876554050294, cpu_cores=48, ram_gb=251.54829025268555)
+[engine] KV capacity 18800 tokens (1175 blocks), policy=coopt
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+[W1010 21:49:39.203204689 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 387973120 bytes (free: 245104640, total: 25250627584).
+[W1010 21:49:39.221527101 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 387973120 bytes (free: 18612224, total: 25250627584).
+[W1010 21:49:39.246421705 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 387973120 bytes (free: 14417920, total: 25250627584).
+[W1010 21:49:39.246662134 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 387973120 bytes (free: 14417920, total: 25250627584).
+Traceback (most recent call last):
+  File "/workspace/IITJ/engine/engine.py", line 462, in run_forever
+    self.step()
+  File "/workspace/IITJ/engine/engine.py", line 360, in step
+    drafts, dprobs = self._draft_phase(plan) if self.draft else ({}, {})
+                     ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/IITJ/engine/engine.py", line 326, in _draft_phase
+    logits, spans = self._run(self.draft, self.draft_graphs, self.dbm, items)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/IITJ/engine/engine.py", line 293, in _run
+    return model.forward(batch), spans
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/IITJ/engine/model.py", line 181, in forward
+    gate, up = F.linear(h, L["gate_up"]).chunk(2, dim=-1)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 370.00 MiB. GPU 0 has a total capacity of 23.52 GiB of which 13.75 MiB is free. Including non-PyTorch memory, this process has 23.49 GiB memory in use. Of the allocated memory 21.58 GiB is allocated by PyTorch, with 353.00 MiB allocated in private pools (e.g., CUDA Graphs), and 818.91 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)

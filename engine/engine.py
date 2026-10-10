@@ -296,16 +296,19 @@ class Engine:
         """Draft model: catch up on new tokens (prefill chunks too) and propose γ tokens."""
         drafts = {s.seq_id: [] for s in plan.decodes}
         dprobs = {s.seq_id: [] for s in plan.decodes}
+        # The draft model's KV can lag the target's: after a CPU-tier restore (draft KV is not
+        # tiered, so it restarts from 0 even if the target resumes mid-prompt) or while γ was 0.
+        # Everything the draft processes in one step, prefill chunks and catch-up alike, shares
+        # one token budget, so its activations stay within what the KV pool was sized for. A
+        # lagging sequence catches up over several steps and does not speculate until then.
         items, owners = [], []
+        catchup_budget = self.policy.max_batched_tokens
         for s, end in plan.chunks:
-            if s.draft_computed < end:
-                items.append(WorkItem(s.seq_id, s.tokens[s.draft_computed:end], s.draft_computed))
-                owners.append((s, end, False))
-        # A sequence whose draft KV lags (restored from the CPU tier, or γ was 0 for a while)
-        # catches up in chunks bounded by the step's token budget and does not speculate until
-        # it has caught up: an unbounded catch-up of a long context would blow the activation
-        # budget the KV pool was sized for.
-        catchup_budget = self.policy.max_batched_tokens - sum(len(it.tokens) for it in items)
+            n = min(end - s.draft_computed, catchup_budget)
+            if n > 0:
+                catchup_budget -= n
+                items.append(WorkItem(s.seq_id, s.tokens[s.draft_computed:s.draft_computed + n], s.draft_computed))
+                owners.append((s, s.draft_computed + n, False))
         spec = []
         for s in [s for s in plan.decodes if s.gamma > 0]:
             lag = len(s.tokens) - s.draft_computed
