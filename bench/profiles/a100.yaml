@@ -1,0 +1,8 @@
+# Final-results profile: 1x A100 80 GB. Every number in the thesis comes from this profile.
+name: a100
+max_model_len: 32768
+repeats: 3
+wandb_project: iitj-coopt-a100
+server_args: [--gpu-memory-utilization, 0.90]
+# Calibrate after the first A2 run on the A100 (target: A2 W3 duration ~ arrival span).
+arrival_time_scale: 1.0

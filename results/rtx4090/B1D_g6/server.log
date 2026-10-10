@@ -1,0 +1,186 @@
+CMD: vllm serve unsloth/Meta-Llama-3.1-8B-Instruct --port 8000 --dtype bfloat16 --seed 0 --speculative-config {"method": "draft_model", "model": "unsloth/Llama-3.2-1B-Instruct", "num_speculative_tokens": 6} --max-cudagraph-capture-size 2048 --gpu-memory-utilization 0.92 --max-model-len 16384
+
+/root/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:64: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+(APIServer pid=16878) INFO 10-10 19:40:02 [api_utils.py:347] 
+(APIServer pid=16878) INFO 10-10 19:40:02 [api_utils.py:347]        █     █     █▄   ▄█
+(APIServer pid=16878) INFO 10-10 19:40:02 [api_utils.py:347]  ▄▄ ▄█ █     █     █ ▀▄▀ █  version 0.31.0
+(APIServer pid=16878) INFO 10-10 19:40:02 [api_utils.py:347]   █▄█▀ █     █     █     █  model   unsloth/Meta-Llama-3.1-8B-Instruct
+(APIServer pid=16878) INFO 10-10 19:40:02 [api_utils.py:347]    ▀▀  ▀▀▀▀▀ ▀▀▀▀▀ ▀     ▀
+(APIServer pid=16878) INFO 10-10 19:40:02 [api_utils.py:347] 
+(APIServer pid=16878) INFO 10-10 19:40:02 [api_utils.py:286] non-default args: {'model_tag': 'unsloth/Meta-Llama-3.1-8B-Instruct', 'model': 'unsloth/Meta-Llama-3.1-8B-Instruct', 'dtype': 'bfloat16', 'max_model_len': 16384, 'max_cudagraph_capture_size': 2048, 'speculative_config': {'method': 'draft_model', 'model': 'unsloth/Llama-3.2-1B-Instruct', 'num_speculative_tokens': 6}}
+(APIServer pid=16878) INFO 10-10 19:40:03 [model.py:699] Resolved architecture: LlamaForCausalLM
+(APIServer pid=16878) INFO 10-10 19:40:03 [model.py:2109] Using max model len 16384
+(APIServer pid=16878) INFO 10-10 19:40:05 [model.py:699] Resolved architecture: LlamaForCausalLM
+(APIServer pid=16878) INFO 10-10 19:40:05 [model.py:2109] Using max model len 131072
+(APIServer pid=16878) INFO 10-10 19:40:05 [speculative.py:1663] Overriding draft model max model len from 131072 to 16384
+(APIServer pid=16878) INFO 10-10 19:40:05 [kernel.py:408] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native'])
+(APIServer pid=16878) WARNING 10-10 19:40:05 [vllm.py:2372] max_num_scheduled_tokens is set to 2048 based on the speculative decoding settings. This may lead to suboptimal performance. Consider increasing max_num_batched_tokens to accommodate the additional draft token slots, or decrease num_speculative_tokens.
+/root/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:64: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+(EngineCore pid=17106) INFO 10-10 19:40:20 [core.py:129] Initializing a V1 LLM engine (v0.31.0) with config: model='unsloth/Meta-Llama-3.1-8B-Instruct', speculative_config=SpeculativeConfig(method='draft_model', model='unsloth/Llama-3.2-1B-Instruct', num_spec_tokens=6), tokenizer='unsloth/Meta-Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=main, tokenizer_revision=main, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=16384, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=False, quantization=None, quantization_config=None, enforce_eager=False, aux_output_config=AuxOutputConfig(enable_return_routed_experts=False, max_bytes=None), kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, per_request_spec_decode_metrics='none', kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False, jit_monitor_mode='warn', jit_monitor_verbose=False), seed=0, served_model_name=unsloth/Meta-Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'ir_enable_torch_wrap': True, 'splitting_ops': ['vllm::unified_attention_with_output', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::qwen4_exp_ple_short_conv', 'vllm::qwen4_exp_qsa_with_output', 'vllm::linear_attention', 'vllm::qwen_gdn_attention_core', 'vllm::qwen_gdn_attention_core_fused_norm_packed', 'vllm::gdn_attention_core_xpu', 'vllm::olmo_hybrid_gdn_full_forward', 'vllm::sparse_attn_indexer', 'vllm::rocm_aiter_sparse_attn_indexer', 'vllm::deepseek_v4_attention', 'vllm::hpc_rope_norm_forward', 'vllm::unified_kv_cache_update', 'vllm::unified_mla_kv_cache_update'], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [2048], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512, 528, 544, 560, 576, 592, 608, 624, 640, 656, 672, 688, 704, 720, 736, 752, 768, 784, 800, 816, 832, 848, 864, 880, 896, 912, 928, 944, 960, 976, 992, 1008, 1024, 1040, 1056, 1072, 1088, 1104, 1120, 1136, 1152, 1168, 1184, 1200, 1216, 1232, 1248, 1264, 1280, 1296, 1312, 1328, 1344, 1360, 1376, 1392, 1408, 1424, 1440, 1456, 1472, 1488, 1504, 1520, 1536, 1552, 1568, 1584, 1600, 1616, 1632, 1648, 1664, 1680, 1696, 1712, 1728, 1744, 1760, 1776, 1792, 1808, 1824, 1840, 1856, 1872, 1888, 1904, 1920, 1936, 1952, 1968, 1984, 2000, 2016, 2032, 2048], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False, 'enable_qk_norm_rope_fusion': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False, 'fuse_qk_norm_rope_kvcache': False}, 'max_cudagraph_capture_size': 2048, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native']), enable_flashinfer_autotune=True, enable_cutedsl_warmup=True, enable_jit_warmup=True, moe_backend='auto', sparse_indexer_topk_backend='auto', linear_backend='auto', linear_backend_per_quant=None)
+(EngineCore pid=17106) INFO 10-10 19:40:21 [parallel_state.py:1825] world_size=1 rank=0 local_rank=0 distributed_init_method=file:///tmp/vllm_dist_616520f6da244c7baf5e7f58394eea57 backend=nccl
+(EngineCore pid=17106) INFO 10-10 19:40:21 [parallel_state.py:2269] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, ETP rank 0, EP rank N/A, EPLB rank N/A
+(EngineCore pid=17106) INFO 10-10 19:40:21 [gpu_worker.py:479] Using V2 Model Runner
+(EngineCore pid=17106) INFO 10-10 19:40:22 [model_runner.py:375] Loading model from scratch...
+(EngineCore pid=17106) INFO 10-10 19:40:23 [cuda.py:526] Using FLASH_ATTN attention backend out of potential backends: ['FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION'].
+(EngineCore pid=17106) INFO 10-10 19:40:23 [flash_attn.py:1167] Using FlashAttention version 2
+(EngineCore pid=17106) INFO 10-10 19:40:24 [weight_utils.py:1063] Filesystem type for checkpoints: FUSE. Checkpoint size: 14.96 GiB. Available RAM: 44.27 GiB.
+(EngineCore pid=17106) INFO 10-10 19:40:24 [weight_utils.py:1086] Auto-prefetch is disabled because the filesystem (FUSE) is not a recognized network FS (NFS/Lustre). If you want to force prefetching, start vLLM with --safetensors-load-strategy=prefetch.
+Loading safetensors checkpoint shards:   0% Completed | 0/4 [00:00<?, ?it/s]
+Loading safetensors checkpoint shards:  25% Completed | 1/4 [00:10<00:30, 10.17s/it]
+Loading safetensors checkpoint shards:  50% Completed | 2/4 [00:20<00:20, 10.34s/it]
+Loading safetensors checkpoint shards:  75% Completed | 3/4 [00:30<00:10, 10.25s/it]
+Loading safetensors checkpoint shards: 100% Completed | 4/4 [00:31<00:00,  6.38s/it]
+Loading safetensors checkpoint shards: 100% Completed | 4/4 [00:31<00:00,  7.80s/it]
+
+(EngineCore pid=17106) INFO 10-10 19:40:55 [default_loader.py:484] Loading weights took 31.31 seconds
+(EngineCore pid=17106) INFO 10-10 19:40:56 [kernel.py:408] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native'])
+(EngineCore pid=17106) WARNING 10-10 19:40:56 [vllm.py:2372] max_num_scheduled_tokens is set to 2048 based on the speculative decoding settings. This may lead to suboptimal performance. Consider increasing max_num_batched_tokens to accommodate the additional draft token slots, or decrease num_speculative_tokens.
+(EngineCore pid=17106) INFO 10-10 19:40:57 [weight_utils.py:1063] Filesystem type for checkpoints: FUSE. Checkpoint size: 2.30 GiB. Available RAM: 44.92 GiB.
+Loading safetensors checkpoint shards:   0% Completed | 0/1 [00:00<?, ?it/s]
+Loading safetensors checkpoint shards: 100% Completed | 1/1 [00:05<00:00,  6.00s/it]
+Loading safetensors checkpoint shards: 100% Completed | 1/1 [00:05<00:00,  6.00s/it]
+
+(EngineCore pid=17106) INFO 10-10 19:41:03 [default_loader.py:484] Loading weights took 6.18 seconds
+(EngineCore pid=17106) INFO 10-10 19:41:03 [model_runner.py:407] Model loading took 17.32 GiB memory and 41.100241 seconds
+(EngineCore pid=17106) INFO 10-10 19:41:03 [topk_topp_sampler.py:124] Using FlashInfer for top-p & top-k sampling.
+(EngineCore pid=17106) INFO 10-10 19:41:03 [torch_utils.py:286] Reducing Torch threads from 13 to 1 for serving. Set OMP_NUM_THREADS in the external environment to override.
+(EngineCore pid=17106) INFO 10-10 19:41:03 [utils.py:343] Using LBNHC KV cache layout.
+(EngineCore pid=17106) INFO 10-10 19:41:10 [backends.py:1090] Using cache directory: /workspace/vllm_cache/torch_compile_cache/c432e45f1a/rank_0_0/backbone for vLLM's torch.compile
+(EngineCore pid=17106) INFO 10-10 19:41:10 [backends.py:1151] Dynamo bytecode transform time: 5.69 s
+(EngineCore pid=17106) INFO 10-10 19:41:35 [backends.py:391] Compiling a graph for compile range (1, 2048) takes 25.37 s
+(EngineCore pid=17106) INFO 10-10 19:41:40 [backends.py:916] collected artifacts: 33 entries, 3 artifacts, 4638612 bytes total
+(EngineCore pid=17106) INFO 10-10 19:41:40 [decorators.py:717] saved AOT compiled function to /workspace/vllm_cache/torch_compile_cache/torch_aot_compile/dc201fbcc406b22a1c0f23d382331c51208733714ca538287ce4b134ec649d2e/rank_0_0/model
+(EngineCore pid=17106) INFO 10-10 19:41:40 [monitor.py:53] torch.compile took 35.81 s in total
+(EngineCore pid=17106) INFO 10-10 19:41:40 [monitor.py:81] Initial profiling/warmup run took 0.19 s
+(EngineCore pid=17106) INFO 10-10 19:41:43 [backends.py:1090] Using cache directory: /workspace/vllm_cache/torch_compile_cache/c432e45f1a/rank_0_0/draft_model for vLLM's torch.compile
+(EngineCore pid=17106) INFO 10-10 19:41:43 [backends.py:1151] Dynamo bytecode transform time: 2.72 s
+(EngineCore pid=17106) INFO 10-10 19:42:06 [backends.py:391] Compiling a graph for compile range (1, 2048) takes 22.93 s
+(EngineCore pid=17106) INFO 10-10 19:42:08 [backends.py:916] collected artifacts: 17 entries, 3 artifacts, 4711368 bytes total
+(EngineCore pid=17106) INFO 10-10 19:42:08 [decorators.py:717] saved AOT compiled function to /workspace/vllm_cache/torch_compile_cache/torch_aot_compile/8648f99b91e4ee910dbe6dbc39f39ee7d5f096683c0d9e656c9f114095381d3c/rank_0_0/model
+(EngineCore pid=17106) INFO 10-10 19:42:08 [monitor.py:53] torch.compile took 27.97 s in total
+(EngineCore pid=17106) INFO 10-10 19:42:08 [monitor.py:81] Initial profiling/warmup run took 0.02 s
+Capturing CUDA graphs (PIECEWISE):   0%|          | 0/147 [00:00<?, ?it/s]Capturing CUDA graphs (PIECEWISE):   1%|          | 1/147 [00:00<00:37,  3.93it/s]Capturing CUDA graphs (PIECEWISE):   1%|▏         | 2/147 [00:00<00:35,  4.12it/s]Capturing CUDA graphs (PIECEWISE):   2%|▏         | 3/147 [00:00<00:34,  4.20it/s]Capturing CUDA graphs (PIECEWISE):   3%|▎         | 4/147 [00:00<00:33,  4.24it/s]Capturing CUDA graphs (PIECEWISE):   3%|▎         | 5/147 [00:01<00:33,  4.29it/s]Capturing CUDA graphs (PIECEWISE):   4%|▍         | 6/147 [00:01<00:32,  4.31it/s]Capturing CUDA graphs (PIECEWISE):   5%|▍         | 7/147 [00:01<00:32,  4.34it/s]Capturing CUDA graphs (PIECEWISE):   5%|▌         | 8/147 [00:01<00:31,  4.35it/s]Capturing CUDA graphs (PIECEWISE):   6%|▌         | 9/147 [00:02<00:31,  4.38it/s]Capturing CUDA graphs (PIECEWISE):   7%|▋         | 10/147 [00:02<00:31,  4.41it/s]Capturing CUDA graphs (PIECEWISE):   7%|▋         | 11/147 [00:02<00:30,  4.43it/s]Capturing CUDA graphs (PIECEWISE):   8%|▊         | 12/147 [00:02<00:30,  4.44it/s]Capturing CUDA graphs (PIECEWISE):   9%|▉         | 13/147 [00:02<00:30,  4.46it/s]Capturing CUDA graphs (PIECEWISE):  10%|▉         | 14/147 [00:03<00:29,  4.47it/s]Capturing CUDA graphs (PIECEWISE):  10%|█         | 15/147 [00:03<00:29,  4.49it/s]Capturing CUDA graphs (PIECEWISE):  11%|█         | 16/147 [00:03<00:29,  4.50it/s]Capturing CUDA graphs (PIECEWISE):  12%|█▏        | 17/147 [00:03<00:28,  4.57it/s]Capturing CUDA graphs (PIECEWISE):  12%|█▏        | 18/147 [00:04<00:28,  4.58it/s]Capturing CUDA graphs (PIECEWISE):  13%|█▎        | 19/147 [00:04<00:27,  4.58it/s]Capturing CUDA graphs (PIECEWISE):  14%|█▎        | 20/147 [00:04<00:27,  4.63it/s]Capturing CUDA graphs (PIECEWISE):  14%|█▍        | 21/147 [00:04<00:26,  4.69it/s]Capturing CUDA graphs (PIECEWISE):  15%|█▍        | 22/147 [00:04<00:26,  4.72it/s]Capturing CUDA graphs (PIECEWISE):  16%|█▌        | 23/147 [00:05<00:26,  4.75it/s]Capturing CUDA graphs (PIECEWISE):  16%|█▋        | 24/147 [00:05<00:25,  4.77it/s]Capturing CUDA graphs (PIECEWISE):  17%|█▋        | 25/147 [00:05<00:25,  4.82it/s]Capturing CUDA graphs (PIECEWISE):  18%|█▊        | 26/147 [00:05<00:24,  4.85it/s]Capturing CUDA graphs (PIECEWISE):  18%|█▊        | 27/147 [00:05<00:24,  4.87it/s]Capturing CUDA graphs (PIECEWISE):  19%|█▉        | 28/147 [00:06<00:24,  4.90it/s]Capturing CUDA graphs (PIECEWISE):  20%|█▉        | 29/147 [00:06<00:23,  4.95it/s]Capturing CUDA graphs (PIECEWISE):  20%|██        | 30/147 [00:06<00:23,  4.99it/s]Capturing CUDA graphs (PIECEWISE):  21%|██        | 31/147 [00:06<00:23,  5.02it/s]Capturing CUDA graphs (PIECEWISE):  22%|██▏       | 32/147 [00:06<00:22,  5.04it/s]Capturing CUDA graphs (PIECEWISE):  22%|██▏       | 33/147 [00:07<00:22,  5.11it/s]Capturing CUDA graphs (PIECEWISE):  23%|██▎       | 34/147 [00:07<00:21,  5.17it/s]Capturing CUDA graphs (PIECEWISE):  24%|██▍       | 35/147 [00:07<00:21,  5.21it/s]Capturing CUDA graphs (PIECEWISE):  24%|██▍       | 36/147 [00:07<00:21,  5.25it/s]Capturing CUDA graphs (PIECEWISE):  25%|██▌       | 37/147 [00:07<00:20,  5.29it/s]Capturing CUDA graphs (PIECEWISE):  26%|██▌       | 38/147 [00:08<00:20,  5.33it/s]Capturing CUDA graphs (PIECEWISE):  27%|██▋       | 39/147 [00:08<00:20,  5.35it/s]Capturing CUDA graphs (PIECEWISE):  27%|██▋       | 40/147 [00:08<00:19,  5.38it/s]Capturing CUDA graphs (PIECEWISE):  28%|██▊       | 41/147 [00:08<00:19,  5.44it/s]Capturing CUDA graphs (PIECEWISE):  29%|██▊       | 42/147 [00:08<00:19,  5.49it/s]Capturing CUDA graphs (PIECEWISE):  29%|██▉       | 43/147 [00:08<00:18,  5.52it/s]Capturing CUDA graphs (PIECEWISE):  30%|██▉       | 44/147 [00:09<00:18,  5.54it/s]Capturing CUDA graphs (PIECEWISE):  31%|███       | 45/147 [00:09<00:18,  5.58it/s]Capturing CUDA graphs (PIECEWISE):  31%|███▏      | 46/147 [00:09<00:17,  5.62it/s]Capturing CUDA graphs (PIECEWISE):  32%|███▏      | 47/147 [00:09<00:17,  5.64it/s]Capturing CUDA graphs (PIECEWISE):  33%|███▎      | 48/147 [00:09<00:17,  5.67it/s]Capturing CUDA graphs (PIECEWISE):  33%|███▎      | 49/147 [00:10<00:17,  5.76it/s]Capturing CUDA graphs (PIECEWISE):  34%|███▍      | 50/147 [00:10<00:16,  5.84it/s]Capturing CUDA graphs (PIECEWISE):  35%|███▍      | 51/147 [00:10<00:16,  5.87it/s]Capturing CUDA graphs (PIECEWISE):  35%|███▌      | 52/147 [00:10<00:16,  5.93it/s]Capturing CUDA graphs (PIECEWISE):  36%|███▌      | 53/147 [00:10<00:15,  6.00it/s]Capturing CUDA graphs (PIECEWISE):  37%|███▋      | 54/147 [00:10<00:15,  6.06it/s]Capturing CUDA graphs (PIECEWISE):  37%|███▋      | 55/147 [00:10<00:15,  6.10it/s]Capturing CUDA graphs (PIECEWISE):  38%|███▊      | 56/147 [00:11<00:14,  6.15it/s]Capturing CUDA graphs (PIECEWISE):  39%|███▉      | 57/147 [00:11<00:14,  6.19it/s]Capturing CUDA graphs (PIECEWISE):  39%|███▉      | 58/147 [00:11<00:14,  6.21it/s]Capturing CUDA graphs (PIECEWISE):  40%|████      | 59/147 [00:11<00:14,  6.24it/s]Capturing CUDA graphs (PIECEWISE):  41%|████      | 60/147 [00:11<00:13,  6.28it/s]Capturing CUDA graphs (PIECEWISE):  41%|████▏     | 61/147 [00:11<00:13,  6.32it/s]Capturing CUDA graphs (PIECEWISE):  42%|████▏     | 62/147 [00:12<00:13,  6.36it/s]Capturing CUDA graphs (PIECEWISE):  43%|████▎     | 63/147 [00:12<00:13,  6.39it/s]Capturing CUDA graphs (PIECEWISE):  44%|████▎     | 64/147 [00:12<00:12,  6.42it/s]Capturing CUDA graphs (PIECEWISE):  44%|████▍     | 65/147 [00:12<00:12,  6.59it/s]Capturing CUDA graphs (PIECEWISE):  45%|████▍     | 66/147 [00:12<00:12,  6.72it/s]Capturing CUDA graphs (PIECEWISE):  46%|████▌     | 67/147 [00:12<00:11,  6.82it/s]Capturing CUDA graphs (PIECEWISE):  46%|████▋     | 68/147 [00:12<00:11,  6.88it/s]Capturing CUDA graphs (PIECEWISE):  47%|████▋     | 69/147 [00:13<00:11,  6.96it/s]Capturing CUDA graphs (PIECEWISE):  48%|████▊     | 70/147 [00:13<00:10,  7.00it/s]Capturing CUDA graphs (PIECEWISE):  48%|████▊     | 71/147 [00:13<00:10,  7.04it/s]Capturing CUDA graphs (PIECEWISE):  49%|████▉     | 72/147 [00:13<00:10,  7.06it/s]Capturing CUDA graphs (PIECEWISE):  50%|████▉     | 73/147 [00:13<00:10,  7.18it/s]Capturing CUDA graphs (PIECEWISE):  50%|█████     | 74/147 [00:13<00:10,  7.28it/s]Capturing CUDA graphs (PIECEWISE):  51%|█████     | 75/147 [00:13<00:09,  7.36it/s]Capturing CUDA graphs (PIECEWISE):  52%|█████▏    | 76/147 [00:14<00:09,  7.41it/s]Capturing CUDA graphs (PIECEWISE):  52%|█████▏    | 77/147 [00:14<00:09,  7.47it/s]Capturing CUDA graphs (PIECEWISE):  53%|█████▎    | 78/147 [00:14<00:09,  7.48it/s]Capturing CUDA graphs (PIECEWISE):  54%|█████▎    | 79/147 [00:14<00:08,  7.56it/s]Capturing CUDA graphs (PIECEWISE):  54%|█████▍    | 80/147 [00:14<00:08,  7.62it/s]Capturing CUDA graphs (PIECEWISE):  55%|█████▌    | 81/147 [00:14<00:08,  7.83it/s]Capturing CUDA graphs (PIECEWISE):  56%|█████▌    | 82/147 [00:14<00:08,  7.98it/s]Capturing CUDA graphs (PIECEWISE):  56%|█████▋    | 83/147 [00:14<00:07,  8.10it/s]Capturing CUDA graphs (PIECEWISE):  57%|█████▋    | 84/147 [00:15<00:07,  8.17it/s]Capturing CUDA graphs (PIECEWISE):  58%|█████▊    | 85/147 [00:15<00:07,  8.30it/s]Capturing CUDA graphs (PIECEWISE):  59%|█████▊    | 86/147 [00:15<00:07,  8.39it/s]Capturing CUDA graphs (PIECEWISE):  59%|█████▉    | 87/147 [00:15<00:07,  8.49it/s]Capturing CUDA graphs (PIECEWISE):  60%|█████▉    | 88/147 [00:15<00:06,  8.53it/s]Capturing CUDA graphs (PIECEWISE):  61%|██████    | 89/147 [00:15<00:06,  8.68it/s]Capturing CUDA graphs (PIECEWISE):  61%|██████    | 90/147 [00:15<00:06,  8.74it/s]Capturing CUDA graphs (PIECEWISE):  62%|██████▏   | 91/147 [00:15<00:06,  8.82it/s]Capturing CUDA graphs (PIECEWISE):  63%|██████▎   | 92/147 [00:15<00:06,  8.89it/s]Capturing CUDA graphs (PIECEWISE):  63%|██████▎   | 93/147 [00:16<00:05,  9.00it/s]Capturing CUDA graphs (PIECEWISE):  64%|██████▍   | 94/147 [00:16<00:05,  9.11it/s]Capturing CUDA graphs (PIECEWISE):  65%|██████▍   | 95/147 [00:16<00:05,  9.16it/s]Capturing CUDA graphs (PIECEWISE):  65%|██████▌   | 96/147 [00:16<00:05,  9.23it/s]Capturing CUDA graphs (PIECEWISE):  67%|██████▋   | 98/147 [00:16<00:05,  9.74it/s]Capturing CUDA graphs (PIECEWISE):  68%|██████▊   | 100/147 [00:16<00:04, 10.01it/s]Capturing CUDA graphs (PIECEWISE):  69%|██████▉   | 102/147 [00:16<00:04, 10.23it/s]Capturing CUDA graphs (PIECEWISE):  71%|███████   | 104/147 [00:17<00:04, 10.35it/s]Capturing CUDA graphs (PIECEWISE):  72%|███████▏  | 106/147 [00:17<00:03, 10.73it/s]Capturing CUDA graphs (PIECEWISE):  73%|███████▎  | 108/147 [00:17<00:03, 11.02it/s]Capturing CUDA graphs (PIECEWISE):  75%|███████▍  | 110/147 [00:17<00:03, 11.22it/s]Capturing CUDA graphs (PIECEWISE):  76%|███████▌  | 112/147 [00:17<00:03, 11.38it/s]Capturing CUDA graphs (PIECEWISE):  78%|███████▊  | 114/147 [00:17<00:02, 12.28it/s]Capturing CUDA graphs (PIECEWISE):  79%|███████▉  | 116/147 [00:18<00:02, 13.13it/s]Capturing CUDA graphs (PIECEWISE):  80%|████████  | 118/147 [00:18<00:02, 13.78it/s]Capturing CUDA graphs (PIECEWISE):  82%|████████▏ | 120/147 [00:18<00:01, 14.30it/s]Capturing CUDA graphs (PIECEWISE):  83%|████████▎ | 122/147 [00:18<00:01, 14.73it/s]Capturing CUDA graphs (PIECEWISE):  84%|████████▍ | 124/147 [00:18<00:01, 15.16it/s]Capturing CUDA graphs (PIECEWISE):  86%|████████▌ | 126/147 [00:18<00:01, 15.53it/s]Capturing CUDA graphs (PIECEWISE):  87%|████████▋ | 128/147 [00:18<00:01, 15.87it/s]Capturing CUDA graphs (PIECEWISE):  88%|████████▊ | 130/147 [00:18<00:01, 15.89it/s]Capturing CUDA graphs (PIECEWISE):  90%|████████▉ | 132/147 [00:19<00:00, 16.14it/s]Capturing CUDA graphs (PIECEWISE):  91%|█████████ | 134/147 [00:19<00:00, 16.48it/s]Capturing CUDA graphs (PIECEWISE):  93%|█████████▎| 136/147 [00:19<00:00, 16.73it/s]Capturing CUDA graphs (PIECEWISE):  94%|█████████▍| 138/147 [00:19<00:00, 16.98it/s]Capturing CUDA graphs (PIECEWISE):  95%|█████████▌| 140/147 [00:19<00:00, 17.17it/s]Capturing CUDA graphs (PIECEWISE):  97%|█████████▋| 142/147 [00:19<00:00, 17.34it/s]Capturing CUDA graphs (PIECEWISE):  98%|█████████▊| 144/147 [00:19<00:00, 17.60it/s]Capturing CUDA graphs (PIECEWISE):  99%|█████████▉| 146/147 [00:19<00:00, 17.86it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 147/147 [00:19<00:00,  7.37it/s]
+Capturing CUDA graphs (FULL):   0%|          | 0/2 [00:00<?, ?it/s]Capturing CUDA graphs (FULL):  50%|█████     | 1/2 [00:00<00:00,  5.38it/s]Capturing CUDA graphs (FULL): 100%|██████████| 2/2 [00:00<00:00,  5.37it/s]Capturing CUDA graphs (FULL): 100%|██████████| 2/2 [00:00<00:00,  5.37it/s]
+(EngineCore pid=17106) INFO 10-10 19:42:32 [model_runner.py:1087] Graph capturing finished in 21 secs, took 1.06 GiB
+(EngineCore pid=17106) INFO 10-10 19:42:33 [gpu_worker.py:692] Available KV cache memory: 1.61 GiB
+(EngineCore pid=17106) INFO 10-10 19:42:33 [gpu_worker.py:707] CUDA graph memory profiling is enabled (default since v0.21.0). The current --gpu-memory-utilization=0.9200 is equivalent to --gpu-memory-utilization=0.8587 without CUDA graph memory profiling. To maintain the same effective KV cache size as before, increase --gpu-memory-utilization to 0.9813. To disable, set VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS=0.
+(EngineCore pid=17106) ERROR 10-10 19:42:33 [core.py:1433] EngineCore failed to start.
+(EngineCore pid=17106) ERROR 10-10 19:42:33 [core.py:1433] Traceback (most recent call last):
+(EngineCore pid=17106) ERROR 10-10 19:42:33 [core.py:1433]   File "/root/venv/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 1395, in run_engine_core
+(EngineCore pid=17106) ERROR 10-10 19:42:33 [core.py:1433]     engine_core = EngineCoreProc(*args, engine_index=dp_rank, **kwargs)
+(EngineCore pid=17106) ERROR 10-10 19:42:33 [core.py:1433]                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=17106) ERROR 10-10 19:42:33 [core.py:1433]   File "/root/venv/lib/python3.12/site-packages/vllm/tracing/otel.py", line 175, in sync_wrapper
+(EngineCore pid=17106) ERROR 10-10 19:42:33 [core.py:1433]     return func(*args, **kwargs)
+(EngineCore pid=17106) ERROR 10-10 19:42:33 [core.py:1433]            ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=17106) ERROR 10-10 19:42:33 [core.py:1433]   File "/root/venv/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 1151, in __init__
+(EngineCore pid=17106) ERROR 10-10 19:42:33 [core.py:1433]     super().__init__(
+(EngineCore pid=17106) ERROR 10-10 19:42:33 [core.py:1433]   File "/root/venv/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 151, in __init__
+(EngineCore pid=17106) ERROR 10-10 19:42:33 [core.py:1433]     kv_cache_config = self._initialize_kv_caches(vllm_config)
+(EngineCore pid=17106) ERROR 10-10 19:42:33 [core.py:1433]                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=17106) ERROR 10-10 19:42:33 [core.py:1433]   File "/root/venv/lib/python3.12/site-packages/vllm/tracing/otel.py", line 175, in sync_wrapper
+(EngineCore pid=17106) ERROR 10-10 19:42:33 [core.py:1433]     return func(*args, **kwargs)
+(EngineCore pid=17106) ERROR 10-10 19:42:33 [core.py:1433]            ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=17106) ERROR 10-10 19:42:33 [core.py:1433]   File "/root/venv/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 320, in _initialize_kv_caches
+(EngineCore pid=17106) ERROR 10-10 19:42:33 [core.py:1433]     kv_cache_configs = get_kv_cache_configs(
+(EngineCore pid=17106) ERROR 10-10 19:42:33 [core.py:1433]                        ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=17106) ERROR 10-10 19:42:33 [core.py:1433]   File "/root/venv/lib/python3.12/site-packages/vllm/v1/core/kv_cache_utils.py", line 2795, in get_kv_cache_configs
+(EngineCore pid=17106) ERROR 10-10 19:42:33 [core.py:1433]     _check_enough_kv_cache_memory(
+(EngineCore pid=17106) ERROR 10-10 19:42:33 [core.py:1433]   File "/root/venv/lib/python3.12/site-packages/vllm/v1/core/kv_cache_utils.py", line 925, in _check_enough_kv_cache_memory
+(EngineCore pid=17106) ERROR 10-10 19:42:33 [core.py:1433]     raise ValueError(
+(EngineCore pid=17106) ERROR 10-10 19:42:33 [core.py:1433] ValueError: To serve at least one request with the model's max seq len (16384), (2.5 GiB KV cache is needed, which is larger than the available KV cache memory (1.6 GiB). Based on the available memory, the estimated maximum model length is 10496. Try increasing `gpu_memory_utilization` (which also controls CPU memory on the CPU backend) or decreasing `max_model_len` when initializing the engine. See https://docs.vllm.ai/en/latest/configuration/conserving_memory/ for more details.
+Process EngineCore:
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/root/venv/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 1437, in run_engine_core
+    raise e
+  File "/root/venv/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 1395, in run_engine_core
+    engine_core = EngineCoreProc(*args, engine_index=dp_rank, **kwargs)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/vllm/tracing/otel.py", line 175, in sync_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 1151, in __init__
+    super().__init__(
+  File "/root/venv/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 151, in __init__
+    kv_cache_config = self._initialize_kv_caches(vllm_config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/vllm/tracing/otel.py", line 175, in sync_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 320, in _initialize_kv_caches
+    kv_cache_configs = get_kv_cache_configs(
+                       ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/vllm/v1/core/kv_cache_utils.py", line 2795, in get_kv_cache_configs
+    _check_enough_kv_cache_memory(
+  File "/root/venv/lib/python3.12/site-packages/vllm/v1/core/kv_cache_utils.py", line 925, in _check_enough_kv_cache_memory
+    raise ValueError(
+ValueError: To serve at least one request with the model's max seq len (16384), (2.5 GiB KV cache is needed, which is larger than the available KV cache memory (1.6 GiB). Based on the available memory, the estimated maximum model length is 10496. Try increasing `gpu_memory_utilization` (which also controls CPU memory on the CPU backend) or decreasing `max_model_len` when initializing the engine. See https://docs.vllm.ai/en/latest/configuration/conserving_memory/ for more details.
+[rank0]:[W1010 19:42:34.616754082 ProcessGroupNCCL.cpp:1624] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+(APIServer pid=16878) INFO 10-10 19:42:35 [utils.py:638] [shutdown] Process manager: send sigterm to process EngineCore
+Traceback (most recent call last):
+  File "/root/venv/bin/vllm", line 10, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/vllm/entrypoints/cli/main.py", line 118, in main
+    args.dispatch_function(args)
+  File "/root/venv/lib/python3.12/site-packages/vllm/entrypoints/cli/serve.py", line 154, in cmd
+    uvloop.run(run_server(args))
+  File "/root/venv/lib/python3.12/site-packages/uvloop/__init__.py", line 96, in run
+    return __asyncio.run(
+           ^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1515, in uvloop.loop.Loop.run_until_complete
+  File "/root/venv/lib/python3.12/site-packages/uvloop/__init__.py", line 48, in wrapper
+    return await main
+           ^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/vllm/entrypoints/launchers/api_server/entry.py", line 172, in run_server
+    await run_server_worker(listen_address, sock, args, **uvicorn_kwargs)
+  File "/root/venv/lib/python3.12/site-packages/vllm/entrypoints/launchers/api_server/entry.py", line 185, in run_server_worker
+    async with build_async_engine_client(
+  File "/usr/lib/python3.12/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/vllm/entrypoints/launchers/api_server/entry.py", line 58, in build_async_engine_client
+    async with build_async_engine_client_from_engine_args(
+  File "/usr/lib/python3.12/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/vllm/entrypoints/launchers/api_server/entry.py", line 92, in build_async_engine_client_from_engine_args
+    async_llm = AsyncLLM.from_vllm_config(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/vllm/v1/engine/async_llm.py", line 248, in from_vllm_config
+    return cls(
+           ^^^^
+  File "/root/venv/lib/python3.12/site-packages/vllm/v1/engine/async_llm.py", line 180, in __init__
+    self.engine_core = EngineCoreClient.make_async_mp_client(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/vllm/tracing/otel.py", line 175, in sync_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 167, in make_async_mp_client
+    return AsyncMPClient(
+           ^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/vllm/tracing/otel.py", line 175, in sync_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 1100, in __init__
+    super().__init__(
+  File "/root/venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 674, in __init__
+    with launch_core_engines(
+  File "/usr/lib/python3.12/contextlib.py", line 144, in __exit__
+    next(self.gen)
+  File "/root/venv/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 1268, in launch_core_engines
+    wait_for_engine_startup(
+  File "/root/venv/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 1348, in wait_for_engine_startup
+    raise RuntimeError(
+RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}

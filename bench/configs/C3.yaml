@@ -1,0 +1,15 @@
+# C3: scheduler controller only
+name: C3
+description: "C3: scheduler controller only"
+server:
+  model: unsloth/Meta-Llama-3.1-8B-Instruct
+  cmd: [python, -m, engine.server, --model, unsloth/Meta-Llama-3.1-8B-Instruct, --draft, unsloth/Llama-3.2-1B-Instruct]
+  args: [--seed, 0, --gamma, 4, --trace, "{out_dir}/trace.jsonl", --policy, coopt, --controllers, sched]
+runs:
+  - workload: W1
+    request_rates: [1, 4, 16, inf]
+  - workload: W2
+    request_rates: [inf]
+    max_concurrency: 16
+  - workload: W3
+    arrivals: file

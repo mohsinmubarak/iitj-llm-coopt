@@ -1,0 +1,11 @@
+.env
+*.env
+__pycache__/
+*.pyc
+.venv/
+venv/
+hf_cache/
+*.safetensors
+wandb/
+results/.wandb_logged
+.last_pod_sync

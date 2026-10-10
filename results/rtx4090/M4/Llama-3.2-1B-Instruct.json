@@ -1,0 +1,14 @@
+{
+ "model": "unsloth/Llama-3.2-1B-Instruct",
+ "prompts": 16,
+ "new_tokens": 64,
+ "teacher_forced_agreement": 0.9936034115138592,
+ "last_logit_max_abs_diff": 0.453125,
+ "last_logit_top1_agreement": 1.0,
+ "single_exact_match_rate": 0.6875,
+ "single_mean_matched_prefix": 51.5625,
+ "batched_exact_match_rate": 0.625,
+ "batched_mean_matched_prefix": 50.25,
+ "batched_equals_single": 0.625,
+ "pass": true
+}

@@ -1,0 +1,11 @@
+# Rehearsal profile: every experiment end to end on 1x RTX 4090 (24 GB).
+# 8B BF16 weights take ~16 GB, so contexts are capped at 16K and W2/A3 prompts above that are dropped.
+name: rtx4090
+max_model_len: 16384
+repeats: 1
+wandb_project: iitj-coopt-rtx4090
+server_args: [--gpu-memory-utilization, 0.92]
+# W3's bursty schedule (arrivals: file) is stretched 2x: on stock vLLM the unscaled schedule took
+# 232 s to serve 115 s of arrivals (2.0x overload). Stretched, the mean load sits near capacity
+# and only the bursts overload, which is the regime the controllers are meant for.
+arrival_time_scale: 2.0

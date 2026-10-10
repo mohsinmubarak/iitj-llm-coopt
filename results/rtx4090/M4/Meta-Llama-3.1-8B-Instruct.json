@@ -1,0 +1,18 @@
+{
+ "model": "unsloth/Meta-Llama-3.1-8B-Instruct",
+ "prompts": 16,
+ "new_tokens": 64,
+ "teacher_forced_agreement": 0.9894625922023182,
+ "last_logit_max_abs_diff": 0.65625,
+ "last_logit_top1_agreement": 1.0,
+ "single_exact_match_rate": 0.375,
+ "single_mean_matched_prefix": 45.625,
+ "batched_exact_match_rate": 0.375,
+ "batched_mean_matched_prefix": 44.6875,
+ "batched_equals_single": 0.4375,
+ "hf_eager_vs_sdpa_agreement": 0.9915700737618546,
+ "disagreements": 10,
+ "disagreement_hf_margin_max": 0.125,
+ "disagreement_hf_margin_median": 0.125,
+ "pass": true
+}

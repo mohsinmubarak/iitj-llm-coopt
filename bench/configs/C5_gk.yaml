@@ -1,0 +1,10 @@
+# C5: gamma + KV, shared snapshot
+name: C5_gk
+description: "C5: gamma + KV, shared snapshot"
+server:
+  model: unsloth/Meta-Llama-3.1-8B-Instruct
+  cmd: [python, -m, engine.server, --model, unsloth/Meta-Llama-3.1-8B-Instruct, --draft, unsloth/Llama-3.2-1B-Instruct]
+  args: [--seed, 0, --gamma, 4, --trace, "{out_dir}/trace.jsonl", --policy, coopt, --controllers, 'gamma,kv', --kv-cpu-gb, 32]
+runs:
+  - workload: W3
+    arrivals: file

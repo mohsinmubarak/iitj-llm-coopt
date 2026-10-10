@@ -1,0 +1,14 @@
+# B2: vLLM native KV offloading to CPU (32 GiB pinned buffer), no spec decoding.
+name: B2
+description: vLLM native CPU KV offload (32 GiB)
+server:
+  model: unsloth/Meta-Llama-3.1-8B-Instruct
+  args: [--dtype, bfloat16, --seed, 0, --kv-offloading-backend, native, --kv-offloading-size, 32]
+runs:
+  - workload: W1
+    request_rates: [1, 4, 16, inf]
+  - workload: W2
+    request_rates: [inf]
+    max_concurrency: 16
+  - workload: W3
+    arrivals: file

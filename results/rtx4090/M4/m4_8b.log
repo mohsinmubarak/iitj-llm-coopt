@@ -1,0 +1,22 @@
+/root/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:64: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+Loading weights:   0%|          | 0/291 [00:00<?, ?it/s]Loading weights:  23%|██▎       | 67/291 [00:00<00:00, 658.29it/s]Loading weights:  46%|████▌     | 133/291 [00:00<00:00, 245.10it/s]Loading weights:  59%|█████▉    | 171/291 [00:00<00:00, 270.74it/s]Loading weights:  71%|███████   | 207/291 [00:00<00:00, 188.58it/s]Loading weights:  80%|████████  | 234/291 [00:01<00:00, 184.41it/s]Loading weights:  90%|████████▉ | 261/291 [00:01<00:00, 182.06it/s]Loading weights: 100%|██████████| 291/291 [00:01<00:00, 221.33it/s]
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 342.40it/s]
+{
+ "model": "unsloth/Meta-Llama-3.1-8B-Instruct",
+ "prompts": 16,
+ "new_tokens": 64,
+ "teacher_forced_agreement": 0.9894625922023182,
+ "last_logit_max_abs_diff": 0.65625,
+ "last_logit_top1_agreement": 1.0,
+ "single_exact_match_rate": 0.375,
+ "single_mean_matched_prefix": 45.625,
+ "batched_exact_match_rate": 0.375,
+ "batched_mean_matched_prefix": 44.6875,
+ "batched_equals_single": 0.4375,
+ "hf_eager_vs_sdpa_agreement": 0.9915700737618546,
+ "disagreements": 10,
+ "disagreement_hf_margin_max": 0.125,
+ "disagreement_hf_margin_median": 0.125,
+ "pass": true
+}

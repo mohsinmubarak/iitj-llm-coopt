@@ -1,0 +1,44 @@
+"""Control policies: the only place runtime decisions are made.
+
+The engine asks its policy for γ per sequence, the batch-size and token budgets, admission and
+the preemption victim, and calls `tick(snapshot)` every N steps. StaticPolicy (experiment C0)
+never changes anything; the co-optimizer subclasses it and adapts these knobs from live metrics.
+"""
+from dataclasses import dataclass
+
+
+@dataclass
+class StaticPolicy:
+    gamma: int = 4               # draft tokens per step; 0 disables speculation
+    max_num_seqs: int = 128      # running batch size cap
+    max_batched_tokens: int = 8192  # tokens per forward pass (prefill chunk budget)
+    watermark: float = 0.01      # fraction of KV blocks kept free when admitting new requests
+    tick_every: int = 8          # steps between tick() calls
+    kv_swap: bool = False        # preemption: swap KV to the CPU tier (True) or recompute (False)
+
+    name = "static"
+
+    def gamma_for(self, seq) -> int:
+        return self.gamma
+
+    def admit(self, seq, engine) -> bool:
+        return True
+
+    def pick_next(self, waiting, engine) -> int:
+        """Index of the waiting request to admit next (FCFS)."""
+        return 0
+
+    def swap_on_preempt(self, seq, engine) -> bool:
+        return self.kv_swap
+
+    def preempt_victim(self, running: list):
+        """Newest running sequence (FCFS fairness, as in vLLM)."""
+        return running[-1]
+
+    def tick(self, snapshot) -> None:
+        pass
+
+    def state(self) -> dict:
+        """Knob values exported as metrics every step."""
+        return {"gamma_target": self.gamma, "max_num_seqs": self.max_num_seqs,
+                "max_batched_tokens": self.max_batched_tokens}
