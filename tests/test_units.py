@@ -2,6 +2,8 @@
 
     pytest -q tests/test_units.py
 """
+import random
+from collections import Counter
 from dataclasses import dataclass
 
 import pytest
@@ -81,23 +83,36 @@ def test_expected_tokens():
     assert expected_tokens(0.8, 1) == pytest.approx(1.8)
 
 
-def test_gamma_grows_with_alpha_and_shrinks_with_pressure():
-    dl = DraftLengthController(gamma_max=8)
-    s = snap()
-    gs = [dl.best_gamma(a, s, 8, 8) for a in (0.2, 0.5, 0.8, 0.95)]
-    assert gs == sorted(gs) and gs[-1] > gs[0]
-    dl.update(snap(alpha_ema=0.9), pressure=0)
-    free_cap = dl.cap
-    dl.update(snap(alpha_ema=0.9), pressure=3)
-    assert dl.cap < free_cap and dl.base <= 1
+def simulate(dl, n, rate_of, steps=600):
+    """Drive the bandit with a synthetic GPU whose tokens/s for each γ is rate_of(γ) (+5 % noise)."""
+    noise = random.Random(1)
+    for _ in range(steps):
+        g = dl.choose(n)
+        dl.observe(g, n, tokens=rate_of(g) * 0.02 * (1 + 0.05 * noise.uniform(-1, 1)), step_s=0.02)
+    return Counter(dl.choose(n) for _ in range(200))
 
 
-def test_gamma_shrinks_when_verification_is_expensive():
-    """Large batches make each extra verified token costly -> smaller γ (compute-bound regime)."""
+def test_bandit_learns_speculation_at_low_load_and_none_at_saturation():
+    """Shapes taken from the 4090 rehearsal: γ=4 best at low load, γ=0 best at saturation."""
+    low = {0: 58, 1: 86, 2: 100, 3: 104, 4: 106, 6: 98, 8: 90}          # tokens/s, 1 sequence
+    sat = {0: 3400, 1: 2000, 2: 2140, 3: 2100, 4: 2130, 6: 1800, 8: 1500}  # tokens/s, 128 sequences
     dl = DraftLengthController(gamma_max=8)
-    cheap = dl.best_gamma(0.8, snap(target_b=1e-7), 8, 8)
-    costly = dl.best_gamma(0.8, snap(target_b=1e-3), 128, 8)
-    assert costly < cheap
+    picks_low = simulate(dl, 1, low.get)
+    picks_sat = simulate(dl, 128, sat.get)
+    assert picks_low.most_common(1)[0][0] == 4
+    assert picks_sat.most_common(1)[0][0] == 0
+    assert dl.best_by_band()[0] == 4 and dl.best_by_band()[7] == 0   # bands learned independently
+
+
+def test_pressure_caps_the_arms():
+    dl = DraftLengthController(gamma_max=8)
+    dl.update(snap(), pressure=0)
+    assert max(dl.arms()) == 8
+    dl.update(snap(), pressure=2)
+    assert max(dl.arms()) == 3
+    dl.update(snap(), pressure=3)
+    assert dl.arms() == [0, 1]
+    assert all(dl.choose(4) <= 1 for _ in range(50))
 
 
 @dataclass

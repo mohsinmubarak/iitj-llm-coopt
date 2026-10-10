@@ -24,7 +24,8 @@ LOGGED = RESULTS / ".wandb_logged"
 
 def result_files(base=RESULTS):
     for p in sorted(Path(base).resolve().rglob("*.json")):
-        if p.name.startswith("env_"):
+        # env files are not runs; _superseded/ and _failed/ hold runs kept only for the record
+        if p.name.startswith("env_") or any(part.startswith("_") for part in p.parts):
             continue
         yield p
 

@@ -109,3 +109,31 @@ RuntimeError: Engine core initialization failed. See root cause above. Failed co
 [C0] W1 rate=4 rep=0: 200/200 ok | out 920.6 tok/s | TTFT p99 0.21s | TPOT p99 25.5ms | goodput 3.53 req/s
 [C0] W1 rate=16 rep=0: 200/200 ok | out 1674.5 tok/s | TTFT p99 11.15s | TPOT p99 47.6ms | goodput 4.11 req/s
 [C0] W1 rate=inf rep=0: 200/200 ok | out 1721.1 tok/s | TTFT p99 21.86s | TPOT p99 185.6ms | goodput 0.92 req/s
+[C0] W2 rate=inf rep=0: 43/43 ok | out 48.2 tok/s | TTFT p99 89.37s | TPOT p99 25.4ms | goodput 0.01 req/s
+[C0] W3 rate=inf rep=0: 288/288 ok | out 208.5 tok/s | TTFT p99 108.96s | TPOT p99 43.3ms | goodput 0.18 req/s
+[C0] index rebuilt: 57 runs
+=== 2026-10-10T20:38:57Z END C0 (exit 0)
+=== 2026-10-10T20:38:57Z START C1
+[C1] server healthy after 60s
+[C1] W1 rate=1 rep=0: 200/200 ok | out 246.2 tok/s | TTFT p99 0.16s | TPOT p99 19.6ms | goodput 0.95 req/s
+[C1] W1 rate=4 rep=0: 200/200 ok | out 898.0 tok/s | TTFT p99 0.19s | TPOT p99 28.7ms | goodput 3.45 req/s
+[C1] W1 rate=16 rep=0: 200/200 ok | out 1478.0 tok/s | TTFT p99 13.09s | TPOT p99 53.5ms | goodput 3.21 req/s
+[C1] W1 rate=inf rep=0: 200/200 ok | out 1611.2 tok/s | TTFT p99 21.96s | TPOT p99 227.3ms | goodput 1.21 req/s
+[C1] W2 rate=inf rep=0: 43/43 ok | out 40.2 tok/s | TTFT p99 100.01s | TPOT p99 31.0ms | goodput 0.00 req/s
+[C1] W3 rate=inf rep=0: 288/288 ok | out 179.8 tok/s | TTFT p99 163.26s | TPOT p99 50.5ms | goodput 0.15 req/s
+[C1] index rebuilt: 63 runs
+=== 2026-10-10T20:57:45Z END C1 (exit 0)
+=== 2026-10-10T20:57:45Z START C2
+[C2] server healthy after 60s
+[C2] W1 rate=1 rep=0: 200/200 ok | out 246.5 tok/s | TTFT p99 0.16s | TPOT p99 18.2ms | goodput 0.95 req/s
+[C2] W1 rate=4 rep=0: 200/200 ok | out 920.3 tok/s | TTFT p99 0.21s | TPOT p99 25.4ms | goodput 3.53 req/s
+[C2] W1 rate=16 rep=0: 200/200 ok | out 1586.4 tok/s | TTFT p99 12.75s | TPOT p99 56.1ms | goodput 3.65 req/s
+[C2] W1 rate=inf rep=0: 200/200 ok | out 1655.5 tok/s | TTFT p99 24.76s | TPOT p99 91.1ms | goodput 1.24 req/s
+[C2] W2 rate=inf rep=0: 17/43 ok | out 45.9 tok/s | TTFT p99 84.94s | TPOT p99 22.1ms | goodput 0.02 req/s
+[C2] index rebuilt: 68 runs
+Traceback (most recent call last):
+    raise RuntimeError(f"server died (exit {proc.returncode}); see {log_path}")
+RuntimeError: server died (exit 1); see /workspace/IITJ/results/rtx4090/C2/server.log
+=== 2026-10-10T21:06:34Z END C2 (exit 1)
+=== 2026-10-10T21:06:34Z START C3
+[C3] server healthy after 60s

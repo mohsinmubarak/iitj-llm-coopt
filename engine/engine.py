@@ -65,6 +65,7 @@ class Sequence:
 class Plan:
     chunks: list = field(default_factory=list)   # (seq, end) prefill chunks: feed tokens[num_computed:end]
     decodes: list = field(default_factory=list)  # seqs with exactly one remaining token
+    gamma: int = 0                               # γ the policy chose for this step's decodes
 
 
 class Scheduler:
@@ -93,9 +94,11 @@ class Scheduler:
         # 1. Decodes: reserve KV for 1 + γ tokens each, preempting the policy's victim if short.
         while True:
             decodes = [s for s in self.running if s.remaining == 1]
+            g_step = pol.gamma_for_step(len(decodes), e) if e.draft and decodes else 0
+            plan.gamma = g_step
             for s in decodes:
                 left = min(s.max_tokens - s.num_generated, e.max_model_len - len(s.tokens)) - 1
-                s.gamma = max(0, min(pol.gamma_for(s), left)) if e.draft else 0
+                s.gamma = max(0, min(g_step, left))
             need = sum(bm.extra_blocks_needed(s.seq_id, len(s.tokens) + s.gamma) for s in decodes)
             if need <= bm.num_free or len(self.running) <= 1:
                 break
@@ -293,15 +296,30 @@ class Engine:
         """Draft model: catch up on new tokens (prefill chunks too) and propose γ tokens."""
         drafts = {s.seq_id: [] for s in plan.decodes}
         dprobs = {s.seq_id: [] for s in plan.decodes}
-        spec = [s for s in plan.decodes if s.gamma > 0]
         items, owners = [], []
         for s, end in plan.chunks:
             if s.draft_computed < end:
                 items.append(WorkItem(s.seq_id, s.tokens[s.draft_computed:end], s.draft_computed))
                 owners.append((s, end, False))
-        for s in spec:
-            items.append(WorkItem(s.seq_id, s.tokens[s.draft_computed:], s.draft_computed))
-            owners.append((s, len(s.tokens), True))
+        # A sequence whose draft KV lags (restored from the CPU tier, or γ was 0 for a while)
+        # catches up in chunks bounded by the step's token budget and does not speculate until
+        # it has caught up: an unbounded catch-up of a long context would blow the activation
+        # budget the KV pool was sized for.
+        catchup_budget = self.policy.max_batched_tokens - sum(len(it.tokens) for it in items)
+        spec = []
+        for s in [s for s in plan.decodes if s.gamma > 0]:
+            lag = len(s.tokens) - s.draft_computed
+            if lag <= 2:
+                spec.append(s)
+                items.append(WorkItem(s.seq_id, s.tokens[s.draft_computed:], s.draft_computed))
+                owners.append((s, len(s.tokens), True))
+                continue
+            s.gamma = 0
+            n = min(lag - 1, catchup_budget)
+            if n > 0:
+                catchup_budget -= n
+                items.append(WorkItem(s.seq_id, s.tokens[s.draft_computed:s.draft_computed + n], s.draft_computed))
+                owners.append((s, s.draft_computed + n, False))
         if not items:
             return drafts, dprobs
         td = time.perf_counter()
@@ -353,7 +371,7 @@ class Engine:
             all(s.temperature <= 0 for s, _ in plan.chunks) else None
         target_s = time.perf_counter() - tt
 
-        outputs = []
+        outputs, decode_tokens = [], 0
         for (s, end), (row, _) in zip(plan.chunks, spans):
             self.counters["prompt_tokens_total"] += end - s.num_computed
             s.num_computed = end
@@ -384,7 +402,9 @@ class Engine:
                 new = [greedy[row]]
             else:
                 new = sample(logits[row:row + 1].float(), s.temperature, self.gen)[0].tolist()
-            outputs.append((s, self._append(s, new)))
+            kept = self._append(s, new)
+            decode_tokens += len(kept)
+            outputs.append((s, kept))
 
         now = time.perf_counter()
         for s, kept in outputs:
@@ -414,6 +434,7 @@ class Engine:
             "batch_tokens": n_tokens,
             **self.policy.state(),
         }
+        self.policy.observe_step(plan.gamma, len(plan.decodes), decode_tokens, now - t0)
         if self.metrics:
             self.metrics.record_step(n_tokens, target_s, self._draft_times,
                                      [s.gamma for s in plan.decodes])
