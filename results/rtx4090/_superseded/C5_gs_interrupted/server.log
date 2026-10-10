@@ -1,0 +1,12 @@
+CMD: python -m engine.server --model unsloth/Meta-Llama-3.1-8B-Instruct --draft unsloth/Llama-3.2-1B-Instruct --port 8000 --seed 0 --gamma 4 --trace /workspace/IITJ/results/rtx4090/C5_gs/trace.jsonl --policy coopt --controllers gamma,sched --gpu-memory-utilization 0.92 --max-model-len 16384
+
+/root/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:64: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 197.22it/s]
+Fetching 6 files:   0%|          | 0/6 [00:00<?, ?it/s]Fetching 6 files: 100%|██████████| 6/6 [00:00<00:00, 278.33it/s]
+[engine] memory: weights 17.36 GiB, prefill activations 0.32 GiB, graphs 0.84 GiB -> KV 2.87 GiB
+[engine] captured 56 target + 16 draft CUDA graphs (target strides [1, 2, 3, 4, 5, 7, 9]) in 6s
+[engine] hardware HardwareProfile(gpu_name='NVIDIA GeForce RTX 4090', vram_gb=23.5164794921875, hbm_bw_gbs=916.4184600759694, pcie_h2d_gbs=25.80533075426402, pcie_d2h_gbs=26.006785679869502, cpu_cores=48, ram_gb=251.54829025268555)
+[engine] KV capacity 18800 tokens (1175 blocks), policy=coopt
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+Traceback (most recent call last):
