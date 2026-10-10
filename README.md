@@ -125,25 +125,25 @@ quality, because γ, KV management and scheduling are controlled **jointly throu
 
 ```mermaid
 flowchart TB
-    subgraph Clients
-        R[OpenAI-compatible requests<br/>/v1/completions]
+    subgraph Clients["Clients"]
+        R["OpenAI-compatible requests<br/>/v1/completions"]
     end
     subgraph Engine["Our engine (engine/)"]
-        S[server.py<br/>FastAPI · SSE streaming · /metrics]
-        SCH[Scheduler<br/>decodes → prefill chunks → admissions]
-        DR[Draft model 1B<br/>propose γ tokens]
-        TG[Target model 8B<br/>prefill + verify γ+1 tokens]
-        RS[Rejection sampling<br/>lossless]
-        BM[Block manager<br/>paged KV, GPU]
-        KV[KV tier manager<br/>GPU ⇄ CPU, INT8/INT4]
-        CG[CUDA graphs<br/>decode-shaped steps]
+        S["server.py<br/>FastAPI · SSE streaming · /metrics"]
+        SCH["Scheduler<br/>decodes → prefill chunks → admissions"]
+        DR["Draft model 1B<br/>propose γ tokens"]
+        TG["Target model 8B<br/>prefill + verify γ+1 tokens"]
+        RS["Rejection sampling<br/>lossless"]
+        BM["Block manager<br/>paged KV, GPU"]
+        KV["KV tier manager<br/>GPU ⇄ CPU, INT8/INT4"]
+        CG["CUDA graphs<br/>decode-shaped steps"]
     end
     subgraph Control["Control plane"]
-        ME[MetricsEngine<br/>20+ signals · cost model]
-        CO[CoOptimizer.tick&#40;snapshot&#41;]
-        GC[γ controller]
-        KC[KV controller]
-        SC[Scheduler controller]
+        ME["MetricsEngine<br/>20+ signals · cost model"]
+        CO["CoOptimizer.tick(snapshot)"]
+        GC["γ controller"]
+        KC["KV controller"]
+        SC["Scheduler controller"]
     end
     R --> S --> SCH
     SCH --> DR --> TG --> RS --> S
@@ -152,12 +152,12 @@ flowchart TB
     BM <--> KV
     DR -.-> CG
     TG -.-> CG
-    SCH -->|every step| ME
-    ME -->|snapshot every N steps| CO
+    SCH -->|"every step"| ME
+    ME -->|"snapshot every N steps"| CO
     CO --> GC & KC & SC
-    GC -->|γ per sequence| SCH
-    KC -->|swap / recompute, bits| KV
-    SC -->|batch cap, chunk, admission, victim| SCH
+    GC -->|"γ per sequence"| SCH
+    KC -->|"swap or recompute, bits"| KV
+    SC -->|"batch cap, chunk, admission, victim"| SCH
 ```
 
 ### Components
