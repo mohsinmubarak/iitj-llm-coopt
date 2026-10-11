@@ -94,7 +94,9 @@ class Scheduler:
         # 1. Decodes: reserve KV for 1 + γ tokens each, preempting the policy's victim if short.
         while True:
             decodes = [s for s in self.running if s.remaining == 1]
+            tg = time.perf_counter()
             g_step = pol.gamma_for_step(len(decodes), e) if e.draft and decodes else 0
+            e.counters["control_seconds_total"] += time.perf_counter() - tg
             plan.gamma = g_step
             for s in decodes:
                 left = min(s.max_tokens - s.num_generated, e.max_model_len - len(s.tokens)) - 1
@@ -213,7 +215,8 @@ class Engine:
         self.counters = {k: 0 for k in (
             "prompt_tokens_total", "generation_tokens_total", "num_preemptions_total",
             "spec_decode_num_drafts_total", "spec_decode_num_draft_tokens_total",
-            "spec_decode_num_accepted_tokens_total", "request_success_total", "steps_total")}
+            "spec_decode_num_accepted_tokens_total", "request_success_total", "steps_total",
+            "control_seconds_total", "step_seconds_total")}
         self.gauges = {}
         self.step_count = 0
         self.recent_ttft = deque(maxlen=128)  # seconds, newest first tokens
@@ -437,12 +440,18 @@ class Engine:
             "batch_tokens": n_tokens,
             **self.policy.state(),
         }
+        # M1: everything the control plane does per step (feedback, snapshot, tick) is timed and
+        # compared with total step time; the γ choice inside schedule() is timed there.
+        tc = time.perf_counter()
         self.policy.observe_step(plan.gamma, len(plan.decodes), decode_tokens, now - t0)
         if self.metrics:
             self.metrics.record_step(n_tokens, target_s, self._draft_times,
                                      [s.gamma for s in plan.decodes])
             if self.step_count % self.policy.tick_every == 0:
                 self.policy.tick(self.metrics.snapshot())
+        end = time.perf_counter()
+        self.counters["control_seconds_total"] += end - tc
+        self.counters["step_seconds_total"] += end - t0
         self._draft_times = []
         return True
 
