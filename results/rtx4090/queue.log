@@ -477,4 +477,59 @@ RuntimeError: server exited during startup, see /workspace/IITJ/results/rtx4090/
     raise RuntimeError(
 RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}
 === 2026-10-11T18:55:32Z END B5 (exit 1)
-=== 2026-10-11T18:55:32Z QUEUE DONE
+=== 2026-10-11T19:09:36Z START ours-static-spec-gamma4
+[ours-static-spec-gamma4] server healthy after 48s
+[ours-static-spec-gamma4] chat rate=1 rep=0: 200/200 ok | out 247.0 tok/s | TTFT p99 0.14s | TPOT p99 13.9ms | goodput 0.95 req/s
+[ours-static-spec-gamma4] chat rate=4 rep=0: 200/200 ok | out 921.3 tok/s | TTFT p99 0.19s | TPOT p99 20.8ms | goodput 3.54 req/s
+[ours-static-spec-gamma4] chat rate=16 rep=0: 200/200 ok | out 1559.3 tok/s | TTFT p99 13.66s | TPOT p99 70.7ms | goodput 3.80 req/s
+[ours-static-spec-gamma4] chat rate=inf rep=0: 200/200 ok | out 1576.4 tok/s | TTFT p99 25.84s | TPOT p99 205.1ms | goodput 1.24 req/s
+[ours-static-spec-gamma4] long-context rate=inf rep=0: 43/43 ok | out 50.6 tok/s | TTFT p99 80.28s | TPOT p99 19.7ms | goodput 0.01 req/s
+[ours-static-spec-gamma4] mixed-bursty rate=inf rep=0: 288/288 ok | out 209.4 tok/s | TTFT p99 109.59s | TPOT p99 44.9ms | goodput 0.18 req/s
+[ours-static-spec-gamma4] phase-shift rate=inf rep=0: 1261/1261 ok | out 792.7 tok/s | TTFT p99 43.34s | TPOT p99 91.3ms | goodput 1.47 req/s
+[ours-static-spec-gamma4] index rebuilt: 93 runs
+=== 2026-10-11T19:32:57Z END ours-static-spec-gamma4 (exit 0)
+=== 2026-10-11T19:33:13Z START ours-cooptimizer
+[ours-cooptimizer] server healthy after 48s
+[ours-cooptimizer] chat rate=1 rep=0: 200/200 ok | out 247.6 tok/s | TTFT p99 0.16s | TPOT p99 15.6ms | goodput 0.95 req/s
+[ours-cooptimizer] chat rate=4 rep=0: 200/200 ok | out 931.9 tok/s | TTFT p99 0.17s | TPOT p99 18.1ms | goodput 3.58 req/s
+[ours-cooptimizer] chat rate=16 rep=0: 200/200 ok | out 2121.8 tok/s | TTFT p99 0.22s | TPOT p99 44.6ms | goodput 8.14 req/s
+[ours-cooptimizer] chat rate=inf rep=0: 200/200 ok | out 3086.4 tok/s | TTFT p99 2.43s | TPOT p99 95.8ms | goodput 9.54 req/s
+[ours-cooptimizer] long-context rate=inf rep=0: 43/43 ok | out 65.5 tok/s | TTFT p99 65.64s | TPOT p99 43.4ms | goodput 0.02 req/s
+[ours-cooptimizer] mixed-bursty rate=inf rep=0: 288/288 ok | out 243.4 tok/s | TTFT p99 59.27s | TPOT p99 96.3ms | goodput 0.32 req/s
+[ours-cooptimizer] phase-shift rate=inf rep=0: 1261/1261 ok | out 792.8 tok/s | TTFT p99 8.81s | TPOT p99 43.9ms | goodput 2.06 req/s
+[ours-cooptimizer] index rebuilt: 100 runs
+=== 2026-10-11T19:54:30Z END ours-cooptimizer (exit 0)
+=== 2026-10-11T19:54:30Z START ours-independent-controllers
+[ours-independent-controllers] server healthy after 48s
+[ours-independent-controllers] chat rate=1 rep=0: 200/200 ok | out 246.6 tok/s | TTFT p99 0.16s | TPOT p99 16.3ms | goodput 0.95 req/s
+[ours-independent-controllers] chat rate=4 rep=0: 200/200 ok | out 928.9 tok/s | TTFT p99 0.20s | TPOT p99 21.3ms | goodput 3.57 req/s
+[ours-independent-controllers] chat rate=16 rep=0: 200/200 ok | out 2033.2 tok/s | TTFT p99 2.49s | TPOT p99 52.8ms | goodput 6.13 req/s
+[ours-independent-controllers] chat rate=inf rep=0: 200/200 ok | out 2509.7 tok/s | TTFT p99 7.17s | TPOT p99 101.9ms | goodput 6.31 req/s
+[ours-independent-controllers] long-context rate=inf rep=0: 43/43 ok | out 65.9 tok/s | TTFT p99 66.66s | TPOT p99 49.3ms | goodput 0.02 req/s
+[ours-independent-controllers] mixed-bursty rate=inf rep=0: 288/288 ok | out 245.2 tok/s | TTFT p99 63.44s | TPOT p99 79.2ms | goodput 0.32 req/s
+[ours-independent-controllers] phase-shift rate=inf rep=0: 1260/1261 ok | out 791.5 tok/s | TTFT p99 10.88s | TPOT p99 47.0ms | goodput 1.94 req/s
+[ours-independent-controllers] index rebuilt: 107 runs
+=== 2026-10-11T20:15:54Z END ours-independent-controllers (exit 0)
+=== 2026-10-11T20:15:54Z START ours-nightjar-like
+[ours-nightjar-like] server healthy after 48s
+[ours-nightjar-like] chat rate=1 rep=0: 200/200 ok | out 247.6 tok/s | TTFT p99 0.17s | TPOT p99 14.0ms | goodput 0.95 req/s
+[ours-nightjar-like] chat rate=4 rep=0: 200/200 ok | out 934.5 tok/s | TTFT p99 0.18s | TPOT p99 20.1ms | goodput 3.59 req/s
+[ours-nightjar-like] chat rate=16 rep=0: 200/200 ok | out 2131.4 tok/s | TTFT p99 0.34s | TPOT p99 43.1ms | goodput 8.18 req/s
+[ours-nightjar-like] chat rate=inf rep=0: 200/200 ok | out 3075.7 tok/s | TTFT p99 2.71s | TPOT p99 89.6ms | goodput 2.77 req/s
+[ours-nightjar-like] long-context rate=inf rep=0: 43/43 ok | out 65.4 tok/s | TTFT p99 57.96s | TPOT p99 42.9ms | goodput 0.02 req/s
+[ours-nightjar-like] mixed-bursty rate=inf rep=0: 288/288 ok | out 242.5 tok/s | TTFT p99 59.40s | TPOT p99 114.1ms | goodput 0.28 req/s
+[ours-nightjar-like] phase-shift rate=inf rep=0: 1261/1261 ok | out 792.9 tok/s | TTFT p99 8.13s | TPOT p99 51.7ms | goodput 2.16 req/s
+[ours-nightjar-like] index rebuilt: 114 runs
+=== 2026-10-11T20:37:14Z END ours-nightjar-like (exit 0)
+=== 2026-10-11T20:37:14Z START vllm-adaptive-spec-schedule
+[vllm-adaptive-spec-schedule] server healthy after 81s
+[vllm-adaptive-spec-schedule] chat rate=1 rep=0: 200/200 ok | out 247.1 tok/s | TTFT p99 0.18s | TPOT p99 13.4ms | goodput 0.95 req/s
+[vllm-adaptive-spec-schedule] chat rate=4 rep=0: 200/200 ok | out 932.4 tok/s | TTFT p99 0.22s | TPOT p99 20.1ms | goodput 3.58 req/s
+[vllm-adaptive-spec-schedule] chat rate=16 rep=0: 200/200 ok | out 1987.9 tok/s | TTFT p99 6.82s | TPOT p99 48.2ms | goodput 5.95 req/s
+[vllm-adaptive-spec-schedule] chat rate=inf rep=0: 200/200 ok | out 2084.0 tok/s | TTFT p99 17.34s | TPOT p99 231.7ms | goodput 1.96 req/s
+[vllm-adaptive-spec-schedule] long-context rate=inf rep=0: 43/43 ok | out 56.3 tok/s | TTFT p99 71.96s | TPOT p99 21.8ms | goodput 0.01 req/s
+[vllm-adaptive-spec-schedule] mixed-bursty rate=inf rep=0: 288/288 ok | out 241.9 tok/s | TTFT p99 65.39s | TPOT p99 42.2ms | goodput 0.24 req/s
+[vllm-adaptive-spec-schedule] phase-shift rate=inf rep=0: 1261/1261 ok | out 793.1 tok/s | TTFT p99 25.48s | TPOT p99 66.1ms | goodput 1.78 req/s
+[vllm-adaptive-spec-schedule] index rebuilt: 121 runs
+=== 2026-10-11T20:59:42Z END vllm-adaptive-spec-schedule (exit 0)
+=== 2026-10-11T20:59:42Z QUEUE DONE

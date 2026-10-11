@@ -1,0 +1,26 @@
+=== 2026-10-11T20:59:52Z smoke tests (20 requests per workload)
+21:04:07 ours-gamma-controller-only: 6 runs ok, 0 errors
+21:08:00 ours-kv-controller-only: 7 runs ok, 0 errors
+21:11:57 ours-kv-controller-only-no-elastic: 6 runs ok, 0 errors
+21:15:56 ours-scheduler-controller-only: 6 runs ok, 0 errors
+21:20:20 ours-cooptimizer-no-elastic: 7 runs ok, 0 errors
+21:24:35 ours-independent-controllers-no-elastic: 7 runs ok, 0 errors
+21:26:14 ours-gamma-and-kv: 1 runs ok, 0 errors
+21:27:54 ours-gamma-and-scheduler: 1 runs ok, 0 errors
+21:29:32 ours-kv-and-scheduler: 1 runs ok, 0 errors
+21:30:51 vllm-draft-spec-gamma6: 0 runs ok, 3 errors
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--
+    raise RuntimeError(
+RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}
+21:32:11 vllm-draft-spec-gamma8: 0 runs ok, 3 errors
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--
+    raise RuntimeError(
+RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}
+=== 2026-10-11T21:32:11Z overload stress (2x arrival rate)
+=== 2026-10-11T21:36:14Z STOPPED by user for the day. Remaining: overload stress (vllm-default, vllm-cpu-kv-offload, ours-cooptimizer) + vllm-draft-spec-gamma6/8 re-test

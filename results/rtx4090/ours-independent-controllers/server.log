@@ -1,11 +1,11 @@
-CMD: python -m engine.server --model unsloth/Meta-Llama-3.1-8B-Instruct --draft unsloth/Llama-3.2-1B-Instruct --port 8000 --seed 0 --gamma 4 --trace /workspace/IITJ/results/rtx4090/C6_el/trace.jsonl --policy coopt --controllers gamma,kv,sched --kv-cpu-gb 32 --elastic --independent --gpu-memory-utilization 0.92 --max-model-len 16384
+CMD: python -m engine.server --model unsloth/Meta-Llama-3.1-8B-Instruct --draft unsloth/Llama-3.2-1B-Instruct --port 8000 --seed 0 --gamma 4 --trace /workspace/IITJ/results/rtx4090/ours-independent-controllers/trace.jsonl --policy coopt --controllers gamma,kv,sched --kv-cpu-gb 32 --elastic --independent --gpu-memory-utilization 0.92 --max-model-len 16384
 
-Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 227.01it/s]
-Fetching 6 files:   0%|          | 0/6 [00:00<?, ?it/s]Fetching 6 files: 100%|██████████| 6/6 [00:00<00:00, 313.98it/s]
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 373.77it/s]
+Fetching 6 files:   0%|          | 0/6 [00:00<?, ?it/s]Fetching 6 files: 100%|██████████| 6/6 [00:00<00:00, 325.11it/s]
 [engine] memory: weights 17.41 GiB, prefill activations 0.37 GiB, graphs 0.93 GiB -> KV 2.68 GiB
 [elastic] target blocks base 1096 (+1453 when the drafter is parked) | drafter weights 2.30 GiB + draft KV 0.54 GiB in the tail | block 2.0 MiB
 [engine] captured 84 target + 26 draft CUDA graphs (target strides [1, 2, 3, 4, 5, 7, 9]) in 8s
-[engine] hardware HardwareProfile(gpu_name='NVIDIA GeForce RTX 4090', vram_gb=23.5164794921875, hbm_bw_gbs=918.7855462777861, pcie_h2d_gbs=13.35353579334603, pcie_d2h_gbs=13.1915328690259, cpu_cores=32, ram_gb=124.9431266784668)
+[engine] hardware HardwareProfile(gpu_name='NVIDIA GeForce RTX 4090', vram_gb=23.5164794921875, hbm_bw_gbs=918.4178371968832, pcie_h2d_gbs=13.35718689177039, pcie_d2h_gbs=13.188979296862618, cpu_cores=32, ram_gb=124.9431266784668)
 [engine] KV capacity 17536 tokens (1096 blocks), policy=coopt
 /workspace/IITJ/engine/server.py:84: DeprecationWarning: 
         on_event is deprecated, use lifespan event handlers instead.
@@ -15,24 +15,7 @@ CMD: python -m engine.server --model unsloth/Meta-Llama-3.1-8B-Instruct --draft 
         
   @app.on_event("startup")
 [transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
-[W1011 18:47:17.364367395 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 209715200 bytes (free: 182190080, total: 25250627584).
-Traceback (most recent call last):
-  File "/workspace/IITJ/engine/worker.py", line 65, in engine_worker
-    engine.step()
-  File "/workspace/IITJ/engine/engine.py", line 393, in step
-    drafts, dprobs = self._draft_phase(plan) if self.draft_active else ({}, {})
-                     ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/IITJ/engine/engine.py", line 372, in _draft_phase
-    logits, spans = self._run(self.draft, self.draft_graphs, self.dbm, items)
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/IITJ/engine/engine.py", line 316, in _run
-    out = runner.run([(it.seq_id, it.tokens, it.start) for it in items], bm)
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/IITJ/engine/cuda_graphs.py", line 92, in run
-    bm.ensure(sid, start + n)
-  File "/workspace/IITJ/engine/block_manager.py", line 90, in ensure
-    raise OutOfBlocks(f"seq {seq_id} needs {need} blocks, {self.num_free} free")
-engine.block_manager.OutOfBlocks: seq 495 needs 1 blocks, 0 free
-
-/usr/lib/python3.12/multiprocessing/resource_tracker.py:254: UserWarning: resource_tracker: There appear to be 6 leaked semaphore objects to clean up at shutdown
-  warnings.warn('resource_tracker: There appear to be %d '
+[W1011 20:00:01.492728706 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 138412032 bytes (free: 25624576, total: 25250627584).
+[W1011 20:00:30.820917932 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 278921216 bytes (free: 236716032, total: 25250627584).
+[W1011 20:00:30.282042682 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 383778816 bytes (free: 29097984, total: 25250627584).
+[W1011 20:00:32.094102089 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 423624704 bytes (free: 169607168, total: 25250627584).
