@@ -1,0 +1,38 @@
+CMD: python -m engine.server --model unsloth/Meta-Llama-3.1-8B-Instruct --draft unsloth/Llama-3.2-1B-Instruct --port 8000 --seed 0 --gamma 4 --trace /workspace/IITJ/results/rtx4090/N1/trace.jsonl --policy coopt --controllers gamma,kv --elastic --gpu-memory-utilization 0.92 --max-model-len 16384
+
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 213.65it/s]
+Fetching 6 files:   0%|          | 0/6 [00:00<?, ?it/s]Fetching 6 files: 100%|██████████| 6/6 [00:00<00:00, 276.17it/s]
+[engine] memory: weights 17.41 GiB, prefill activations 0.37 GiB, graphs 0.93 GiB -> KV 2.68 GiB
+[elastic] target blocks base 1096 (+1453 when the drafter is parked) | drafter weights 2.30 GiB + draft KV 0.54 GiB in the tail | block 2.0 MiB
+[engine] captured 84 target + 26 draft CUDA graphs (target strides [1, 2, 3, 4, 5, 7, 9]) in 8s
+[engine] hardware HardwareProfile(gpu_name='NVIDIA GeForce RTX 4090', vram_gb=23.5164794921875, hbm_bw_gbs=918.3007941786494, pcie_h2d_gbs=13.354213385350887, pcie_d2h_gbs=13.191525141143677, cpu_cores=32, ram_gb=124.9431266784668)
+[engine] KV capacity 17536 tokens (1096 blocks), policy=coopt
+/workspace/IITJ/engine/server.py:84: DeprecationWarning: 
+        on_event is deprecated, use lifespan event handlers instead.
+
+        Read more about it in the
+        [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+        
+  @app.on_event("startup")
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+[W1011 18:53:13.917749860 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 113246208 bytes (free: 96206848, total: 25250627584).
+Traceback (most recent call last):
+  File "/workspace/IITJ/engine/worker.py", line 65, in engine_worker
+    engine.step()
+  File "/workspace/IITJ/engine/engine.py", line 393, in step
+    drafts, dprobs = self._draft_phase(plan) if self.draft_active else ({}, {})
+                     ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/IITJ/engine/engine.py", line 359, in _draft_phase
+    logits, spans = self._run(self.draft, self.draft_graphs, self.dbm, items)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/IITJ/engine/engine.py", line 322, in _run
+    batch, spans = build_batch(items, bm)
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/IITJ/engine/batch.py", line 30, in build_batch
+    bm.ensure(it.seq_id, end)
+  File "/workspace/IITJ/engine/block_manager.py", line 90, in ensure
+    raise OutOfBlocks(f"seq {seq_id} needs {need} blocks, {self.num_free} free")
+engine.block_manager.OutOfBlocks: seq 466 needs 1 blocks, 0 free
+
+/usr/lib/python3.12/multiprocessing/resource_tracker.py:254: UserWarning: resource_tracker: There appear to be 6 leaked semaphore objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '
