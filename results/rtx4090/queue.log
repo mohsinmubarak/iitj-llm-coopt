@@ -308,3 +308,14 @@ RuntimeError: Engine core initialization failed. See root cause above. Failed co
 === 2026-10-11T14:02:13Z END C0 (exit 0)
 === 2026-10-11T14:26:46Z START C0_nospec
 [C0_nospec] server healthy after 33s
+[C0_nospec] W1 rate=1 rep=0: 200/200 ok | out 240.8 tok/s | TTFT p99 0.11s | TPOT p99 19.4ms | goodput 0.92 req/s
+[C0_nospec] W1 rate=4 rep=0: 200/200 ok | out 846.7 tok/s | TTFT p99 0.14s | TPOT p99 25.5ms | goodput 3.25 req/s
+[C0_nospec] W1 rate=16 rep=0: 200/200 ok | out 2060.5 tok/s | TTFT p99 0.23s | TPOT p99 46.4ms | goodput 7.91 req/s
+[C0_nospec] W1 rate=inf rep=0: 200/200 ok | out 2945.5 tok/s | TTFT p99 3.28s | TPOT p99 109.0ms | goodput 2.32 req/s
+[C0_nospec] W2 rate=inf rep=0: 43/43 ok | out 67.0 tok/s | TTFT p99 57.17s | TPOT p99 45.7ms | goodput 0.02 req/s
+[C0_nospec] W3 rate=inf rep=0: 288/288 ok | out 242.8 tok/s | TTFT p99 56.95s | TPOT p99 81.5ms | goodput 0.29 req/s
+[C0_nospec] W4 rate=inf rep=0: 1261/1261 ok | out 786.7 tok/s | TTFT p99 7.92s | TPOT p99 51.3ms | goodput 2.15 req/s
+[C0_nospec] index rebuilt: 57 runs
+=== 2026-10-11T14:48:00Z END C0_nospec (exit 0)
+=== 2026-10-11T14:48:00Z START C0
+[C0] server healthy after 45s
