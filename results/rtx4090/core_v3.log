@@ -1,0 +1,8 @@
+ "teacher_forced_agreement": 0.9957850368809273,
+ "pass": true
+decode-only steps, batch   1- 63 (n= 139): step  21.58 ms | GPU  21.40 ms | schedule  0.04 | prep+launch  0.35 | rest  0.15 ms
+decode-only steps, batch  64-127 (n=  49): step  25.83 ms | GPU  25.43 ms | schedule  0.10 | prep+launch  0.85 | rest  0.30 ms
+decode-only steps, batch 128-191 (n= 140): step  31.40 ms | GPU  30.86 ms | schedule  0.21 | prep+launch  1.11 | rest  0.32 ms
+decode-only steps, batch 192-256 (n=  90): step  34.17 ms | GPU  33.54 ms | schedule  0.19 | prep+launch  1.36 | rest  0.44 ms
+total: 445 steps, 17.1 s, 51200 tokens -> 2989 tok/s; GPU busy 99%
+M4 PASS: starting core v3

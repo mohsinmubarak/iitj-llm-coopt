@@ -8,10 +8,10 @@ sleep 45   # let the pod logger and the last server exit
 set -a; . /workspace/.env; set +a
 . /root/venv/bin/activate
 export HF_HOME=/workspace/hf_cache PYTHONPATH=/workspace/IITJ WANDB_SILENT=true PYTHONUNBUFFERED=1
-LOG=results/$PROFILE/Q/quality.log
-mkdir -p results/$PROFILE/Q
+LOG=results/$PROFILE/quality/quality.log
+mkdir -p results/$PROFILE/quality
 echo "=== $(date -u +%FT%TZ) Q1 start" >> $LOG
-python -m eval.quality q1 --workload fixed_4096 --n 32 --profile $PROFILE >> $LOG 2>&1
+python -m eval.quality q1 --workload prompt-4k --n 32 --profile $PROFILE >> $LOG 2>&1
 echo "=== $(date -u +%FT%TZ) Q2 start" >> $LOG
 python -m eval.quality q2 --n 32 --new 128 --profile $PROFILE >> $LOG 2>&1
 echo "=== $(date -u +%FT%TZ) QUALITY DONE" >> $LOG

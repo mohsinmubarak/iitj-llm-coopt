@@ -1,12 +1,12 @@
 """Regret of static configurations across regimes (thesis Claim 1).
 
-For each regime (W1 at each load, W2, W3, each W4 phase) and metric, find the best configuration
+For each regime (chat at each load, long-context, mixed-bursty, each phase-shift phase) and metric, find the best configuration
 and report every configuration's shortfall ("regret") relative to it. A configuration that is
 best somewhere but far from best elsewhere is regime-specific; the claim is that every static
 configuration has a large regret in at least one regime.
 
-    python -m analysis.regret --profile rtx4090 --configs A2 A2_nopc B1 B1D_g1 B1D_g2 B1D_g4 B2
-    python -m analysis.regret --profile rtx4090 --configs A2 B1D_g4 C0_nospec C0 C4_el --md out.md
+    python -m analysis.regret --configs vllm-default vllm-draft-spec-gamma4 vllm-cpu-kv-offload
+    python -m analysis.regret --configs vllm-default ours-static-no-spec ours-cooptimizer --md out.md
 """
 import argparse
 import json
@@ -16,19 +16,19 @@ ROOT = Path(__file__).resolve().parent.parent
 
 # (regime label, result file under <config>/, summary key, higher_is_better, unit)
 REGIMES = [
-    ("W1 1 req/s · TPOT p50", "W1/r1_rep0.json", "tpot_p50", False, "ms"),
-    ("W1 4 req/s · TPOT p50", "W1/r4_rep0.json", "tpot_p50", False, "ms"),
-    ("W1 16 req/s · throughput", "W1/r16_rep0.json", "output_throughput_tok_s", True, "tok/s"),
-    ("W1 16 req/s · goodput", "W1/r16_rep0.json", "goodput_req_s", True, "req/s"),
-    ("W1 saturation · throughput", "W1/inf_rep0.json", "output_throughput_tok_s", True, "tok/s"),
-    ("W1 saturation · goodput", "W1/inf_rep0.json", "goodput_req_s", True, "req/s"),
-    ("W2 long · throughput", "W2/inf_rep0.json", "output_throughput_tok_s", True, "tok/s"),
-    ("W3 bursty · goodput", "W3/file_rep0.json", "goodput_req_s", True, "req/s"),
-    ("W3 bursty · TTFT p99", "W3/file_rep0.json", "ttft_p99", False, "s"),
-    ("W4 P1 chat · TPOT p50", "W4/file_rep0.json", "P1_chat_tpot_p50", False, "ms"),
-    ("W4 P2 long · SLO", "W4/file_rep0.json", "P2_long_slo_attainment", True, ""),
-    ("W4 P3 burst · SLO", "W4/file_rep0.json", "P3_burst_slo_attainment", True, ""),
-    ("W4 P4 recovery · TPOT p50", "W4/file_rep0.json", "P4_recovery_tpot_p50", False, "ms"),
+    ("chat 1 req/s · TPOT p50", "chat/1rps_rep0.json", "tpot_p50", False, "ms"),
+    ("chat 4 req/s · TPOT p50", "chat/4rps_rep0.json", "tpot_p50", False, "ms"),
+    ("chat 16 req/s · throughput", "chat/16rps_rep0.json", "output_throughput_tok_s", True, "tok/s"),
+    ("chat 16 req/s · goodput", "chat/16rps_rep0.json", "goodput_req_s", True, "req/s"),
+    ("chat saturation · throughput", "chat/saturation_rep0.json", "output_throughput_tok_s", True, "tok/s"),
+    ("chat saturation · goodput", "chat/saturation_rep0.json", "goodput_req_s", True, "req/s"),
+    ("long-context · throughput", "long-context/saturation_rep0.json", "output_throughput_tok_s", True, "tok/s"),
+    ("mixed-bursty · goodput", "mixed-bursty/scheduled_rep0.json", "goodput_req_s", True, "req/s"),
+    ("mixed-bursty · TTFT p99", "mixed-bursty/scheduled_rep0.json", "ttft_p99", False, "s"),
+    ("phase-shift: chat phase · TPOT p50", "phase-shift/scheduled_rep0.json", "P1_chat_tpot_p50", False, "ms"),
+    ("phase-shift: long phase · SLO", "phase-shift/scheduled_rep0.json", "P2_long_slo_attainment", True, ""),
+    ("phase-shift: burst phase · SLO", "phase-shift/scheduled_rep0.json", "P3_burst_slo_attainment", True, ""),
+    ("phase-shift: recovery phase · TPOT p50", "phase-shift/scheduled_rep0.json", "P4_recovery_tpot_p50", False, "ms"),
 ]
 
 

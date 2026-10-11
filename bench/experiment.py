@@ -8,7 +8,6 @@ Runs whose JSON already exists are skipped, so an interrupted queue simply resum
 import argparse
 import asyncio
 import json
-import math
 import os
 import re
 import shlex
@@ -21,7 +20,7 @@ from pathlib import Path
 
 import yaml
 
-from bench import tracking
+from bench import names, tracking
 from bench.run import benchmark, load_workload
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -121,7 +120,7 @@ def main():
             continue
         for rate in run.get("request_rates", [run.get("request_rate", "inf")]):
             for k in range(repeats):
-                tag = "file" if run.get("arrivals") == "file" else "inf" if math.isinf(float(rate)) else f"r{rate}"
+                tag = names.rate(rate, scheduled=run.get("arrivals") == "file")  # e.g. 4rps, saturation, scheduled
                 path = out_dir / run.get("label", run["workload"]) / f"{tag}_rep{k}.json"
                 if args.force or not path.exists():
                     todo.append((run, rate, k, path))
@@ -129,7 +128,11 @@ def main():
         print(f"[{name}] all results present, skipping")
         return
 
-    extra = " ".join(map(str, prof.get("server_args", []))) + f" --max-model-len {max_len} " + args.extra_args
+    # order: config args, profile args, context limit, config overrides (documented exceptions such
+    # as a baseline that needs a little more memory to start), CLI extras; later flags win
+    overrides = " ".join(map(str, cfg["server"].get("override_args", [])))
+    extra = " ".join(map(str, prof.get("server_args", []))) + f" --max-model-len {max_len} " + overrides \
+        + " " + args.extra_args
     log_path = out_dir / "server.log"
     proc, cmd = start_server(cfg, extra, log_path)
     exp_run = tracking.ExperimentRun(name, args.profile, cfg, cmd, out_dir, env)

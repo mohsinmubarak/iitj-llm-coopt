@@ -1,0 +1,16 @@
+# B1-S: fixed-gamma sweep with the 1B drafter, gamma=8
+# vLLM 0.31 captures CUDA graphs up to batch x (gamma+1) tokens and crashes ("Shape 2304 out of
+# considered ranges [(1, 2048)]") when that passes max_num_batched_tokens=2048. Capping the capture size
+# at 2048 matches what gamma<=4 got implicitly. On the second 4090 pod (driver 580.159) graph memory
+# left 2.42 GiB KV < the 2.5 GiB one 16K sequence needs, so the cap is 1024 (larger batches run eager).
+name: vllm-draft-spec-gamma8
+description: "B1-S: fixed-gamma sweep with the 1B drafter, gamma=8"
+server:
+  model: unsloth/Meta-Llama-3.1-8B-Instruct
+  args: [--dtype, bfloat16, --seed, 0, --speculative-config, '{"method": "draft_model", "model": "unsloth/Llama-3.2-1B-Instruct", "num_speculative_tokens": 8}', --max-cudagraph-capture-size, 1024]
+runs:
+  - workload: chat
+    request_rates: [1, 4, 16, inf]
+  - workload: long-context
+    request_rates: [inf]
+    max_concurrency: 16

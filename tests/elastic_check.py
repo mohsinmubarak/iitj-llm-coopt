@@ -39,7 +39,7 @@ def run(engine, seqs, hook=None):
 
 
 def main():
-    reqs = load_workload("fixed_1024")[:24] + load_workload("W1")[:40]
+    reqs = load_workload("prompt-1k")[:24] + load_workload("chat")[:40]
     prompts = [r["prompt_token_ids"] for r in reqs]
     e = Engine(TARGET, DRAFT, policy=StaticPolicy(gamma=4, max_num_seqs=128), max_model_len=4096,
                gpu_memory_utilization=0.92, elastic=True)

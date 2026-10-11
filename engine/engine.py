@@ -331,11 +331,26 @@ class Engine:
         # Everything the draft processes in one step, prefill chunks and catch-up alike, shares
         # one token budget, so its activations stay within what the KV pool was sized for. A
         # lagging sequence catches up over several steps and does not speculate until then.
+        #
+        # The draft pool can also run out on its own: target sequences share prefix-cached
+        # blocks but draft KV is per sequence, so the target pool can admit more sequences than
+        # the draft pool can hold. A sequence whose draft blocks do not fit this step simply does
+        # not draft (γ = 0) and catches up later; drafting never takes blocks it cannot get.
         items, owners = [], []
         catchup_budget = self.policy.max_batched_tokens
+        draft_free = self.dbm.num_free
+
+        def draft_fits(s, total_tokens):
+            nonlocal draft_free
+            need = self.dbm.extra_blocks_needed(s.seq_id, total_tokens)
+            if need > draft_free:
+                return False
+            draft_free -= need
+            return True
+
         for s, end in plan.chunks:
             n = min(end - s.draft_computed, catchup_budget)
-            if n > 0:
+            if n > 0 and draft_fits(s, s.draft_computed + n):
                 catchup_budget -= n
                 items.append(WorkItem(s.seq_id, s.tokens[s.draft_computed:s.draft_computed + n], s.draft_computed))
                 owners.append((s, s.draft_computed + n, False))
@@ -343,13 +358,17 @@ class Engine:
         for s in [s for s in plan.decodes if s.gamma > 0]:
             lag = len(s.tokens) - s.draft_computed
             if lag <= 2:
-                spec.append(s)
-                items.append(WorkItem(s.seq_id, s.tokens[s.draft_computed:], s.draft_computed))
-                owners.append((s, len(s.tokens), True))
+                # proposing γ tokens writes draft KV up to len(tokens) + γ - 1
+                if draft_fits(s, len(s.tokens) + s.gamma - 1):
+                    spec.append(s)
+                    items.append(WorkItem(s.seq_id, s.tokens[s.draft_computed:], s.draft_computed))
+                    owners.append((s, len(s.tokens), True))
+                else:
+                    s.gamma = 0
                 continue
             s.gamma = 0
             n = min(lag - 1, catchup_budget)
-            if n > 0:
+            if n > 0 and draft_fits(s, s.draft_computed + n):
                 catchup_budget -= n
                 items.append(WorkItem(s.seq_id, s.tokens[s.draft_computed:s.draft_computed + n], s.draft_computed))
                 owners.append((s, s.draft_computed + n, False))

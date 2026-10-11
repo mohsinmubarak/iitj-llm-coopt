@@ -23,7 +23,7 @@ def main():
     args = ap.parse_args()
     e = Engine("unsloth/Meta-Llama-3.1-8B-Instruct", None, policy=StaticPolicy(gamma=0, max_batched_tokens=2048),
                max_model_len=16384, gpu_memory_utilization=0.92)
-    for i, r in enumerate(load_workload("W1")[: args.n]):
+    for i, r in enumerate(load_workload("chat")[: args.n]):
         e.scheduler.waiting.append(Sequence(seq_id=i, tokens=list(r["prompt_token_ids"]), max_tokens=args.new,
                                             temperature=0.0, ignore_eos=True))
 

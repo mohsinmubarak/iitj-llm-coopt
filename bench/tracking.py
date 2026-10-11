@@ -93,7 +93,8 @@ def log_wandb(path, res):
     if not os.environ.get("WANDB_API_KEY") and not os.environ.get("WANDB_MODE"):
         os.environ["WANDB_MODE"] = "offline"
     m = res["meta"]
-    exp, wl, rate, rep = m["experiment"], m.get("label", m["workload"]), m["rate"], m["repeat"]
+    exp, wl, rep = m["experiment"], m.get("label", m["workload"]), m["repeat"]
+    rate = Path(path).stem.rsplit("_rep", 1)[0]  # rate name from the file: 4rps, saturation, scheduled
     srv = m.get("config", {}).get("server", {})
     config = {"experiment": exp, "tier": exp[0], "profile": m.get("profile"), "workload": wl, "rate": str(rate), "repeat": rep,
               "limit": m.get("limit"), "description": m.get("config", {}).get("description"),
@@ -101,7 +102,7 @@ def log_wandb(path, res):
               "git": m.get("git"), **{f"env/{k}": v for k, v in m.get("env", {}).items()},
               **{f"server/{k}": v for k, v in m.get("server_info", {}).items()}}
 
-    with wandb.init(project=os.environ.get("WANDB_PROJECT", "iitj-llm-coopt"), name=f"{exp}|{wl}|{rate}|rep{rep}", group=exp, job_type=wl,
+    with wandb.init(project=os.environ.get("WANDB_PROJECT", "iitj-llm-coopt"), name=f"{exp} | {wl} | {rate} | rep{rep}", group=exp, job_type=wl,
                     tags=[f"tier-{exp[0]}", exp, wl, m.get("profile", "na")], config=config, dir=str(ROOT),
                     reinit="create_new") as run:
         # time series against seconds-since-start
@@ -155,7 +156,7 @@ class ExperimentRun:
             import wandb
             self.wandb = wandb
             self.run = wandb.init(
-                project=os.environ.get("WANDB_PROJECT", "iitj-llm-coopt"), name=f"{name}|experiment",
+                project=os.environ.get("WANDB_PROJECT", "iitj-llm-coopt"), name=f"{name} | experiment",
                 group=name, job_type="experiment", tags=[f"tier-{name[0]}", name, profile, "experiment"],
                 config={"experiment": name, "tier": name[0], "profile": profile,
                         "description": cfg.get("description"), "server_cmd": " ".join(map(str, cmd)),

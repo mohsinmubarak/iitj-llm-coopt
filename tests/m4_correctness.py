@@ -93,7 +93,7 @@ def main():
     ap.add_argument("--profile", default="rtx4090")
     args = ap.parse_args()
 
-    reqs = load_workload("W1")[: args.n - 2] + load_workload("fixed_1024")[:2]
+    reqs = load_workload("chat")[: args.n - 2] + load_workload("prompt-1k")[:2]
     prompts = [r["prompt_token_ids"] for r in reqs]
     ref, ref_logits, ref_margins, noise_floor = hf_reference(args.model, prompts, args.new)
 
@@ -149,7 +149,7 @@ def main():
     res["pass"] = ((res["teacher_forced_agreement"] >= 0.99 or floor_ok)
                    and max(last_margins, default=0.0) < 1.0
                    and res["disagreement_hf_margin_max"] < 1.0)
-    out = ROOT / "results" / args.profile / "M4" / f"{args.model.split('/')[-1]}.json"
+    out = ROOT / "results" / args.profile / "engine-correctness" / f"{args.model.split('/')[-1]}.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(res, indent=1))
     print(json.dumps(res, indent=1))
@@ -160,7 +160,8 @@ def main():
         import yaml
         prof = yaml.safe_load((ROOT / "bench" / "profiles" / f"{args.profile}.yaml").read_text())
         with wandb.init(project=os.environ.get("WANDB_PROJECT", prof["wandb_project"]), job_type="validation",
-                        group="M4", name=f"M4|{args.model.split('/')[-1]}", tags=["M4", "validation", args.profile],
+                        group="engine-correctness", name=f"engine-correctness | {args.model.split('/')[-1]}",
+                        tags=["engine-correctness", "validation", args.profile],
                         config=vars(args), dir=str(ROOT)) as run:
             run.summary.update(res)
             run.save(str(out), base_path=str(out.parent), policy="now")

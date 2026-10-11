@@ -7,9 +7,9 @@ Q1  KV quantization cost. A swap to the CPU tier quantizes a sequence's KV and r
 Q2  End-to-end losslessness of speculative decoding in our engine: greedy outputs with the 1B
     drafter at fixed γ vs. the same engine without a drafter, one request at a time.
 
-    python -m eval.quality q1 --workload fixed_4096 --n 32
+    python -m eval.quality q1 --workload prompt-4k --n 32
     python -m eval.quality q2 --n 32 --new 128
-Results: results/<profile>/Q/{q1,q2}.json (+ a W&B validation run).
+Results: results/<profile>/quality/{q1,q2}.json (+ a W&B validation run).
 """
 import argparse
 import gc
@@ -87,7 +87,7 @@ def greedy_outputs(engine, prompts, new):
 def q2(args):
     from engine.engine import Engine
     from engine.policy import StaticPolicy
-    prompts = [r["prompt_token_ids"] for r in load_workload("W1")[: args.n]]
+    prompts = [r["prompt_token_ids"] for r in load_workload("chat")[: args.n]]
     runs = {}
     for name, draft, gamma in (("spec_gamma4", DRAFT, 4), ("no_spec", None, 0)):
         eng = Engine(TARGET, draft, policy=StaticPolicy(gamma=gamma), max_model_len=4096,
@@ -119,14 +119,14 @@ def q2(args):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("which", choices=["q1", "q2"])
-    ap.add_argument("--workload", default="fixed_4096")
+    ap.add_argument("--workload", default="prompt-4k")
     ap.add_argument("--n", type=int, default=32)
     ap.add_argument("--cont", type=int, default=256)
     ap.add_argument("--new", type=int, default=128)
     ap.add_argument("--profile", default="rtx4090")
     args = ap.parse_args()
     res = q1(args) if args.which == "q1" else q2(args)
-    out = ROOT / "results" / args.profile / "Q" / f"{args.which}.json"
+    out = ROOT / "results" / args.profile / "quality" / f"{args.which}.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(res, indent=1))
     try:
@@ -134,7 +134,8 @@ def main():
         import yaml
         prof = yaml.safe_load((ROOT / "bench" / "profiles" / f"{args.profile}.yaml").read_text())
         with wandb.init(project=os.environ.get("WANDB_PROJECT", prof["wandb_project"]), job_type="validation",
-                        group="Q", name=f"Q|{args.which}", tags=["quality", args.which, args.profile],
+                        group="quality", name=f"quality | {dict(q1='kv-quantization', q2='spec-vs-no-spec')[args.which]}",
+                        tags=["quality", args.which, args.profile],
                         config=vars(args), dir=str(ROOT)) as run:
             run.summary.update({k: v for k, v in res.items() if not isinstance(v, dict)})
             for bits, v in res.get("bits", {}).items():

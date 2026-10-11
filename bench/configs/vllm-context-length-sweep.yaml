@@ -1,0 +1,22 @@
+# A3: context-length scaling of stock vLLM: fixed-length prompts, 128 output tokens, 8 concurrent.
+name: vllm-context-length-sweep
+description: Throughput vs prompt length on stock vLLM (motivation, H1)
+server:
+  model: unsloth/Meta-Llama-3.1-8B-Instruct
+  args: [--dtype, bfloat16, --seed, 0]
+runs:
+  - workload: prompt-1k
+    request_rates: [inf]
+    max_concurrency: 8
+  - workload: prompt-4k
+    request_rates: [inf]
+    max_concurrency: 8
+  - workload: prompt-8k
+    request_rates: [inf]
+    max_concurrency: 8
+  - workload: prompt-16k
+    request_rates: [inf]
+    max_concurrency: 8
+  - workload: prompt-32k
+    request_rates: [inf]
+    max_concurrency: 8

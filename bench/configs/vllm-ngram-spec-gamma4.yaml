@@ -1,0 +1,14 @@
+# B1: vLLM n-gram (prompt-lookup) speculative decoding at fixed gamma=4.
+name: vllm-ngram-spec-gamma4
+description: vLLM n-gram speculative decoding, fixed gamma=4
+server:
+  model: unsloth/Meta-Llama-3.1-8B-Instruct
+  args: [--dtype, bfloat16, --seed, 0, --speculative-config, '{"method": "ngram", "num_speculative_tokens": 4, "prompt_lookup_max": 4, "prompt_lookup_min": 2}']
+runs:
+  - workload: chat
+    request_rates: [1, 4, 16, inf]
+  - workload: long-context
+    request_rates: [inf]
+    max_concurrency: 16
+  - workload: mixed-bursty
+    arrivals: file

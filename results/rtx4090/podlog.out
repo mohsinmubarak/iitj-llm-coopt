@@ -419,4 +419,63 @@ RuntimeError: Engine core initialization failed. See root cause above. Failed co
 === 2026-10-11T17:49:28Z START C2_el
 [C2_el] server healthy after 48s
 === 2026-10-11T17:53:31Z stopped after C6 (engine fixes next)
-=== 2026-10-11T17:53:31Z QUEUE DONE
+=== 2026-10-11T18:08:48Z START C0_nospec
+[C0_nospec] server healthy after 15s
+[C0_nospec] W1 rate=1 rep=0: 200/200 ok | out 240.8 tok/s | TTFT p99 0.13s | TPOT p99 19.2ms | goodput 0.92 req/s
+[C0_nospec] W1 rate=4 rep=0: 200/200 ok | out 847.3 tok/s | TTFT p99 0.12s | TPOT p99 24.5ms | goodput 3.25 req/s
+[C0_nospec] W1 rate=16 rep=0: 200/200 ok | out 2058.9 tok/s | TTFT p99 0.21s | TPOT p99 45.3ms | goodput 7.90 req/s
+[C0_nospec] W1 rate=inf rep=0: 200/200 ok | out 3239.1 tok/s | TTFT p99 1.72s | TPOT p99 73.4ms | goodput 7.40 req/s
+[C0_nospec] W2 rate=inf rep=0: 43/43 ok | out 65.5 tok/s | TTFT p99 56.42s | TPOT p99 50.0ms | goodput 0.02 req/s
+[C0_nospec] W3 rate=inf rep=0: 288/288 ok | out 245.2 tok/s | TTFT p99 53.75s | TPOT p99 78.8ms | goodput 0.28 req/s
+[C0_nospec] W4 rate=inf rep=0: 1261/1261 ok | out 786.7 tok/s | TTFT p99 5.36s | TPOT p99 48.7ms | goodput 2.39 req/s
+[C0_nospec] index rebuilt: 86 runs
+=== 2026-10-11T18:29:46Z END C0_nospec (exit 0)
+=== 2026-10-11T18:29:46Z START C0
+[C0] server healthy after 45s
+[C0] W1 rate=1 rep=0: 200/200 ok | out 247.0 tok/s | TTFT p99 0.15s | TPOT p99 14.8ms | goodput 0.95 req/s
+[C0] W1 rate=4 rep=0: 200/200 ok | out 933.4 tok/s | TTFT p99 0.17s | TPOT p99 18.5ms | goodput 3.58 req/s
+[C0] W1 rate=16 rep=0: 53/200 ok | out 622.5 tok/s | TTFT p99 0.22s | TPOT p99 28.9ms | goodput 4.09 req/s
+[C0] index rebuilt: 89 runs
+Traceback (most recent call last):
+    raise RuntimeError(f"server died (exit {proc.returncode}); see {log_path}")
+RuntimeError: server died (exit 1); see /workspace/IITJ/results/rtx4090/C0/server.log
+=== 2026-10-11T18:35:40Z END C0 (exit 1)
+=== 2026-10-11T18:35:40Z START C4_el
+[C4_el] server healthy after 51s
+[C4_el] W1 rate=1 rep=0: 200/200 ok | out 246.0 tok/s | TTFT p99 0.16s | TPOT p99 14.6ms | goodput 0.94 req/s
+[C4_el] W1 rate=4 rep=0: 200/200 ok | out 927.6 tok/s | TTFT p99 0.17s | TPOT p99 18.7ms | goodput 3.56 req/s
+[C4_el] W1 rate=16 rep=0: 54/200 ok | out 645.8 tok/s | TTFT p99 0.19s | TPOT p99 27.7ms | goodput 4.17 req/s
+[C4_el] index rebuilt: 92 runs
+Traceback (most recent call last):
+    raise RuntimeError(f"server died (exit {proc.returncode}); see {log_path}")
+RuntimeError: server died (exit 1); see /workspace/IITJ/results/rtx4090/C4_el/server.log
+=== 2026-10-11T18:41:42Z END C4_el (exit 1)
+=== 2026-10-11T18:41:42Z START C6_el
+[C6_el] server healthy after 51s
+[C6_el] W1 rate=1 rep=0: 200/200 ok | out 247.6 tok/s | TTFT p99 0.16s | TPOT p99 14.7ms | goodput 0.95 req/s
+[C6_el] W1 rate=4 rep=0: 200/200 ok | out 934.2 tok/s | TTFT p99 0.17s | TPOT p99 18.1ms | goodput 3.59 req/s
+[C6_el] W1 rate=16 rep=0: 56/200 ok | out 696.8 tok/s | TTFT p99 0.19s | TPOT p99 27.3ms | goodput 4.32 req/s
+[C6_el] index rebuilt: 95 runs
+Traceback (most recent call last):
+    raise RuntimeError(f"server died (exit {proc.returncode}); see {log_path}")
+RuntimeError: server died (exit 1); see /workspace/IITJ/results/rtx4090/C6_el/server.log
+=== 2026-10-11T18:47:42Z END C6_el (exit 1)
+=== 2026-10-11T18:47:42Z START N1
+[N1] server healthy after 48s
+[N1] W1 rate=1 rep=0: 200/200 ok | out 247.0 tok/s | TTFT p99 0.16s | TPOT p99 14.3ms | goodput 0.95 req/s
+[N1] W1 rate=4 rep=0: 200/200 ok | out 930.4 tok/s | TTFT p99 0.20s | TPOT p99 20.3ms | goodput 3.57 req/s
+[N1] W1 rate=16 rep=0: 51/200 ok | out 564.8 tok/s | TTFT p99 0.18s | TPOT p99 27.6ms | goodput 3.93 req/s
+[N1] index rebuilt: 98 runs
+Traceback (most recent call last):
+    raise RuntimeError(f"server died (exit {proc.returncode}); see {log_path}")
+RuntimeError: server died (exit 1); see /workspace/IITJ/results/rtx4090/N1/server.log
+=== 2026-10-11T18:53:40Z END N1 (exit 1)
+=== 2026-10-11T18:53:40Z START B5
+[B5] index rebuilt: 98 runs
+Traceback (most recent call last):
+    raise RuntimeError(f"server exited during startup, see {log_path}:\n"
+RuntimeError: server exited during startup, see /workspace/IITJ/results/rtx4090/B5/server.log:
+    raise RuntimeError(
+RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}
+=== 2026-10-11T18:55:32Z END B5 (exit 1)
+=== 2026-10-11T18:55:32Z QUEUE DONE

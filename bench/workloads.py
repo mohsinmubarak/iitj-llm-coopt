@@ -3,11 +3,12 @@
 Every workload is a JSONL file of requests holding *exact prompt token ids*, so vLLM and our
 engine receive byte-identical inputs. Build once, commit the files' hashes, never regenerate.
 
-    python -m bench.workloads --all            # W1, W2, W3 + fixed-length sets for A3
-    python -m bench.workloads --only W1 --n 50 # quick smoke set
+    python -m bench.workloads --all              # chat, long-context, mixed-bursty, phase-shift, prompt-1k..32k
+    python -m bench.workloads --only chat --n 50  # quick smoke set
 
 Request schema (one JSON object per line):
-    id, category ("short" | "long"), prompt_token_ids, prompt_len, max_tokens, arrival_s (W3 only)
+    id, category ("short" | "long"), prompt_token_ids, prompt_len, max_tokens,
+    arrival_s (mixed-bursty, phase-shift), phase (phase-shift)
 """
 import argparse
 import hashlib
@@ -20,13 +21,15 @@ import numpy as np
 from huggingface_hub import hf_hub_download
 from transformers import AutoTokenizer
 
+from bench import names
+
 TARGET = "unsloth/Meta-Llama-3.1-8B-Instruct"
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 SEED = 2026
 
 LONGBENCH_TASKS = ["narrativeqa", "qasper", "multifieldqa_en", "hotpotqa", "2wikimqa",
                    "musique", "gov_report", "qmsum", "multi_news"]
-FIXED_LENGTHS = [1024, 4096, 8192, 16384, 31744]  # A3; 31744 + 128 output + chat overhead < 32768
+FIXED_LENGTHS = [1024, 4096, 8192, 16384, 31744]  # context-length sweep; 31744 + 128 output < 32768
 
 
 def load_sharegpt():
@@ -166,21 +169,21 @@ def write(name, reqs):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--only", choices=["W1", "W2", "W3", "W4", "fixed"], action="append")
+    ap.add_argument("--only", choices=["chat", "long-context", "mixed-bursty", "phase-shift", "prompts"], action="append")
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--n", type=int, help="override request count (smoke tests)")
     args = ap.parse_args()
-    todo = ["W1", "W2", "W3", "W4", "fixed"] if args.all or not args.only else args.only
+    todo = ["chat", "long-context", "mixed-bursty", "phase-shift", "prompts"] if args.all or not args.only else args.only
 
     tok = AutoTokenizer.from_pretrained(TARGET)
     rng = np.random.default_rng(SEED)
     pyrng = random.Random(SEED)
 
-    if "W1" in todo:
-        write("W1", build_short(tok, args.n or 200, pyrng))
-    if "W2" in todo:
-        write("W2", build_long(tok, args.n or 60, pyrng, 8192, 31744))
-    if "W3" in todo:
+    if "chat" in todo:
+        write("chat", build_short(tok, args.n or 200, pyrng))
+    if "long-context" in todo:
+        write("long-context", build_long(tok, args.n or 60, pyrng, 8192, 31744))
+    if "mixed-bursty" in todo:
         n = args.n or 300
         n_long = int(round(0.3 * n))
         reqs = build_short(tok, n - n_long, random.Random(SEED + 3)) + \
@@ -188,12 +191,12 @@ def main():
         random.Random(SEED + 5).shuffle(reqs)
         for r, t in zip(reqs, bursty_arrivals(n, rng)):
             r["arrival_s"] = t
-        write("W3", reqs)
-    if "W4" in todo:
-        write("W4", build_phase_shift(tok, np.random.default_rng(SEED + 40), pyrng))
-    if "fixed" in todo:
+        write("mixed-bursty", reqs)
+    if "phase-shift" in todo:
+        write("phase-shift", build_phase_shift(tok, np.random.default_rng(SEED + 40), pyrng))
+    if "prompts" in todo:
         for length in FIXED_LENGTHS:
-            write(f"fixed_{length}", build_fixed(tok, length, args.n or 32))
+            write(names.WORKLOADS[f"fixed_{length}"], build_fixed(tok, length, args.n or 32))
 
 
 if __name__ == "__main__":

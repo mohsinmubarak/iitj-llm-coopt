@@ -1,0 +1,23 @@
+Loading weights:   0%|          | 0/291 [00:00<?, ?it/s]Loading weights:  23%|██▎       | 66/291 [00:00<00:00, 619.69it/s]Loading weights:  44%|████▍     | 128/291 [00:00<00:00, 419.51it/s]Loading weights:  60%|█████▉    | 174/291 [00:00<00:00, 395.14it/s]Loading weights:  74%|███████▍  | 216/291 [00:00<00:00, 308.15it/s]Loading weights:  87%|████████▋ | 254/291 [00:00<00:00, 325.38it/s]Loading weights:  99%|█████████▉| 289/291 [00:00<00:00, 293.02it/s]Loading weights: 100%|██████████| 291/291 [00:00<00:00, 336.05it/s]
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 283.80it/s]
+{
+ "model": "unsloth/Meta-Llama-3.1-8B-Instruct",
+ "prompts": 16,
+ "new_tokens": 64,
+ "teacher_forced_agreement": 0.9957850368809273,
+ "last_logit_max_abs_diff": 0.53125,
+ "last_logit_top1_agreement": 0.9375,
+ "single_exact_match_rate": 0.5625,
+ "single_mean_matched_prefix": 53.0625,
+ "batched_exact_match_rate": 0.5,
+ "batched_mean_matched_prefix": 44.0625,
+ "batched_equals_single": 0.625,
+ "hf_eager_vs_sdpa_agreement": 0.9915700737618546,
+ "disagreements": 4,
+ "last_token_disagreement_hf_margins": [
+  0.125
+ ],
+ "disagreement_hf_margin_max": 0.125,
+ "disagreement_hf_margin_median": 0.0,
+ "pass": true
+}
