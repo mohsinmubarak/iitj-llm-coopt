@@ -5,6 +5,9 @@ GET /health, GET /metrics (Prometheus text). Shared counters use vLLM's metric n
 bench/run.py, bench/tracking.py and the W&B dashboard treat both systems identically;
 engine-only signals (γ, α, KV tiers, policy knobs) are exported under `coopt:`.
 
+The GPU engine runs in its own process (engine/worker.py); this process only handles HTTP,
+detokenisation and streaming, so neither competes with the other for the GIL.
+
     python -m engine.server --model unsloth/Meta-Llama-3.1-8B-Instruct \
         --draft unsloth/Llama-3.2-1B-Instruct --gamma 4 --port 8000
 """
@@ -12,6 +15,9 @@ import argparse
 import asyncio
 import itertools
 import json
+import multiprocessing as mp
+import os
+import threading
 import time
 
 import uvicorn
@@ -20,27 +26,78 @@ from fastapi.responses import JSONResponse, PlainTextResponse, StreamingResponse
 from transformers import AutoTokenizer
 
 from engine.co_optimizer import CoOptimizer
-from engine.engine import Engine, Sequence
-from engine.kv_tier_manager import KVTierManager
-from engine.metrics_engine import MetricsEngine
 from engine.policy import StaticPolicy
 
 
-def build_app(engine: Engine, tokenizer, model_name: str) -> FastAPI:
+class EngineClient:
+    """Server-side handle on the engine process: submit requests, route batched outputs."""
+
+    def __init__(self, args):
+        ctx = mp.get_context("spawn")
+        self.req_q, self.out_q = ctx.Queue(), ctx.Queue()
+        from engine.worker import engine_worker
+        self.proc = ctx.Process(target=engine_worker, args=(vars(args), self.req_q, self.out_q), daemon=True)
+        self.proc.start()
+        kind, info = self.out_q.get()
+        if kind != "ready":
+            raise RuntimeError(f"engine failed to start:\n{info}")
+        self.max_model_len = info["max_model_len"]
+        self.metrics = {"counters": {}, "gauges": {}, "extra": {}}
+        self.streams = {}          # request id -> (loop, asyncio.Queue)
+        self.loop = None
+        threading.Thread(target=self._receive, daemon=True).start()
+
+    def _receive(self):
+        import queue as _queue
+        while True:
+            try:
+                kind, payload = self.out_q.get(timeout=1.0)
+            except _queue.Empty:
+                if not self.proc.is_alive():  # hard crash without a "fatal" message
+                    os._exit(1)
+                continue
+            if kind == "out":
+                self.loop.call_soon_threadsafe(self._dispatch, payload)
+            elif kind == "metrics":
+                self.metrics = payload
+            elif kind == "fatal":
+                # the engine died (e.g. OOM): exit so clients see dropped connections, as with vLLM
+                os._exit(1)
+
+    def _dispatch(self, items):
+        for rid, toks, done, reason, prompt_len, n_gen in items:
+            q = self.streams.get(rid)
+            if q is not None:
+                q.put_nowait((toks, done, reason, prompt_len, n_gen))
+
+    def submit(self, rid, prompt, max_tokens, temperature, ignore_eos):
+        q = asyncio.Queue()
+        self.streams[rid] = q
+        self.req_q.put(("req", rid, prompt, max_tokens, temperature, ignore_eos))
+        return q
+
+
+def build_app(client: EngineClient, tokenizer, model_name: str) -> FastAPI:
     app = FastAPI()
     ids = itertools.count()
 
+    @app.on_event("startup")
+    async def bind_loop():
+        client.loop = asyncio.get_running_loop()
+
     @app.get("/health")
     async def health():
-        return PlainTextResponse("ok")
+        return PlainTextResponse("ok" if client.proc.is_alive() else "engine dead",
+                                 status_code=200 if client.proc.is_alive() else 503)
 
     @app.get("/metrics")
     async def metrics():
-        lines = [f"vllm:{k} {v}" for k, v in engine.counters.items()]
-        lines += [f"vllm:{k} {v}" for k, v in engine.gauges.items()
+        m = client.metrics
+        lines = [f"vllm:{k} {v}" for k, v in m["counters"].items()]
+        lines += [f"vllm:{k} {v}" for k, v in m["gauges"].items()
                   if k in ("num_requests_running", "num_requests_waiting", "kv_cache_usage_perc")]
-        lines += [f"coopt:{k} {v}" for k, v in engine.gauges.items() if isinstance(v, (int, float))]
-        lines += [f"coopt:{k} {v}" for k, v in getattr(engine, "extra_metrics", {}).items()]
+        lines += [f"coopt:{k} {v}" for k, v in m["gauges"].items() if isinstance(v, (int, float))]
+        lines += [f"coopt:{k} {v}" for k, v in m["extra"].items()]
         return PlainTextResponse("\n".join(lines) + "\n")
 
     @app.post("/v1/completions")
@@ -50,52 +107,52 @@ def build_app(engine: Engine, tokenizer, model_name: str) -> FastAPI:
         if isinstance(prompt, str):
             prompt = tokenizer(prompt).input_ids
         max_tokens = int(body.get("max_tokens", 16))
-        if len(prompt) + max_tokens > engine.max_model_len:
+        if len(prompt) + max_tokens > client.max_model_len:
             return JSONResponse({"error": f"prompt ({len(prompt)}) + max_tokens ({max_tokens}) exceeds "
-                                          f"max_model_len {engine.max_model_len}"}, status_code=400)
-        loop = asyncio.get_running_loop()
-        q: asyncio.Queue = asyncio.Queue()
-
-        def on_output(seq, new_tokens, finished):
-            loop.call_soon_threadsafe(q.put_nowait, (new_tokens, finished))
-
-        seq = Sequence(seq_id=next(ids), tokens=list(prompt), max_tokens=max_tokens,
-                       temperature=float(body.get("temperature", 1.0)),
-                       ignore_eos=bool(body.get("ignore_eos", False)), on_output=on_output)
-        engine.add_request(seq)
-        rid, created = f"cmpl-{seq.seq_id}", int(time.time())
+                                          f"max_model_len {client.max_model_len}"}, status_code=400)
+        rid = next(ids)
+        q = client.submit(rid, list(prompt), max_tokens, float(body.get("temperature", 1.0)),
+                          bool(body.get("ignore_eos", False)))
+        cid, created = f"cmpl-{rid}", int(time.time())
+        final = {}
 
         def chunk(text, finish=None, usage=None):
-            c = {"id": rid, "object": "text_completion", "created": created, "model": model_name,
+            c = {"id": cid, "object": "text_completion", "created": created, "model": model_name,
                  "choices": [] if usage else [{"index": 0, "text": text, "finish_reason": finish}]}
             if usage:
                 c["usage"] = usage
             return f"data: {json.dumps(c)}\n\n"
 
         async def stream():
-            while True:
-                toks, done = await q.get()
-                yield chunk(tokenizer.decode(toks), seq.finish_reason if done else None)
-                if done:
-                    break
-            if (body.get("stream_options") or {}).get("include_usage"):
-                n = seq.num_generated
-                yield chunk("", usage={"prompt_tokens": seq.prompt_len, "completion_tokens": n,
-                                       "total_tokens": seq.prompt_len + n})
-            yield "data: [DONE]\n\n"
+            try:
+                while True:
+                    toks, done, reason, prompt_len, n_gen = await q.get()
+                    yield chunk(tokenizer.decode(toks), reason if done else None)
+                    if done:
+                        final.update(prompt_len=prompt_len, n_gen=n_gen)
+                        break
+                if (body.get("stream_options") or {}).get("include_usage"):
+                    yield chunk("", usage={"prompt_tokens": final["prompt_len"], "completion_tokens": final["n_gen"],
+                                           "total_tokens": final["prompt_len"] + final["n_gen"]})
+                yield "data: [DONE]\n\n"
+            finally:
+                client.streams.pop(rid, None)
 
         if body.get("stream"):
             return StreamingResponse(stream(), media_type="text/event-stream")
         out = []
-        while True:
-            toks, done = await q.get()
-            out += toks
-            if done:
-                break
-        return {"id": rid, "object": "text_completion", "created": created, "model": model_name,
-                "choices": [{"index": 0, "text": tokenizer.decode(out), "finish_reason": seq.finish_reason}],
-                "usage": {"prompt_tokens": seq.prompt_len, "completion_tokens": len(out),
-                          "total_tokens": seq.prompt_len + len(out)}}
+        try:
+            while True:
+                toks, done, reason, prompt_len, n_gen = await q.get()
+                out += toks
+                if done:
+                    break
+        finally:
+            client.streams.pop(rid, None)
+        return {"id": cid, "object": "text_completion", "created": created, "model": model_name,
+                "choices": [{"index": 0, "text": tokenizer.decode(out), "finish_reason": reason}],
+                "usage": {"prompt_tokens": prompt_len, "completion_tokens": len(out),
+                          "total_tokens": prompt_len + len(out)}}
 
     return app
 
@@ -126,7 +183,7 @@ def main():
     ap.add_argument("--kv-cpu-gb", type=float, default=0.0, help="CPU KV tier size; 0 disables tiering")
     ap.add_argument("--kv-bits", type=int, default=8, choices=[4, 8, 16])
     ap.add_argument("--trace", default=None, help="JSONL file for per-tick snapshots")
-    ap.add_argument("--max-num-seqs", type=int, default=128)
+    ap.add_argument("--max-num-seqs", type=int, default=256, help="running batch cap (vLLM 0.31 default: 256)")
     ap.add_argument("--max-num-batched-tokens", type=int, default=2048,
                     help="prefill chunk / tokens per step; 2048 = vLLM 0.31 default on these GPUs")
     ap.add_argument("--kv-gb", type=float, default=None)
@@ -140,20 +197,9 @@ def main():
                     help="memory-elastic speculation: drafter in the KV buffer tail, parkable under pressure")
     args = ap.parse_args()
 
-    engine = Engine(args.model, args.draft, policy=make_policy(args), kv_gb=args.kv_gb,
-                    gpu_memory_utilization=args.gpu_memory_utilization,
-                    max_model_len=args.max_model_len, seed=args.seed, cuda_graphs=not args.no_cuda_graphs,
-                    elastic=args.elastic)
-    if args.kv_cpu_gb > 0:
-        KVTierManager(engine, cpu_gb=args.kv_cpu_gb, bits=args.kv_bits)
-    MetricsEngine(engine, trace_path=args.trace)
-    engine.policy.engine = engine
-    print(f"[engine] hardware {engine.metrics.profile}", flush=True)
-    print(f"[engine] KV capacity {engine.kv_capacity_tokens} tokens "
-          f"({engine.bm.num_blocks} blocks), policy={engine.policy.name}", flush=True)
-    engine.start()
+    client = EngineClient(args)
     tok = AutoTokenizer.from_pretrained(args.model)
-    uvicorn.run(build_app(engine, tok, args.model), host="0.0.0.0", port=args.port, log_level="warning")
+    uvicorn.run(build_app(client, tok, args.model), host="0.0.0.0", port=args.port, log_level="warning")
 
 
 if __name__ == "__main__":

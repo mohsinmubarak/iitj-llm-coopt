@@ -279,3 +279,33 @@ RuntimeError: Engine core initialization failed. See root cause above. Failed co
 [B2S_kv3g] server healthy after 69s
 [B2S_kv3g] W3 rate=inf rep=0: 288/288 ok | out 245.0 tok/s | TTFT p99 25.94s | TPOT p99 51.2ms | goodput 0.17 req/s
 [B2S_kv3g] W3 rate=inf rep=0: 288/288 ok | out 245.0 tok/s | TTFT p99 48.03s | TPOT p99 53.4ms | goodput 0.02 req/s
+[B2S_kv3g] W3 rate=inf rep=0: 288/288 ok | out 245.1 tok/s | TTFT p99 85.30s | TPOT p99 75.3ms | goodput 0.03 req/s
+[B2S_kv3g] W3 rate=inf rep=0: 288/288 ok | out 240.5 tok/s | TTFT p99 154.24s | TPOT p99 54.9ms | goodput 0.02 req/s
+[B2S_kv3g] index rebuilt: 111 runs
+=== 2026-10-11T13:32:38Z END B2S_kv3g (exit 0)
+=== 2026-10-11T13:32:38Z START A2
+[A2] server healthy after 72s
+[A2] W3 rate=inf rep=0: 288/288 ok | out 265.9 tok/s | TTFT p99 32.69s | TPOT p99 71.0ms | goodput 0.49 req/s
+[A2] W4 rate=inf rep=0: 1261/1261 ok | out 787.4 tok/s | TTFT p99 4.27s | TPOT p99 58.5ms | goodput 2.73 req/s
+[A2] index rebuilt: 113 runs
+=== 2026-10-11T13:45:32Z END A2 (exit 0)
+=== 2026-10-11T13:45:32Z START B1D_g4
+[B1D_g4] server healthy after 72s
+[B1D_g4] W4 rate=inf rep=0: 1261/1261 ok | out 792.9 tok/s | TTFT p99 20.31s | TPOT p99 49.5ms | goodput 1.77 req/s
+[B1D_g4] index rebuilt: 114 runs
+=== 2026-10-11T13:53:47Z END B1D_g4 (exit 0)
+=== 2026-10-11T13:53:47Z START B2
+[B2] index rebuilt: 114 runs
+Traceback (most recent call last):
+    raise RuntimeError(f"server exited during startup, see {log_path}:\n"
+RuntimeError: server exited during startup, see /workspace/IITJ/results/rtx4090/B2/server.log:
+    raise RuntimeError(
+RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}
+=== 2026-10-11T13:54:46Z END B2 (exit 1)
+=== 2026-10-11T13:54:46Z START C0
+[C0] server healthy after 24s
+[C0] W4 rate=inf rep=0: 1261/1261 ok | out 792.0 tok/s | TTFT p99 38.95s | TPOT p99 54.3ms | goodput 1.48 req/s
+[C0] index rebuilt: 115 runs
+=== 2026-10-11T14:02:13Z END C0 (exit 0)
+=== 2026-10-11T14:26:46Z START C0_nospec
+[C0_nospec] server healthy after 33s

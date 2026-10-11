@@ -1,0 +1,7 @@
+{
+ "prompts": 32,
+ "new_tokens": 128,
+ "exact_match_rate": 0.5625,
+ "mean_matched_prefix": 93.8125,
+ "token_agreement": 0.766845703125
+}

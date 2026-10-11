@@ -150,7 +150,8 @@ class Scheduler:
 class Engine:
     def __init__(self, target: str, draft: str | None = None, policy=None, kv_gb: float | None = None,
                  gpu_memory_utilization=0.9, max_model_len=32768, block_size=16, seed=0, eos_ids=(),
-                 cuda_graphs=True, graph_batch_sizes=(1, 2, 4, 8, 16, 32, 64, 128), elastic=False):
+                 cuda_graphs=True, graph_batch_sizes=(1, 2, 4, 8, 16, 32, 64, 96, 128, 160, 192, 224, 256), elastic=False,
+                 graph_max_tokens=1280):
         torch.manual_seed(seed)
         self.gen = torch.Generator(device="cuda").manual_seed(seed)
         self.policy = policy or StaticPolicy()
@@ -171,7 +172,7 @@ class Engine:
             graphs = 0
             if cuda_graphs:
                 gmax = getattr(self.policy, "gamma_max", self.policy.gamma) if self.draft else 0
-                rows = max(graph_batch_sizes) * (gmax + 1)
+                rows = min(max(graph_batch_sizes) * (gmax + 1), graph_max_tokens)  # one shared logits buffer
                 graphs = rows * self.target.cfg.vocab_size * 2 + 384 * 2**20
                 if self.draft:
                     graphs += max(graph_batch_sizes) * 2 * self.draft.cfg.vocab_size * 2 + 128 * 2**20
@@ -215,10 +216,10 @@ class Engine:
             gmax = getattr(self.policy, "gamma_max", self.policy.gamma) if self.draft else 0
             strides = sorted({1} | {g + 1 for g in (1, 2, 3, 4, 6, 8) if g <= gmax} | ({gmax + 1} if gmax else set()))
             self.target_graphs = GraphRunner(self.target, self.max_model_len, strides, graph_batch_sizes, target_scratch)
-            self.target_graphs.capture()
+            self.target_graphs.capture(graph_max_tokens)
             if self.draft:
                 self.draft_graphs = GraphRunner(self.draft, self.max_model_len, [1, 2], graph_batch_sizes, draft_scratch)
-                self.draft_graphs.capture()
+                self.draft_graphs.capture(graph_max_tokens)
             print(f"[engine] captured {len(self.target_graphs.graphs)} target + "
                   f"{len(self.draft_graphs.graphs) if self.draft_graphs else 0} draft CUDA graphs "
                   f"(target strides {strides}) in {time.perf_counter() - t:.0f}s", flush=True)

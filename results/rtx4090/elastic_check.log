@@ -1,0 +1,11 @@
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 230.89it/s]
+Fetching 6 files:   0%|          | 0/6 [00:00<?, ?it/s]Fetching 6 files: 100%|██████████| 6/6 [00:00<00:00, 356.83it/s]
+[engine] memory: weights 17.41 GiB, prefill activations 1.45 GiB, graphs 0.93 GiB -> KV 1.60 GiB
+[elastic] target blocks base 653 (+1343 when the drafter is parked) | drafter weights 2.30 GiB + draft KV 0.32 GiB in the tail | block 2.0 MiB
+[engine] captured 65 target + 26 draft CUDA graphs (target strides [1, 2, 3, 4, 5]) in 6s
+base pool 10448 tokens, parked pool 31936, workload needs 34010
+events: {'parked_at': 8, 'tail_blocks_in_use_before_unpark': 1243, 'unparked_at': 105, 'migrated': 209}
+speculation: acceptance 0.404 over 337 draft tokens
+token agreement with the parked reference 0.7002 (informative only: bf16 near-ties diverge)
+confidently-wrong tokens: reference 0/6144, elastic 0/6144
+ELASTIC CHECK PASS

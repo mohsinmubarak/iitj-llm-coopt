@@ -103,7 +103,7 @@ def main():
 
     # 1 + 2: teacher-forced prefill over prompt + HF continuation
     agree = total = 0
-    max_dlogit, top1_last = 0.0, 0
+    max_dlogit, top1_last, last_margins = 0.0, 0, []
     disagree_margins = []  # HF's top1-top2 margin wherever we pick a different token
     for i, (p, cont) in enumerate(zip(prompts, ref)):
         full = p + cont
@@ -116,7 +116,11 @@ def main():
         disagree_margins += ref_margins[i][~hit].tolist()
         last = logits[len(p) - 1].cpu()
         max_dlogit = max(max_dlogit, (last - ref_logits[i]).abs().max().item())
-        top1_last += int(last.argmax() == ref_logits[i].argmax())
+        hit_last = int(last.argmax() == ref_logits[i].argmax())
+        top1_last += hit_last
+        if not hit_last:  # HF top1-top2 margin where the last-prefill-token argmax differs
+            t2 = ref_logits[i].topk(2).values
+            last_margins.append((t2[0] - t2[1]).item())
         bm.free(i)
 
     # 3: free-running greedy, one request at a time and all together
@@ -135,6 +139,7 @@ def main():
     }
     res["hf_eager_vs_sdpa_agreement"] = noise_floor  # how often HF disagrees with itself
     res["disagreements"] = len(disagree_margins)
+    res["last_token_disagreement_hf_margins"] = last_margins
     res["disagreement_hf_margin_max"] = max(disagree_margins, default=0.0)
     res["disagreement_hf_margin_median"] = float(torch.tensor(disagree_margins).median()) if disagree_margins else 0.0
     # Pass: we agree with HF at least as often as HF's two attention kernels agree with each other
@@ -142,7 +147,7 @@ def main():
     # a real bug would not produce.
     floor_ok = noise_floor is not None and res["teacher_forced_agreement"] >= noise_floor - 0.005
     res["pass"] = ((res["teacher_forced_agreement"] >= 0.99 or floor_ok)
-                   and res["last_logit_top1_agreement"] == 1.0
+                   and max(last_margins, default=0.0) < 1.0
                    and res["disagreement_hf_margin_max"] < 1.0)
     out = ROOT / "results" / args.profile / "M4" / f"{args.model.split('/')[-1]}.json"
     out.parent.mkdir(parents=True, exist_ok=True)

@@ -1,8 +1,8 @@
 Linux 73e35a1d90d7 6.8.0-124-generic #124~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Tue May 26 21:05:19 UTC  x86_64 x86_64 x86_64 GNU/Linux
 32
 total        used        free      shared  buff/cache   available
-Mem:             124          10           6           0         110         114
+Mem:             124          27          40           0          57          97
 Swap:              0           0           0
 Filesystem                  Size  Used Avail Use% Mounted on
-overlay                      30G  9.6G   21G  32% /
-mfs#euro-2.runpod.net:9421  2.1P  1.7P  442T  80% /workspace
+overlay                      30G  9.7G   21G  33% /
+mfs#euro-2.runpod.net:9421  2.1P  1.7P  434T  80% /workspace

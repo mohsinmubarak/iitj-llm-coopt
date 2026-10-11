@@ -1,0 +1,21 @@
+{
+ "workload": "fixed_4096",
+ "docs": 32,
+ "continuation_tokens": 256,
+ "bits": {
+  "16": {
+   "ppl": 6.794058487058065,
+   "top1_agreement_vs_bf16": 1.0
+  },
+  "8": {
+   "ppl": 6.798202237047736,
+   "top1_agreement_vs_bf16": 0.9862060546875,
+   "ppl_change_pct": 0.06099079066753182
+  },
+  "4": {
+   "ppl": 6.8529928857774225,
+   "top1_agreement_vs_bf16": 0.9501953125,
+   "ppl_change_pct": 0.8674402616877872
+  }
+ }
+}

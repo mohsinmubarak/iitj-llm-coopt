@@ -21,6 +21,7 @@ import torch
 import torch.nn.functional as F
 from huggingface_hub import snapshot_download
 from safetensors import safe_open
+import vllm._custom_ops as _ops
 from vllm.vllm_flash_attn import flash_attn_varlen_func
 
 
@@ -121,6 +122,10 @@ class Llama:
         emb = torch.cat((freqs, freqs), dim=-1)
         self.cos = emb.cos().to(device=device, dtype=dtype)
         self.sin = emb.sin().to(device=device, dtype=dtype)
+        # neox-layout cache for the fused rotary kernel: [cos(θ) | sin(θ)] over the first half dims
+        half = freqs.to(device)
+        self.cos_sin_cache = torch.cat((half.cos(), half.sin()), dim=-1).to(dtype)
+        self.fused = True  # vLLM kernels; False = plain PyTorch reference path
         self.k_cache, self.v_cache = [], []
         self.block_size = None
 
@@ -170,6 +175,10 @@ class Llama:
 
     @torch.inference_mode()
     def forward(self, b: Batch, logits_dtype=torch.float32, out=None) -> torch.Tensor:
+        return (self.forward_fused if self.fused else self.forward_reference)(b, logits_dtype, out)
+
+    @torch.inference_mode()
+    def forward_reference(self, b: Batch, logits_dtype=torch.float32, out=None) -> torch.Tensor:
         """Returns logits for the rows in `b.logits_indices` (fp32 by default). CUDA graphs pass `out`,
         one shared bf16 [max_rows, vocab] buffer, so ~50 captured graphs don't each own a logits tensor."""
         T = b.input_ids.shape[0]
@@ -200,6 +209,46 @@ class Llama:
             gate, up = F.linear(h, L["gate_up"]).chunk(2, dim=-1)
             x = x + F.linear(F.silu(gate) * up, L["down"])
         x = rms_norm(x[b.logits_indices], self.norm, self.cfg.rms_norm_eps)
+        return self._logits(x, logits_dtype, out)
+
+    def _logits(self, x, logits_dtype, out):
         if out is not None:
             return torch.matmul(x, self.lm_head.t(), out=out[: x.shape[0]])
         return F.linear(x, self.lm_head).to(logits_dtype)
+
+    @torch.inference_mode()
+    def forward_fused(self, b: Batch, logits_dtype=torch.float32, out=None) -> torch.Tensor:
+        """Same computation with vLLM's fused CUDA kernels (fused add+RMSNorm, in-place neox RoPE,
+        SiLU-and-mul), i.e. the kernels the vLLM baselines run, so engine-vs-vLLM differences come
+        from scheduling and control rather than kernel fusion. The unfused path launched ~40 small
+        kernels per layer and made decode steps ~25 % slower than vLLM on the 4090."""
+        T = b.input_ids.shape[0]
+        H, Hkv, D = self.n_heads, self.n_kv, self.head_dim
+        eps = self.cfg.rms_norm_eps
+        blk, off = b.slot_mapping // self.block_size, b.slot_mapping % self.block_size
+        x = F.embedding(b.input_ids, self.embed)
+        residual = None
+        for i, L in enumerate(self.layers):
+            if residual is None:
+                residual, h = x, torch.empty_like(x)
+                _ops.rms_norm(h, x, L["ln1"], eps)
+            else:
+                _ops.fused_add_rms_norm(x, residual, L["ln1"], eps)  # residual += x; x = norm(residual)
+                h = x
+            q, k, v = F.linear(h, L["qkv"]).split([H * D, Hkv * D, Hkv * D], dim=-1)
+            _ops.rotary_embedding(b.positions, q, k, D, self.cos_sin_cache, True)
+            q, k, v = q.reshape(T, H, D), k.reshape(T, Hkv, D), v.reshape(T, Hkv, D)
+            self.k_cache[i][blk, off] = k
+            self.v_cache[i][blk, off] = v
+            attn = flash_attn_varlen_func(
+                q=q, k=self.k_cache[i], v=self.v_cache[i], cu_seqlens_q=b.cu_seqlens_q,
+                max_seqlen_q=b.max_seqlen_q, seqused_k=b.seq_lens, max_seqlen_k=b.max_seqlen_k,
+                softmax_scale=self.scale, causal=True, block_table=b.block_table, fa_version=2)
+            x = F.linear(attn.reshape(T, H * D), L["o"])
+            _ops.fused_add_rms_norm(x, residual, L["ln2"], eps)
+            gu = F.linear(x, L["gate_up"])
+            act = torch.empty((T, gu.shape[1] // 2), dtype=gu.dtype, device=gu.device)
+            torch.ops._C.silu_and_mul(act, gu)
+            x = F.linear(act, L["down"])
+        _ops.fused_add_rms_norm(x, residual, self.norm, eps)
+        return self._logits(x[b.logits_indices], logits_dtype, out)

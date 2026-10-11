@@ -10,7 +10,7 @@ from dataclasses import dataclass
 @dataclass
 class StaticPolicy:
     gamma: int = 4               # draft tokens per step; 0 disables speculation
-    max_num_seqs: int = 128      # running batch size cap
+    max_num_seqs: int = 256      # running batch size cap (vLLM 0.31 default)
     max_batched_tokens: int = 8192  # tokens per forward pass (prefill chunk budget)
     watermark: float = 0.01      # fraction of KV blocks kept free when admitting new requests
     tick_every: int = 8          # steps between tick() calls

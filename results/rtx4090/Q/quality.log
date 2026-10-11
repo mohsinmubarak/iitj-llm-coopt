@@ -1,0 +1,16 @@
+=== 2026-10-11T14:03:24Z Q1 start
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 363.30it/s]
+Q1 bits=16: perplexity 6.7941 | greedy agreement vs bf16 1.0000
+Q1 bits= 8: perplexity 6.7982 | greedy agreement vs bf16 0.9862
+Q1 bits= 4: perplexity 6.8530 | greedy agreement vs bf16 0.9502
+=== 2026-10-11T14:04:43Z Q2 start
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 481.71it/s]
+Fetching 6 files:   0%|          | 0/6 [00:00<?, ?it/s]Fetching 6 files: 100%|██████████| 6/6 [00:00<00:00, 297.93it/s]
+[engine] memory: weights 17.36 GiB, prefill activations 1.25 GiB, graphs 0.71 GiB -> KV 1.59 GiB
+[engine] captured 40 target + 16 draft CUDA graphs (target strides [1, 2, 3, 4, 5]) in 3s
+Q2 spec_gamma4: acceptance 0.602
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 427.02it/s]
+[engine] memory: weights 15.04 GiB, prefill activations 1.24 GiB, graphs 0.41 GiB -> KV 4.23 GiB
+[engine] captured 8 target + 0 draft CUDA graphs (target strides [1]) in 1s
+Q2: exact match 0.562 | mean matched prefix 93.8/128
+=== 2026-10-11T14:07:41Z QUALITY DONE

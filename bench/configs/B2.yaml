@@ -1,9 +1,10 @@
-# B2: vLLM native KV offloading to CPU (32 GiB pinned buffer), no spec decoding.
+# B2: vLLM native KV offloading to CPU (24 GiB buffer), no spec decoding.
+# 24 GiB (was 32): vLLM puts the buffer in /dev/shm, which holds 28.6 GiB on the second 4090 pod.
 name: B2
-description: vLLM native CPU KV offload (32 GiB)
+description: vLLM native CPU KV offload (24 GiB)
 server:
   model: unsloth/Meta-Llama-3.1-8B-Instruct
-  args: [--dtype, bfloat16, --seed, 0, --kv-offloading-backend, native, --kv-offloading-size, 32]
+  args: [--dtype, bfloat16, --seed, 0, --kv-offloading-backend, native, --kv-offloading-size, 24]
 runs:
   - workload: W1
     request_rates: [1, 4, 16, inf]
