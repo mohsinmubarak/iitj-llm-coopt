@@ -24,6 +24,7 @@ import torch
 from engine.batch import WorkItem, build_batch
 from engine.block_manager import BlockManager
 from engine.cuda_graphs import GraphRunner
+from engine.elastic import ElasticKV
 from engine.model import Llama
 from engine.policy import StaticPolicy
 from engine.spec_decode import sample, verify
@@ -95,7 +96,7 @@ class Scheduler:
         while True:
             decodes = [s for s in self.running if s.remaining == 1]
             tg = time.perf_counter()
-            g_step = pol.gamma_for_step(len(decodes), e) if e.draft and decodes else 0
+            g_step = pol.gamma_for_step(len(decodes), e) if e.draft_active and decodes else 0
             e.counters["control_seconds_total"] += time.perf_counter() - tg
             plan.gamma = g_step
             for s in decodes:
@@ -149,7 +150,7 @@ class Scheduler:
 class Engine:
     def __init__(self, target: str, draft: str | None = None, policy=None, kv_gb: float | None = None,
                  gpu_memory_utilization=0.9, max_model_len=32768, block_size=16, seed=0, eos_ids=(),
-                 cuda_graphs=True, graph_batch_sizes=(1, 2, 4, 8, 16, 32, 64, 128)):
+                 cuda_graphs=True, graph_batch_sizes=(1, 2, 4, 8, 16, 32, 64, 128), elastic=False):
         torch.manual_seed(seed)
         self.gen = torch.Generator(device="cuda").manual_seed(seed)
         self.policy = policy or StaticPolicy()
@@ -180,16 +181,28 @@ class Engine:
                   f"-> KV {kv_bytes / 2**30:.2f} GiB", flush=True)
         else:
             kv_bytes = kv_gb * 2**30
-        per_token = self.target.cfg.kv_bytes_per_token() + (self.draft.cfg.kv_bytes_per_token() if self.draft else 0)
-        num_blocks = int(kv_bytes // (per_token * block_size))
-        assert num_blocks > 0, "no memory left for the KV cache"
-        # One extra block per cache is the CUDA-graph scratch block (padding writes land there);
-        # the block managers never hand it out.
-        self.bm = BlockManager(num_blocks, block_size)
-        self.target.allocate_kv_cache(num_blocks + 1, block_size)
-        if self.draft:
-            self.dbm = BlockManager(num_blocks, block_size)
-            self.draft.allocate_kv_cache(num_blocks + 1, block_size)
+        self.elastic = None
+        if elastic and self.draft:
+            # Memory-elastic speculation: the drafter's weights move into the KV buffer's tail,
+            # so the buffer also gets the memory the weights occupied a moment ago.
+            draft_w = sum(c[k].numel() * c[k].element_size() for c, k in self.draft.weight_slots())
+            self.elastic = ElasticKV(self, kv_bytes + draft_w, block_size)
+            num_blocks, target_scratch = self.elastic.base, self.elastic.scratch
+            self.bm = BlockManager(num_blocks, block_size)
+            self.dbm = BlockManager(self.elastic.draft_blocks, block_size)
+            draft_scratch = self.elastic.draft_blocks
+        else:
+            per_token = self.target.cfg.kv_bytes_per_token() + (self.draft.cfg.kv_bytes_per_token() if self.draft else 0)
+            num_blocks = int(kv_bytes // (per_token * block_size))
+            assert num_blocks > 0, "no memory left for the KV cache"
+            # One extra block per cache is the CUDA-graph scratch block (padding writes land there);
+            # the block managers never hand it out.
+            self.bm = BlockManager(num_blocks, block_size)
+            self.target.allocate_kv_cache(num_blocks + 1, block_size)
+            target_scratch = draft_scratch = num_blocks
+            if self.draft:
+                self.dbm = BlockManager(num_blocks, block_size)
+                self.draft.allocate_kv_cache(num_blocks + 1, block_size)
         self.kv_capacity_tokens = num_blocks * block_size
         if self.kv_capacity_tokens < self.max_model_len:
             print(f"[engine] KV pool holds {self.kv_capacity_tokens} tokens < max_model_len "
@@ -201,10 +214,10 @@ class Engine:
             t = time.perf_counter()
             gmax = getattr(self.policy, "gamma_max", self.policy.gamma) if self.draft else 0
             strides = sorted({1} | {g + 1 for g in (1, 2, 3, 4, 6, 8) if g <= gmax} | ({gmax + 1} if gmax else set()))
-            self.target_graphs = GraphRunner(self.target, self.max_model_len, strides, graph_batch_sizes, num_blocks)
+            self.target_graphs = GraphRunner(self.target, self.max_model_len, strides, graph_batch_sizes, target_scratch)
             self.target_graphs.capture()
             if self.draft:
-                self.draft_graphs = GraphRunner(self.draft, self.max_model_len, [1, 2], graph_batch_sizes, num_blocks)
+                self.draft_graphs = GraphRunner(self.draft, self.max_model_len, [1, 2], graph_batch_sizes, draft_scratch)
                 self.draft_graphs.capture()
             print(f"[engine] captured {len(self.target_graphs.graphs)} target + "
                   f"{len(self.draft_graphs.graphs) if self.draft_graphs else 0} draft CUDA graphs "
@@ -216,7 +229,8 @@ class Engine:
             "prompt_tokens_total", "generation_tokens_total", "num_preemptions_total",
             "spec_decode_num_drafts_total", "spec_decode_num_draft_tokens_total",
             "spec_decode_num_accepted_tokens_total", "request_success_total", "steps_total",
-            "control_seconds_total", "step_seconds_total")}
+            "control_seconds_total", "step_seconds_total",
+            "drafter_parks_total", "drafter_unparks_total", "drafter_migrated_blocks_total")}
         self.gauges = {}
         self.step_count = 0
         self.recent_ttft = deque(maxlen=128)  # seconds, newest first tokens
@@ -251,6 +265,10 @@ class Engine:
 
     def add_request(self, seq: Sequence):
         self.inbox.put(seq)
+
+    @property
+    def draft_active(self) -> bool:
+        return self.draft is not None and not (self.elastic and self.elastic.parked)
 
     def release(self, seq):
         self.bm.free(seq.seq_id)
@@ -363,7 +381,7 @@ class Engine:
         if not plan.chunks and not plan.decodes:
             return False
         t0 = time.perf_counter()
-        drafts, dprobs = self._draft_phase(plan) if self.draft else ({}, {})
+        drafts, dprobs = self._draft_phase(plan) if self.draft_active else ({}, {})
 
         items = [WorkItem(s.seq_id, s.tokens[s.num_computed:end], s.num_computed) for s, end in plan.chunks]
         for s in plan.decodes:
@@ -436,6 +454,8 @@ class Engine:
             "num_requests_running": len(self.scheduler.running),
             "num_requests_waiting": len(self.scheduler.waiting),
             "kv_cache_usage_perc": self.bm.usage,
+            "kv_capacity_tokens": self.bm.num_blocks * self.bm.block_size,
+            "drafter_parked": int(bool(self.elastic and self.elastic.parked)),
             "step_time_s": now - t0,
             "batch_tokens": n_tokens,
             **self.policy.state(),
@@ -443,12 +463,19 @@ class Engine:
         # M1: everything the control plane does per step (feedback, snapshot, tick) is timed and
         # compared with total step time; the γ choice inside schedule() is timed there.
         tc = time.perf_counter()
-        self.policy.observe_step(plan.gamma, len(plan.decodes), decode_tokens, now - t0)
+        if self.draft_active:  # steps taken while the drafter is parked would bias the γ estimates
+            self.policy.observe_step(plan.gamma, len(plan.decodes), decode_tokens, now - t0)
         if self.metrics:
             self.metrics.record_step(n_tokens, target_s, self._draft_times,
                                      [s.gamma for s in plan.decodes])
             if self.step_count % self.policy.tick_every == 0:
                 self.policy.tick(self.metrics.snapshot())
+                if self.elastic:  # memory-elastic speculation: the policy decides, the engine executes
+                    want = self.policy.want_drafter(self)
+                    if want and self.elastic.parked:
+                        self.elastic.unpark()
+                    elif not want and not self.elastic.parked:
+                        self.elastic.park()
         end = time.perf_counter()
         self.counters["control_seconds_total"] += end - tc
         self.counters["step_seconds_total"] += end - t0

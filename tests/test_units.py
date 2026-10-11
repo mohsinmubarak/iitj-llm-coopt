@@ -153,3 +153,57 @@ def test_independent_mode_has_no_shared_pressure():
     coupled.engine = FakeEngine
     coupled.tick(snap(p_gpu=0.99, preemption_rate=0.5))
     assert coupled.pressure == 3 and coupled.dl.cap <= 1
+
+
+# ---- memory-elastic speculation ---------------------------------------------------------------
+def test_block_manager_grows_and_shrinks():
+    bm = BlockManager(num_blocks=4, block_size=16)
+    bm.add_blocks([4, 5, 6])
+    assert bm.num_blocks == 7 and bm.num_free == 7
+    bm.ensure(1, 16 * 7)                    # uses every block, including the added ones
+    with pytest.raises(OutOfBlocks):
+        bm.withdraw_free([4, 5, 6])          # still in use
+    bm.free(1)
+    bm.withdraw_free([4, 5, 6])
+    assert bm.num_blocks == 4 and set(bm.free_blocks) == {0, 1, 2, 3}
+
+
+class FakeElastic:
+    def __init__(self):
+        self.parked, self.last_change, self.usage = False, 0.0, 0.3
+
+    def usage_if_unparked(self):
+        return self.usage
+
+
+class FakeElasticEngine:
+    def __init__(self):
+        self.elastic = FakeElastic()
+
+
+def test_drafter_parks_under_sustained_pressure_and_returns_when_calm():
+    kv, eng = KVController(), FakeElasticEngine()
+    kv.update_drafter(snap(queue_depth=5), 2, eng)
+    assert kv.want_drafter                   # one hot tick is not enough
+    kv.update_drafter(snap(queue_depth=5), 2, eng)
+    assert not kv.want_drafter               # two consecutive pressured ticks: park
+    eng.elastic.parked = True
+    for _ in range(3):
+        kv.update_drafter(snap(queue_depth=0), 0, eng)
+    assert not kv.want_drafter               # needs four calm ticks
+    kv.update_drafter(snap(queue_depth=0), 0, eng)
+    assert kv.want_drafter
+
+
+def test_coupled_drafter_decision_uses_the_gamma_verdict():
+    dl = DraftLengthController(gamma_max=8)
+    simulate(dl, 8, {0: 3000, 1: 2000, 2: 2100, 3: 2000, 4: 1900, 6: 1700, 8: 1500}.get)
+    assert dl.best_for(8) == 0
+    kv, eng = KVController(), FakeElasticEngine()
+    for _ in range(2):                        # no memory pressure at all, but speculation does not pay
+        kv.update_drafter(snap(queue_depth=3, running=8), 0, eng, gamma_ctl=dl)
+    assert not kv.want_drafter
+    eng.elastic.parked = True
+    for _ in range(6):                        # calm, yet the γ verdict keeps it parked
+        kv.update_drafter(snap(queue_depth=0, running=8), 0, eng, gamma_ctl=dl)
+    assert not kv.want_drafter

@@ -148,6 +148,23 @@ class Llama:
         self.v_cache = [torch.empty_like(k) for k in self.k_cache]
         self.block_size = block_size
 
+    def use_kv_views(self, k_list, v_list, block_size):
+        """Use externally owned per-layer caches (e.g. strided views of one block-major buffer)."""
+        self.k_cache, self.v_cache, self.block_size = list(k_list), list(v_list), block_size
+
+    def weight_slots(self):
+        """(container, key) of every weight tensor; a tied lm_head is the embedding, listed once."""
+        slots = [(self.__dict__, "embed"), (self.__dict__, "norm")]
+        if not self.cfg.tie_word_embeddings:
+            slots.append((self.__dict__, "lm_head"))
+        for layer in self.layers:
+            slots += [(layer, k) for k in layer]
+        return slots
+
+    def retie(self):
+        if self.cfg.tie_word_embeddings:
+            self.lm_head = self.embed
+
     def kv_blocks_for_bytes(self, nbytes, block_size=16):
         return int(nbytes // (self.cfg.kv_bytes_per_token(self.dtype) * block_size))
 
@@ -159,6 +176,8 @@ class Llama:
         H, Hkv, D = self.n_heads, self.n_kv, self.head_dim
         cos = self.cos[b.positions].unsqueeze(1)
         sin = self.sin[b.positions].unsqueeze(1)
+        # (block, offset) indexing also works for strided per-layer views of a block-major buffer
+        blk, off = b.slot_mapping // self.block_size, b.slot_mapping % self.block_size
         x = F.embedding(b.input_ids, self.embed)
         for i, L in enumerate(self.layers):
             h = rms_norm(x, L["ln1"], self.cfg.rms_norm_eps)
@@ -170,8 +189,8 @@ class Llama:
             q = q * cos + rotate_half(q) * sin
             k = k * cos + rotate_half(k) * sin
             kc, vc = self.k_cache[i], self.v_cache[i]
-            kc.view(-1, Hkv, D)[b.slot_mapping] = k
-            vc.view(-1, Hkv, D)[b.slot_mapping] = v
+            kc[blk, off] = k
+            vc[blk, off] = v
             attn = flash_attn_varlen_func(
                 q=q, k=kc, v=vc, cu_seqlens_q=b.cu_seqlens_q, max_seqlen_q=b.max_seqlen_q,
                 seqused_k=b.seq_lens, max_seqlen_k=b.max_seqlen_k, softmax_scale=self.scale,

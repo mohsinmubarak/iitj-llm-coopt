@@ -136,11 +136,14 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--dtype", default="bfloat16", help="accepted for CLI parity; bf16 only")
     ap.add_argument("--no-cuda-graphs", action="store_true", help="eager decode (debugging)")
+    ap.add_argument("--elastic", action="store_true",
+                    help="memory-elastic speculation: drafter in the KV buffer tail, parkable under pressure")
     args = ap.parse_args()
 
     engine = Engine(args.model, args.draft, policy=make_policy(args), kv_gb=args.kv_gb,
                     gpu_memory_utilization=args.gpu_memory_utilization,
-                    max_model_len=args.max_model_len, seed=args.seed, cuda_graphs=not args.no_cuda_graphs)
+                    max_model_len=args.max_model_len, seed=args.seed, cuda_graphs=not args.no_cuda_graphs,
+                    elastic=args.elastic)
     if args.kv_cpu_gb > 0:
         KVTierManager(engine, cpu_gb=args.kv_cpu_gb, bits=args.kv_bits)
     MetricsEngine(engine, trace_path=args.trace)

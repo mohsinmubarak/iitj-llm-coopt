@@ -1,0 +1,16 @@
+CMD: python -m engine.server --model unsloth/Meta-Llama-3.1-8B-Instruct --draft unsloth/Llama-3.2-1B-Instruct --port 8000 --seed 0 --gamma 4 --trace /workspace/IITJ/results/rtx4090/C2/trace.jsonl --policy coopt --controllers kv --kv-cpu-gb 32 --gpu-memory-utilization 0.92 --max-model-len 16384
+
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 394.26it/s]
+Fetching 6 files:   0%|          | 0/6 [00:00<?, ?it/s]Fetching 6 files: 100%|██████████| 6/6 [00:00<00:00, 289.01it/s]
+[engine] memory: weights 17.36 GiB, prefill activations 0.32 GiB, graphs 0.84 GiB -> KV 2.87 GiB
+[engine] captured 56 target + 16 draft CUDA graphs (target strides [1, 2, 3, 4, 5, 7, 9]) in 5s
+[engine] hardware HardwareProfile(gpu_name='NVIDIA GeForce RTX 4090', vram_gb=23.5164794921875, hbm_bw_gbs=918.2124464619789, pcie_h2d_gbs=13.323616723129907, pcie_d2h_gbs=13.127587934671242, cpu_cores=32, ram_gb=124.9431266784668)
+[engine] KV capacity 18800 tokens (1175 blocks), policy=coopt
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+[W1011 11:07:58.389602900 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 96468992 bytes (free: 27000832, total: 25250627584).
+[W1011 11:08:00.828217165 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 130023424 bytes (free: 94109696, total: 25250627584).
+[W1011 11:08:01.714182441 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 157286400 bytes (free: 62652416, total: 25250627584).
+[W1011 11:08:03.269836785 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 171966464 bytes (free: 127664128, total: 25250627584).
+[W1011 11:08:08.063279362 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 20971520 bytes (free: 18612224, total: 25250627584).
+[W1011 11:08:17.028368036 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 138412032 bytes (free: 39583744, total: 25250627584).
+[W1011 11:08:32.230409393 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 245366784 bytes (free: 108789760, total: 25250627584).

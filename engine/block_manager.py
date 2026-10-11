@@ -63,6 +63,30 @@ class BlockManager:
         self.free_blocks.extend(table)
         return len(table)
 
+    # ---- elastic capacity (memory-elastic speculation) ----------------------------------------
+    def add_blocks(self, ids) -> None:
+        """Grow the pool with blocks whose memory was just handed over (the parked drafter's)."""
+        ids = list(ids)
+        self.free_blocks.extend(ids)
+        self.num_blocks += len(ids)
+
+    def withdraw_free(self, ids) -> None:
+        """Shrink the pool by removing blocks that are currently free (caller migrated the rest)."""
+        ids = set(ids)
+        remaining = deque(b for b in self.free_blocks if b not in ids)
+        if len(self.free_blocks) - len(remaining) != len(ids):
+            raise OutOfBlocks("withdraw_free: some blocks are still in use")
+        self.free_blocks = remaining
+        self.num_blocks -= len(ids)
+
+    def take_free_excluding(self, excluded) -> int:
+        """Pop one free block that is not in `excluded` (migration target)."""
+        for i, b in enumerate(self.free_blocks):
+            if b not in excluded:
+                del self.free_blocks[i]
+                return b
+        raise OutOfBlocks("no free block outside the excluded range")
+
     # ---- tensors for the forward pass -----------------------------------------------------
     def slot_mapping(self, seq_id: int, start: int, end: int) -> torch.Tensor:
         """Cache slots for positions [start, end) of seq_id (CPU int64 tensor)."""

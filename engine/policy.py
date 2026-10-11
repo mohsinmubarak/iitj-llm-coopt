@@ -35,6 +35,10 @@ class StaticPolicy:
     def swap_on_preempt(self, seq, engine) -> bool:
         return self.kv_swap
 
+    def want_drafter(self, engine) -> bool:
+        """Memory-elastic speculation: keep the drafter loaded (True) or park it (False)."""
+        return True
+
     def preempt_victim(self, running: list):
         """Newest running sequence (FCFS fairness, as in vLLM)."""
         return running[-1]

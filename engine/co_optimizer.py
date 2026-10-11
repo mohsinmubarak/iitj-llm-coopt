@@ -20,6 +20,7 @@ each reads only its own signals and refreshes on its own clock (γ every tick, K
 scheduler every 4), as three independently built systems would.
 """
 import random
+import time
 from dataclasses import dataclass, field
 
 
@@ -99,6 +100,12 @@ class DraftLengthController:
         rate, cnt = self.stats.get(key, (r, 0))
         self.stats[key] = (self.ema * rate + (1 - self.ema) * r if cnt else r, cnt + 1)
 
+    def best_for(self, n_decodes: int):
+        """Learned best γ at this decode-batch size, or None if the band is still unexplored."""
+        b = batch_bucket(n_decodes)
+        seen = [g for g in GAMMA_ARMS if self.stats.get((b, g), (0.0, 0))[1] >= self.min_trials]
+        return max(seen, key=lambda g: self.stats[(b, g)][0]) if seen else None
+
     def best_by_band(self) -> dict:
         """Current greedy choice per band (for traces and the thesis' γ-vs-load figure)."""
         out = {}
@@ -113,10 +120,40 @@ class DraftLengthController:
 class KVController:
     cpu_pressure_int4: float = 0.75   # switch new evictions to INT4 above this CPU-tier occupancy
     swap_fixed_s: float = 0.003       # per-swap launch/sync overhead (2 x layers of copy + quantize)
+    # memory-elastic speculation (engine/elastic.py): park the drafter to grow the KV pool
+    park_ticks: int = 2               # consecutive pressured ticks before parking
+    unpark_ticks: int = 4             # consecutive calm ticks before restoring
+    min_hold_s: float = 5.0           # minimum time between park/unpark decisions (no thrashing)
+    unpark_max_usage: float = 0.6     # restore only if current sequences fill < 60 % of the base pool
+    want_drafter: bool = True
+    _hot: int = 0
+    _calm: int = 0
 
     def update(self, snap, pressure, engine):
         if engine.kv_tiers:
             engine.kv_tiers.bits = 4 if snap.p_cpu > self.cpu_pressure_int4 else 8
+
+    def update_drafter(self, snap, pressure, engine, gamma_ctl=None):
+        """Coupled: shared pressure plus the γ controller's own verdict (speculation does not pay
+        at this batch size). Independent (C6): only this controller's signals (KV use + queue)."""
+        el = getattr(engine, "elastic", None)
+        if el is None:
+            return
+        held = time.perf_counter() - el.last_change >= self.min_hold_s
+        if not el.parked:
+            hot = pressure >= 2 if pressure is not None else (snap.p_gpu >= 0.90 and snap.queue_depth > 0)
+            if gamma_ctl is not None and snap.queue_depth > 0 and gamma_ctl.best_for(snap.running) == 0:
+                hot = True
+            self._hot = self._hot + 1 if hot else 0
+            if self._hot >= self.park_ticks and held:
+                self.want_drafter, self._hot = False, 0
+        else:
+            calm = snap.queue_depth == 0 and el.usage_if_unparked() <= self.unpark_max_usage
+            if gamma_ctl is not None and gamma_ctl.best_for(snap.running) == 0:
+                calm = False  # the γ controller has learned that drafting does not pay at this load
+            self._calm = self._calm + 1 if calm else 0
+            if self._calm >= self.unpark_ticks and held:
+                self.want_drafter, self._calm = True, 0
 
     def swap_on_preempt(self, seq, engine, snap, pressure) -> bool:
         tiers, prof = engine.kv_tiers, engine.metrics.profile
@@ -223,6 +260,7 @@ class CoOptimizer(StaticPolicy):
                 self.dl.update(snap, p)
             if self.enable_kv:
                 self.kv.update(snap, p, self.engine)
+                self.kv.update_drafter(snap, p, self.engine, self.dl if self.enable_gamma else None)
             if self.enable_sched:
                 self.sc.update(snap, p, self)
             return
@@ -234,6 +272,7 @@ class CoOptimizer(StaticPolicy):
         if self.enable_kv and self.ticks % 2 == 0:
             self.stale["kv"] = snap
             self.kv.update(snap, None, self.engine)
+            self.kv.update_drafter(snap, None, self.engine)  # own signals only, no γ verdict
         if self.enable_sched and self.ticks % 4 == 0:
             self.stale["sched"] = snap
             self.sc.update(snap, None, self)
@@ -245,6 +284,9 @@ class CoOptimizer(StaticPolicy):
     def observe_step(self, gamma, n_decodes, tokens, step_s):
         if self.enable_gamma:
             self.dl.observe(gamma, n_decodes, tokens, step_s)
+
+    def want_drafter(self, engine) -> bool:
+        return self.kv.want_drafter if self.enable_kv else True
 
     def swap_on_preempt(self, seq, engine) -> bool:
         if not self.enable_kv:
