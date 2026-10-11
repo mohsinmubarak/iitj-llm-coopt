@@ -1,0 +1,8 @@
+CMD: python -m engine.server --model unsloth/Meta-Llama-3.1-8B-Instruct --port 8000 --seed 0 --gamma 0 --trace /workspace/IITJ/results/rtx4090/C0_nospec/trace.jsonl --policy static --gpu-memory-utilization 0.92 --max-model-len 16384
+
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 302.92it/s]
+[engine] memory: weights 15.03 GiB, prefill activations 0.32 GiB, graphs 0.41 GiB -> KV 5.63 GiB
+[engine] captured 8 target + 0 draft CUDA graphs (target strides [1]) in 1s
+[engine] hardware HardwareProfile(gpu_name='NVIDIA GeForce RTX 4090', vram_gb=23.5164794921875, hbm_bw_gbs=917.5208796821796, pcie_h2d_gbs=13.360137942547178, pcie_d2h_gbs=13.190528561711353, cpu_cores=32, ram_gb=124.9431266784668)
+[engine] KV capacity 46144 tokens (2884 blocks), policy=static
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.

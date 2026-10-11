@@ -175,4 +175,5 @@ RuntimeError: server died (exit 1); see /workspace/IITJ/results/rtx4090/C4/serve
 === 2026-10-10T21:52:12Z START C5_gs
 [C5_gs] server healthy after 57s
 === 2026-10-10T21:55:42Z STOPPED by user for the day. Resume list: C5_gs C5_ks B1D_g6 B1D_g8 B2S_kv4g B2S_kv2p5g B2S_kv3g A2 C0_nospec C1 C2 C4 C6 C5_gk
-=== 2026-10-10T21:55:42Z QUEUE DONE
+=== 2026-10-11T10:23:12Z START C0_nospec
+[C0_nospec] server healthy after 30s

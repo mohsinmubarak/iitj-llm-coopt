@@ -108,6 +108,35 @@ def bursty_arrivals(n, rng, base_rate=1.5, burst_rate=6.0, period_s=60.0, burst_
     return times
 
 
+# W4 (experiment L3): one run whose traffic changes regime. Each phase favours a different static
+# configuration, so any fixed setting loses somewhere. Rates are for the A100; the profile's
+# arrival_time_scale stretches them for smaller GPUs (2x on the 4090).
+PHASES = [  # name, kind, seconds, requests/s
+    ("P1_chat", "short", 60, 8.0),
+    ("P2_long", "long", 60, 0.5),
+    ("P3_burst", "short", 20, 30.0),
+    ("P4_recovery", "short", 60, 2.0),
+]
+
+
+def build_phase_shift(tok, rng, pyrng):
+    t0, plan = 0.0, []
+    for name, kind, secs, rate in PHASES:
+        t = t0
+        while True:
+            t += rng.exponential(1.0 / rate)
+            if t >= t0 + secs:
+                break
+            plan.append((name, kind, round(t, 4)))
+        t0 += secs
+    n_short = sum(k == "short" for _, k, _ in plan)
+    n_long = len(plan) - n_short
+    shorts = iter(build_short(tok, n_short, random.Random(SEED + 41)))
+    longs = iter(build_long(tok, n_long, random.Random(SEED + 42), 4096, 12288))
+    return [{**(next(shorts) if kind == "short" else next(longs)), "phase": name, "arrival_s": t}
+            for name, kind, t in plan]
+
+
 def build_fixed(tok, length, n, output_len=128):
     """Fixed-length prompts for the context-length sweep (A3): LongBench text cut to exactly `length` ids."""
     items = load_longbench()
@@ -137,11 +166,11 @@ def write(name, reqs):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--only", choices=["W1", "W2", "W3", "fixed"], action="append")
+    ap.add_argument("--only", choices=["W1", "W2", "W3", "W4", "fixed"], action="append")
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--n", type=int, help="override request count (smoke tests)")
     args = ap.parse_args()
-    todo = ["W1", "W2", "W3", "fixed"] if args.all or not args.only else args.only
+    todo = ["W1", "W2", "W3", "W4", "fixed"] if args.all or not args.only else args.only
 
     tok = AutoTokenizer.from_pretrained(TARGET)
     rng = np.random.default_rng(SEED)
@@ -160,6 +189,8 @@ def main():
         for r, t in zip(reqs, bursty_arrivals(n, rng)):
             r["arrival_s"] = t
         write("W3", reqs)
+    if "W4" in todo:
+        write("W4", build_phase_shift(tok, np.random.default_rng(SEED + 40), pyrng))
     if "fixed" in todo:
         for length in FIXED_LENGTHS:
             write(f"fixed_{length}", build_fixed(tok, length, args.n or 32))

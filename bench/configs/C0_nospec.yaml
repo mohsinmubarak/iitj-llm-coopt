@@ -15,3 +15,5 @@ runs:
     max_concurrency: 16
   - workload: W3
     arrivals: file
+  - workload: W4          # L3 phase shift: chat -> long -> burst -> recovery
+    arrivals: file

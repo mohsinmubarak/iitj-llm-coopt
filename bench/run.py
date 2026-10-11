@@ -57,6 +57,7 @@ class Result:
     output_tokens: int = 0
     chunk_gaps: list = field(default_factory=list)  # seconds between streamed chunks
     error: str = ""
+    phase: str = ""                                 # W4 phase label, "" otherwise
 
 
 async def send(session, url, model, req, res, temperature):
@@ -206,6 +207,18 @@ def summarize(results, duration, slo):
         sub = [r.ttft for r in ok if r.category == cat]
         if sub:
             s[f"ttft_p99_{cat}"] = pct(sub, 99)
+    # Phase-shift workloads (W4): per-phase SLO attainment and latency. Failed requests count
+    # as SLO misses, so a phase cannot look good by dropping its hardest requests.
+    for phase in sorted({r.phase for r in results if r.phase}):
+        sub = [r for r in results if r.phase == phase]
+        okp = [r for r in sub if not r.error]
+        tp = [(r.e2e - r.ttft) / (r.output_tokens - 1) for r in okp if r.output_tokens > 1]
+        s[f"{phase}_requests"] = len(sub)
+        s[f"{phase}_slo_attainment"] = sum(meets_slo(r) for r in okp) / len(sub)
+        s[f"{phase}_ttft_p50"] = pct([r.ttft for r in okp], 50)
+        s[f"{phase}_ttft_p99"] = pct([r.ttft for r in okp], 99)
+        s[f"{phase}_tpot_p50"] = pct(tp, 50)
+        s[f"{phase}_tpot_p99"] = pct(tp, 99)
     return s
 
 
@@ -213,7 +226,7 @@ async def benchmark(url, model, reqs, *, request_rate=math.inf, arrivals="rate",
                     max_concurrency=None, seed=0, temperature=0.0, slo=None):
     slo = slo or {"ttft_short": 1.0, "ttft_long": 10.0, "tpot": 0.10}
     offsets = schedule(reqs, request_rate, arrivals, time_scale, seed)
-    results = [Result(r["id"], r["category"], r["prompt_len"], r["max_tokens"], o)
+    results = [Result(r["id"], r["category"], r["prompt_len"], r["max_tokens"], o, phase=r.get("phase", ""))
                for r, o in zip(reqs, offsets)]
     sem = asyncio.Semaphore(max_concurrency) if max_concurrency else None
     sampler = MetricsSampler(url)
