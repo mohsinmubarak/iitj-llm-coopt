@@ -19,4 +19,4 @@ fi
 pkill -TERM -f "^python -m bench.podlog" 2>/dev/null
 echo "=== $(date -u +%FT%TZ) reordered: A2_nopc first (prefix-caching test)" >> $LOG
 sleep 10
-bash bench/queue.sh rtx4090 A2_nopc B2 C4 C6 C2_el C1 C2 C3 C5_gk C5_gs C5_ks B1D_g6 B1D_g8
+bash bench/queue.sh rtx4090 A2_nopc B5 N1 B2 C4 C6 C2_el C1 C2 C3 C5_gk C5_gs C5_ks B1D_g6 B1D_g8

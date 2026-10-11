@@ -14,3 +14,6 @@ CMD: python -m engine.server --model unsloth/Meta-Llama-3.1-8B-Instruct --draft 
         
   @app.on_event("startup")
 [transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+[W1011 14:53:28.519339142 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 109051904 bytes (free: 85721088, total: 25250627584).
+[W1011 14:53:31.832286890 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 146800640 bytes (free: 79429632, total: 25250627584).
+[W1011 14:53:58.279602765 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 226492416 bytes (free: 8126464, total: 25250627584).

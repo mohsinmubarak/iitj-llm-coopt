@@ -1,0 +1,20 @@
+# N1 ("Nightjar-like"): our engine with only the gamma controller and memory-elastic drafter
+# parking (drafter weights + KV released under pressure); no CPU KV tier, no scheduler controller.
+# Approximates the closest prior system (Nightjar, arXiv 2512.22420: adaptive speculation +
+# drafter offload). C4_el vs N1 = what coordinating KV tiering and admission adds on top.
+name: N1
+description: "Nightjar-like: gamma controller + elastic drafter only"
+server:
+  model: unsloth/Meta-Llama-3.1-8B-Instruct
+  cmd: [python, -m, engine.server, --model, unsloth/Meta-Llama-3.1-8B-Instruct, --draft, unsloth/Llama-3.2-1B-Instruct]
+  args: [--seed, 0, --gamma, 4, --trace, "{out_dir}/trace.jsonl", --policy, coopt, --controllers, 'gamma,kv', --elastic]
+runs:
+  - workload: W1
+    request_rates: [1, 4, 16, inf]
+  - workload: W2
+    request_rates: [inf]
+    max_concurrency: 16
+  - workload: W3
+    arrivals: file
+  - workload: W4
+    arrivals: file

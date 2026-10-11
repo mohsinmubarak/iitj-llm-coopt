@@ -319,3 +319,20 @@ RuntimeError: Engine core initialization failed. See root cause above. Failed co
 === 2026-10-11T14:48:00Z END C0_nospec (exit 0)
 === 2026-10-11T14:48:00Z START C0
 [C0] server healthy after 45s
+[C0] W1 rate=1 rep=0: 200/200 ok | out 247.0 tok/s | TTFT p99 0.14s | TPOT p99 14.1ms | goodput 0.95 req/s
+[C0] W1 rate=4 rep=0: 200/200 ok | out 932.8 tok/s | TTFT p99 0.18s | TPOT p99 18.9ms | goodput 3.58 req/s
+[C0] W1 rate=16 rep=0: 200/200 ok | out 1889.5 tok/s | TTFT p99 8.61s | TPOT p99 44.4ms | goodput 4.61 req/s
+[C0] W1 rate=inf rep=0: 200/200 ok | out 1946.4 tok/s | TTFT p99 19.66s | TPOT p99 129.5ms | goodput 1.34 req/s
+[C0] W2 rate=inf rep=0: 43/43 ok | out 49.7 tok/s | TTFT p99 82.61s | TPOT p99 19.5ms | goodput 0.01 req/s
+[C0] W3 rate=inf rep=0: 288/288 ok | out 208.0 tok/s | TTFT p99 111.02s | TPOT p99 54.4ms | goodput 0.18 req/s
+[C0] W4 rate=inf rep=0: 1261/1261 ok | out 792.3 tok/s | TTFT p99 32.80s | TPOT p99 48.8ms | goodput 1.55 req/s
+[C0] index rebuilt: 64 runs
+=== 2026-10-11T15:11:08Z END C0 (exit 0)
+=== 2026-10-11T15:11:08Z START C4_el
+[C4_el] server healthy after 48s
+[C4_el] W1 rate=1 rep=0: 200/200 ok | out 246.5 tok/s | TTFT p99 0.16s | TPOT p99 13.6ms | goodput 0.95 req/s
+[C4_el] W1 rate=4 rep=0: 200/200 ok | out 930.4 tok/s | TTFT p99 0.18s | TPOT p99 17.7ms | goodput 3.57 req/s
+[C4_el] W1 rate=16 rep=0: 200/200 ok | out 2101.2 tok/s | TTFT p99 0.28s | TPOT p99 45.8ms | goodput 8.07 req/s
+[C4_el] W1 rate=inf rep=0: 200/200 ok | out 2422.1 tok/s | TTFT p99 5.95s | TPOT p99 70.3ms | goodput 4.46 req/s
+[C4_el] W2 rate=inf rep=0: 43/43 ok | out 67.0 tok/s | TTFT p99 65.27s | TPOT p99 36.5ms | goodput 0.02 req/s
+[C4_el] W3 rate=inf rep=0: 288/288 ok | out 241.9 tok/s | TTFT p99 60.85s | TPOT p99 95.1ms | goodput 0.28 req/s
