@@ -207,3 +207,58 @@ def test_coupled_drafter_decision_uses_the_gamma_verdict():
     for _ in range(6):                        # calm, yet the γ verdict keeps it parked
         kv.update_drafter(snap(queue_depth=0, running=8), 0, eng, gamma_ctl=dl)
     assert not kv.want_drafter
+
+
+# ---- prefix caching -------------------------------------------------------------------------
+def test_prefix_cache_reuses_full_blocks_and_survives_release():
+    bm = BlockManager(num_blocks=16, block_size=4, prefix_caching=True)
+    a = list(range(100, 111))                       # 11 tokens: 2 full blocks + 3
+    bm.ensure(1, len(a))
+    bm.register(1, a, num_computed=len(a))
+    assert len(bm.hash_of) == 2                     # only full blocks are hashed
+    b = a[:8] + [7, 7, 7, 7, 7]                     # same first 8 tokens, then different
+    assert bm.match_prefix(2, b) == 8               # both cached blocks claimed
+    assert bm.tables[2] == bm.tables[1][:2] and bm.ref[bm.tables[1][0]] == 2
+    bm.free(1)                                      # shared blocks stay with seq 2
+    assert bm.ref[bm.tables[2][0]] == 1
+    bm.free(2)                                      # now cached-evictable, still counted free
+    assert bm.num_free == 16 and len(bm.evictable) == 2
+    assert bm.match_prefix(3, a) == 8               # a "preempted" request finds its blocks again
+    assert len(bm.evictable) == 0
+
+
+def test_prefix_cache_leaves_one_token_and_evicts_lru():
+    bm = BlockManager(num_blocks=3, block_size=4, prefix_caching=True)
+    a = list(range(8))                              # exactly 2 full blocks
+    bm.ensure(1, 8)
+    bm.register(1, a, 8)
+    bm.free(1)
+    assert bm.match_prefix(2, a) == 4               # last token must still be computed
+    bm.free(2)
+    bm.ensure(3, 12)                                # needs all 3 blocks: cached ones are evicted
+    assert len(bm.hash_of) == 0 and bm.match_prefix(4, a) == 0
+
+
+def test_migration_keeps_shared_blocks_shared():
+    bm = BlockManager(num_blocks=4, block_size=4, prefix_caching=True)
+    bm.add_blocks([4, 5])                           # "parked drafter" tail
+    for b in list(bm.free_blocks):                  # force the next allocations into the tail
+        if b < 4:
+            bm.free_blocks.remove(b)
+    toks = list(range(9))
+    bm.ensure(1, 8)
+    bm.register(1, toks, 8)
+    assert bm.match_prefix(2, toks) == 8            # seq 2 shares both tail blocks
+    bm.free_blocks.extend([0, 1, 2, 3])
+    copies = []
+    assert bm.migrate_out_of({4, 5}, lambda s, d: copies.append((s, d))) == 2
+    assert len(copies) == 2                         # each shared block copied once
+    assert bm.tables[1] == bm.tables[2] and not set(bm.tables[1]) & {4, 5}
+    bm.withdraw_free({4, 5})
+    assert bm.num_blocks == 4 and bm.match_prefix(3, toks) == 8   # hashes follow the move
+
+
+def test_burst_parks_drafter_at_once():
+    kv, eng = KVController(), FakeElasticEngine()
+    kv.update_drafter(snap(queue_depth=40, p_gpu=0.5), 0, eng)
+    assert not kv.want_drafter                      # a long queue parks without waiting two ticks

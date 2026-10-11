@@ -2,11 +2,12 @@
 # (num_speculative_tokens_per_batch_size), tuned from our fixed-gamma sweep B1-S: gamma=4 is best
 # at low load, gamma=2 at ~16 req/s, no speculation at saturation. The strongest "vLLM already
 # adapts gamma" baseline. The drafter's weights and KV stay resident even when gamma = 0.
+# Graph capture capped at 1024 tokens like B1D_g6/g8: otherwise 2.46 GiB KV < 2.5 GiB for one 16K sequence.
 name: B5
 description: "vLLM dynamic speculation: batch-size gamma schedule (4 / 2 / 0)"
 server:
   model: unsloth/Meta-Llama-3.1-8B-Instruct
-  args: [--dtype, bfloat16, --seed, 0, --speculative-config, '{"method": "draft_model", "model": "unsloth/Llama-3.2-1B-Instruct", "num_speculative_tokens": 4, "num_speculative_tokens_per_batch_size": [[1, 16, 4], [17, 96, 2], [97, 256, 0]]}']
+  args: [--dtype, bfloat16, --seed, 0, --speculative-config, '{"method": "draft_model", "model": "unsloth/Llama-3.2-1B-Instruct", "num_speculative_tokens": 4, "num_speculative_tokens_per_batch_size": [[1, 16, 4], [17, 96, 2], [97, 256, 0]]}', --max-cudagraph-capture-size, 1024]
 runs:
   - workload: W1
     request_rates: [1, 4, 16, inf]

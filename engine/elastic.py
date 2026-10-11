@@ -127,16 +127,10 @@ class ElasticKV:
         if not self.parked:
             return True
         e, bm = self.e, self.e.bm
-        used_tail = [(sid, i, b) for sid, table in bm.tables.items() for i, b in enumerate(table)
-                     if b in self.tail_ids]
-        free_outside = sum(1 for b in bm.free_blocks if b not in self.tail_ids)
-        if free_outside < len(used_tail):
+        # one contiguous copy moves a block in every layer; shared (prefix-cached) blocks move once
+        moved = bm.migrate_out_of(self.tail_ids, lambda src, dst: self.buf[dst].copy_(self.buf[src]))
+        if moved < 0:
             return False  # not enough room outside the tail yet: stay parked
-        for sid, i, src in used_tail:
-            dst = bm.take_free_excluding(self.tail_ids)
-            self.buf[dst].copy_(self.buf[src])  # one contiguous copy moves the block in every layer
-            bm.tables[sid][i] = dst
-            bm.free_blocks.append(src)
         bm.withdraw_free(self.tail_ids)
         for view, host in zip(self.weight_views, self.cpu):
             view.copy_(host, non_blocking=True)
@@ -144,7 +138,7 @@ class ElasticKV:
         self.parked = False
         self.last_change = time.perf_counter()
         e.counters["drafter_unparks_total"] += 1
-        e.counters["drafter_migrated_blocks_total"] += len(used_tail)
+        e.counters["drafter_migrated_blocks_total"] += moved
         return True
 
     def usage_if_unparked(self) -> float:

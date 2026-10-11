@@ -193,6 +193,7 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--dtype", default="bfloat16", help="accepted for CLI parity; bf16 only")
     ap.add_argument("--no-cuda-graphs", action="store_true", help="eager decode (debugging)")
+    ap.add_argument("--no-prefix-caching", action="store_true", help="disable prefix caching (on by default, as in vLLM)")
     ap.add_argument("--elastic", action="store_true",
                     help="memory-elastic speculation: drafter in the KV buffer tail, parkable under pressure")
     args = ap.parse_args()

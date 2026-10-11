@@ -32,7 +32,8 @@ def engine_worker(args: dict, req_q, out_q):
         a.__dict__.update(args)
         engine = Engine(a.model, a.draft, policy=make_policy(a), kv_gb=a.kv_gb,
                         gpu_memory_utilization=a.gpu_memory_utilization, max_model_len=a.max_model_len,
-                        seed=a.seed, cuda_graphs=not a.no_cuda_graphs, elastic=a.elastic)
+                        seed=a.seed, cuda_graphs=not a.no_cuda_graphs, elastic=a.elastic,
+                        prefix_caching=not a.no_prefix_caching)
         if a.kv_cpu_gb > 0:
             KVTierManager(engine, cpu_gb=a.kv_cpu_gb, bits=a.kv_bits)
         MetricsEngine(engine, trace_path=a.trace)

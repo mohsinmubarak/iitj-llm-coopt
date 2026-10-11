@@ -336,3 +336,86 @@ RuntimeError: Engine core initialization failed. See root cause above. Failed co
 [C4_el] W1 rate=inf rep=0: 200/200 ok | out 2422.1 tok/s | TTFT p99 5.95s | TPOT p99 70.3ms | goodput 4.46 req/s
 [C4_el] W2 rate=inf rep=0: 43/43 ok | out 67.0 tok/s | TTFT p99 65.27s | TPOT p99 36.5ms | goodput 0.02 req/s
 [C4_el] W3 rate=inf rep=0: 288/288 ok | out 241.9 tok/s | TTFT p99 60.85s | TPOT p99 95.1ms | goodput 0.28 req/s
+[C4_el] W4 rate=inf rep=0: 1261/1261 ok | out 792.3 tok/s | TTFT p99 11.98s | TPOT p99 45.4ms | goodput 1.92 req/s
+[C4_el] index rebuilt: 71 runs
+=== 2026-10-11T15:32:32Z END C4_el (exit 0)
+=== 2026-10-11T15:32:32Z START C6_el
+[C6_el] server healthy after 51s
+[C6_el] W1 rate=1 rep=0: 200/200 ok | out 246.7 tok/s | TTFT p99 0.17s | TPOT p99 17.0ms | goodput 0.95 req/s
+[C6_el] W1 rate=4 rep=0: 200/200 ok | out 931.2 tok/s | TTFT p99 0.20s | TPOT p99 23.1ms | goodput 3.57 req/s
+[C6_el] W1 rate=16 rep=0: 200/200 ok | out 2003.9 tok/s | TTFT p99 2.84s | TPOT p99 53.8ms | goodput 5.08 req/s
+[C6_el] W1 rate=inf rep=0: 200/200 ok | out 2251.7 tok/s | TTFT p99 12.83s | TPOT p99 72.7ms | goodput 4.37 req/s
+[C6_el] W2 rate=inf rep=0: 43/43 ok | out 66.7 tok/s | TTFT p99 65.66s | TPOT p99 36.3ms | goodput 0.02 req/s
+[C6_el] W3 rate=inf rep=0: 288/288 ok | out 241.5 tok/s | TTFT p99 64.42s | TPOT p99 69.1ms | goodput 0.30 req/s
+[C6_el] W4 rate=inf rep=0: 1261/1261 ok | out 792.3 tok/s | TTFT p99 15.37s | TPOT p99 53.5ms | goodput 1.70 req/s
+[C6_el] index rebuilt: 78 runs
+=== 2026-10-11T15:54:01Z END C6_el (exit 0)
+=== 2026-10-11T15:54:01Z START B2
+=== 2026-10-11T15:56:17Z reordered: A2_nopc first (prefix-caching test)
+=== 2026-10-11T15:56:27Z START A2_nopc
+[A2_nopc] server healthy after 60s
+[A2_nopc] W1 rate=1 rep=0: 200/200 ok | out 241.2 tok/s | TTFT p99 0.12s | TPOT p99 18.4ms | goodput 0.93 req/s
+[A2_nopc] W1 rate=4 rep=0: 200/200 ok | out 855.4 tok/s | TTFT p99 0.15s | TPOT p99 22.9ms | goodput 3.28 req/s
+[A2_nopc] W1 rate=16 rep=0: 200/200 ok | out 2149.0 tok/s | TTFT p99 0.28s | TPOT p99 43.0ms | goodput 8.25 req/s
+[A2_nopc] W1 rate=inf rep=0: 200/200 ok | out 3195.9 tok/s | TTFT p99 3.28s | TPOT p99 101.4ms | goodput 2.45 req/s
+[A2_nopc] W2 rate=inf rep=0: 43/43 ok | out 75.0 tok/s | TTFT p99 51.88s | TPOT p99 37.5ms | goodput 0.02 req/s
+[A2_nopc] W3 rate=inf rep=0: 288/288 ok | out 263.5 tok/s | TTFT p99 34.93s | TPOT p99 76.7ms | goodput 0.43 req/s
+[A2_nopc] W4 rate=inf rep=0: 1261/1261 ok | out 787.4 tok/s | TTFT p99 7.13s | TPOT p99 56.2ms | goodput 2.41 req/s
+[A2_nopc] index rebuilt: 85 runs
+=== 2026-10-11T16:17:22Z END A2_nopc (exit 0)
+=== 2026-10-11T16:17:22Z START B5
+[B5] index rebuilt: 85 runs
+Traceback (most recent call last):
+    raise RuntimeError(f"server exited during startup, see {log_path}:\n"
+RuntimeError: server exited during startup, see /workspace/IITJ/results/rtx4090/B5/server.log:
+    raise RuntimeError(
+RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}
+=== 2026-10-11T16:19:09Z END B5 (exit 1)
+=== 2026-10-11T16:19:09Z START N1
+[N1] server healthy after 45s
+[N1] W1 rate=1 rep=0: 200/200 ok | out 246.5 tok/s | TTFT p99 0.16s | TPOT p99 15.9ms | goodput 0.95 req/s
+[N1] W1 rate=4 rep=0: 200/200 ok | out 929.7 tok/s | TTFT p99 0.19s | TPOT p99 19.8ms | goodput 3.57 req/s
+[N1] W1 rate=16 rep=0: 200/200 ok | out 2100.3 tok/s | TTFT p99 0.25s | TPOT p99 46.0ms | goodput 8.06 req/s
+[N1] W1 rate=inf rep=0: 200/200 ok | out 2634.2 tok/s | TTFT p99 4.34s | TPOT p99 77.6ms | goodput 1.82 req/s
+[N1] W2 rate=inf rep=0: 43/43 ok | out 67.3 tok/s | TTFT p99 55.12s | TPOT p99 37.6ms | goodput 0.02 req/s
+[N1] W3 rate=inf rep=0: 288/288 ok | out 242.2 tok/s | TTFT p99 62.27s | TPOT p99 98.0ms | goodput 0.26 req/s
+[N1] W4 rate=inf rep=0: 1261/1261 ok | out 792.2 tok/s | TTFT p99 9.93s | TPOT p99 48.5ms | goodput 2.05 req/s
+[N1] index rebuilt: 92 runs
+=== 2026-10-11T16:40:24Z END N1 (exit 0)
+=== 2026-10-11T16:40:24Z START B2
+[B2] server healthy after 72s
+[B2] W1 rate=1 rep=0: 200/200 ok | out 241.2 tok/s | TTFT p99 0.13s | TPOT p99 18.3ms | goodput 0.93 req/s
+[B2] W1 rate=4 rep=0: 200/200 ok | out 855.1 tok/s | TTFT p99 0.17s | TPOT p99 21.3ms | goodput 3.28 req/s
+[B2] W1 rate=16 rep=0: 200/200 ok | out 2182.2 tok/s | TTFT p99 0.22s | TPOT p99 28.0ms | goodput 8.38 req/s
+[B2] W1 rate=inf rep=0: 200/200 ok | out 3826.0 tok/s | TTFT p99 0.70s | TPOT p99 33.6ms | goodput 14.69 req/s
+[B2] W2 rate=inf rep=0: 43/43 ok | out 75.8 tok/s | TTFT p99 52.10s | TPOT p99 39.9ms | goodput 0.03 req/s
+[B2] W3 rate=inf rep=0: 288/288 ok | out 266.1 tok/s | TTFT p99 32.42s | TPOT p99 70.4ms | goodput 0.49 req/s
+[B2] W4 rate=inf rep=0: 1261/1261 ok | out 787.4 tok/s | TTFT p99 3.43s | TPOT p99 54.9ms | goodput 2.87 req/s
+[B2] index rebuilt: 99 runs
+=== 2026-10-11T17:01:25Z END B2 (exit 0)
+=== 2026-10-11T17:01:25Z START C4
+[C4] server healthy after 48s
+[C4] W1 rate=1 rep=0: 200/200 ok | out 247.3 tok/s | TTFT p99 0.16s | TPOT p99 14.5ms | goodput 0.95 req/s
+[C4] W1 rate=4 rep=0: 200/200 ok | out 931.7 tok/s | TTFT p99 0.18s | TPOT p99 19.2ms | goodput 3.58 req/s
+[C4] W1 rate=16 rep=0: 200/200 ok | out 1872.4 tok/s | TTFT p99 10.63s | TPOT p99 31.2ms | goodput 4.67 req/s
+[C4] W1 rate=inf rep=0: 200/200 ok | out 2055.8 tok/s | TTFT p99 20.19s | TPOT p99 31.9ms | goodput 2.01 req/s
+[C4] W2 rate=inf rep=0: 43/43 ok | out 39.6 tok/s | TTFT p99 124.95s | TPOT p99 22.5ms | goodput 0.01 req/s
+[C4] W3 rate=inf rep=0: 288/288 ok | out 190.1 tok/s | TTFT p99 158.46s | TPOT p99 43.4ms | goodput 0.16 req/s
+[C4] W4 rate=inf rep=0: 1261/1261 ok | out 792.5 tok/s | TTFT p99 32.21s | TPOT p99 34.1ms | goodput 1.46 req/s
+[C4] index rebuilt: 106 runs
+=== 2026-10-11T17:26:08Z END C4 (exit 0)
+=== 2026-10-11T17:26:08Z START C6
+[C6] server healthy after 45s
+[C6] W1 rate=1 rep=0: 200/200 ok | out 246.5 tok/s | TTFT p99 0.14s | TPOT p99 14.3ms | goodput 0.95 req/s
+[C6] W1 rate=4 rep=0: 200/200 ok | out 927.5 tok/s | TTFT p99 0.17s | TPOT p99 21.2ms | goodput 3.56 req/s
+[C6] W1 rate=16 rep=0: 200/200 ok | out 1973.7 tok/s | TTFT p99 9.45s | TPOT p99 31.1ms | goodput 4.85 req/s
+[C6] W1 rate=inf rep=0: 200/200 ok | out 2069.1 tok/s | TTFT p99 19.65s | TPOT p99 47.6ms | goodput 3.97 req/s
+[C6] W2 rate=inf rep=0: 43/43 ok | out 48.2 tok/s | TTFT p99 106.55s | TPOT p99 22.3ms | goodput 0.01 req/s
+[C6] W3 rate=inf rep=0: 288/288 ok | out 207.1 tok/s | TTFT p99 129.85s | TPOT p99 39.9ms | goodput 0.19 req/s
+[C6] W4 rate=inf rep=0: 1261/1261 ok | out 792.6 tok/s | TTFT p99 31.43s | TPOT p99 32.6ms | goodput 1.55 req/s
+[C6] index rebuilt: 113 runs
+=== 2026-10-11T17:49:28Z END C6 (exit 0)
+=== 2026-10-11T17:49:28Z START C2_el
+[C2_el] server healthy after 48s
+=== 2026-10-11T17:53:31Z stopped after C6 (engine fixes next)
+=== 2026-10-11T17:53:31Z QUEUE DONE

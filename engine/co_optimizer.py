@@ -125,6 +125,8 @@ class KVController:
     unpark_ticks: int = 4             # consecutive calm ticks before restoring
     min_hold_s: float = 5.0           # minimum time between park/unpark decisions (no thrashing)
     unpark_max_usage: float = 0.6     # restore only if current sequences fill < 60 % of the base pool
+    queue_hot: int = 8                # coupled: a waiting queue this long counts as pressure...
+    queue_burst: int = 32             # ...and this long parks at once (a burst is under way)
     want_drafter: bool = True
     _hot: int = 0
     _calm: int = 0
@@ -141,11 +143,18 @@ class KVController:
             return
         held = time.perf_counter() - el.last_change >= self.min_hold_s
         if not el.parked:
-            hot = pressure >= 2 if pressure is not None else (snap.p_gpu >= 0.90 and snap.queue_depth > 0)
-            if gamma_ctl is not None and snap.queue_depth > 0 and gamma_ctl.best_for(snap.running) == 0:
-                hot = True
+            burst = False
+            if pressure is None:   # independent: memory signals only
+                hot = snap.p_gpu >= 0.90 and snap.queue_depth > 0
+            else:                  # coupled: memory pressure, the scheduler's queue, the γ verdict
+                hot = pressure >= 2 or (snap.queue_depth >= self.queue_hot and snap.p_gpu >= 0.6)
+                burst = snap.queue_depth >= self.queue_burst
+                if gamma_ctl is not None and snap.queue_depth > 0 and gamma_ctl.best_for(snap.running) == 0:
+                    hot = True
+            # v2 (4090 rehearsal, W4): parking on memory pressure alone came too late in a burst;
+            # the queue had already built up (burst SLO 0.24 vs 0.39 without a drafter).
             self._hot = self._hot + 1 if hot else 0
-            if self._hot >= self.park_ticks and held:
+            if (burst or self._hot >= self.park_ticks) and held:
                 self.want_drafter, self._hot = False, 0
         else:
             calm = snap.queue_depth == 0 and el.usage_if_unparked() <= self.unpark_max_usage

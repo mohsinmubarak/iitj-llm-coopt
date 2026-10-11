@@ -127,12 +127,20 @@ class Scheduler:
         while self.waiting and budget > 0 and len(self.running) < pol.max_num_seqs:
             i = pol.pick_next(self.waiting, e)
             s = self.waiting[i]
+            swapped = bool(tiers) and tiers.has(s.seq_id)
+            # prefix caching: claim cached blocks for the longest cached prefix (a preempted
+            # request usually finds its own blocks still cached) and skip computing them
+            matched = 0 if swapped or s.num_computed else bm.match_prefix(s.seq_id, s.tokens)
+            s.num_computed += matched
             end = s.num_computed + min(s.remaining, budget)
             if bm.extra_blocks_needed(s.seq_id, end) > bm.num_free - reserve or not pol.admit(s, e):
+                if matched:  # not admitted after all: hand the cached blocks back
+                    bm.free(s.seq_id)
+                    s.num_computed = 0
                 break
             del self.waiting[i]
             self.running.append(s)
-            if tiers and tiers.has(s.seq_id):
+            if swapped:
                 tiers.swap_in(s)  # restore quantized KV instead of recomputing
             elif s.num_preemptions and tiers:
                 tiers.note_recompute()
@@ -151,7 +159,7 @@ class Engine:
     def __init__(self, target: str, draft: str | None = None, policy=None, kv_gb: float | None = None,
                  gpu_memory_utilization=0.9, max_model_len=32768, block_size=16, seed=0, eos_ids=(),
                  cuda_graphs=True, graph_batch_sizes=(1, 2, 4, 8, 16, 32, 64, 96, 128, 160, 192, 224, 256), elastic=False,
-                 graph_max_tokens=1280):
+                 graph_max_tokens=1280, prefix_caching=True):
         torch.manual_seed(seed)
         self.gen = torch.Generator(device="cuda").manual_seed(seed)
         self.policy = policy or StaticPolicy()
@@ -189,7 +197,7 @@ class Engine:
             draft_w = sum(c[k].numel() * c[k].element_size() for c, k in self.draft.weight_slots())
             self.elastic = ElasticKV(self, kv_bytes + draft_w, block_size)
             num_blocks, target_scratch = self.elastic.base, self.elastic.scratch
-            self.bm = BlockManager(num_blocks, block_size)
+            self.bm = BlockManager(num_blocks, block_size, prefix_caching=prefix_caching)
             self.dbm = BlockManager(self.elastic.draft_blocks, block_size)
             draft_scratch = self.elastic.draft_blocks
         else:
@@ -198,7 +206,7 @@ class Engine:
             assert num_blocks > 0, "no memory left for the KV cache"
             # One extra block per cache is the CUDA-graph scratch block (padding writes land there);
             # the block managers never hand it out.
-            self.bm = BlockManager(num_blocks, block_size)
+            self.bm = BlockManager(num_blocks, block_size, prefix_caching=prefix_caching)
             self.target.allocate_kv_cache(num_blocks + 1, block_size)
             target_scratch = draft_scratch = num_blocks
             if self.draft:
@@ -230,7 +238,7 @@ class Engine:
             "prompt_tokens_total", "generation_tokens_total", "num_preemptions_total",
             "spec_decode_num_drafts_total", "spec_decode_num_draft_tokens_total",
             "spec_decode_num_accepted_tokens_total", "request_success_total", "steps_total",
-            "control_seconds_total", "step_seconds_total",
+            "control_seconds_total", "step_seconds_total", "prefix_cache_hits_total", "prefix_cache_queries_total",
             "drafter_parks_total", "drafter_unparks_total", "drafter_migrated_blocks_total")}
         self.gauges = {}
         self.step_count = 0
@@ -400,6 +408,7 @@ class Engine:
         for (s, end), (row, _) in zip(plan.chunks, spans):
             self.counters["prompt_tokens_total"] += end - s.num_computed
             s.num_computed = end
+            self.bm.register(s.seq_id, s.tokens, end)  # hash completed full blocks (prefix cache)
             if end == len(s.tokens):  # prefill finished: first token
                 if greedy is not None:
                     tok = [greedy[row]]
@@ -436,6 +445,7 @@ class Engine:
             # KV is valid for every token except the newly sampled last one.
             s.num_computed = len(s.tokens) - 1
             self.bm.truncate(s.seq_id, s.num_computed)
+            self.bm.register(s.seq_id, s.tokens, s.num_computed)
             if self.draft:
                 s.draft_computed = min(s.draft_computed, len(s.tokens) - 1)
                 self.dbm.truncate(s.seq_id, s.draft_computed)
@@ -451,6 +461,8 @@ class Engine:
 
         self.step_count += 1
         self.counters["steps_total"] += 1
+        self.counters["prefix_cache_hits_total"] = self.bm.hit_tokens
+        self.counters["prefix_cache_queries_total"] = self.bm.query_tokens
         self.gauges = {
             "num_requests_running": len(self.scheduler.running),
             "num_requests_waiting": len(self.scheduler.waiting),
