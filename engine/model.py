@@ -126,6 +126,7 @@ class Llama:
         half = freqs.to(device)
         self.cos_sin_cache = torch.cat((half.cos(), half.sin()), dim=-1).to(dtype)
         self.fused = True  # vLLM kernels; False = plain PyTorch reference path
+        self._kv_scale = torch.ones((), device=device, dtype=torch.float32)  # bf16 cache: no scaling
         self.k_cache, self.v_cache = [], []
         self.block_size = None
 
@@ -225,7 +226,6 @@ class Llama:
         T = b.input_ids.shape[0]
         H, Hkv, D = self.n_heads, self.n_kv, self.head_dim
         eps = self.cfg.rms_norm_eps
-        blk, off = b.slot_mapping // self.block_size, b.slot_mapping % self.block_size
         x = F.embedding(b.input_ids, self.embed)
         residual = None
         for i, L in enumerate(self.layers):
@@ -238,8 +238,9 @@ class Llama:
             q, k, v = F.linear(h, L["qkv"]).split([H * D, Hkv * D, Hkv * D], dim=-1)
             _ops.rotary_embedding(b.positions, q, k, D, self.cos_sin_cache, True)
             q, k, v = q.reshape(T, H, D), k.reshape(T, Hkv, D), v.reshape(T, Hkv, D)
-            self.k_cache[i][blk, off] = k
-            self.v_cache[i][blk, off] = v
+            # one fused kernel per layer (vLLM's), also correct for strided block-major views
+            _ops.reshape_and_cache_flash(k, v, self.k_cache[i], self.v_cache[i], b.slot_mapping, "auto",
+                                         self._kv_scale, self._kv_scale)
             attn = flash_attn_varlen_func(
                 q=q, k=self.k_cache[i], v=self.v_cache[i], cu_seqlens_q=b.cu_seqlens_q,
                 max_seqlen_q=b.max_seqlen_q, seqused_k=b.seq_lens, max_seqlen_k=b.max_seqlen_k,

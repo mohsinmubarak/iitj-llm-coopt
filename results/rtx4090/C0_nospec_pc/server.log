@@ -1,0 +1,15 @@
+CMD: python -m engine.server --model unsloth/Meta-Llama-3.1-8B-Instruct --port 8000 --seed 0 --gamma 0 --trace /workspace/IITJ/results/rtx4090/C0_nospec_pc/trace.jsonl --policy static --gpu-memory-utilization 0.92 --max-model-len 16384
+
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 199.73it/s]
+[engine] memory: weights 15.06 GiB, prefill activations 0.37 GiB, graphs 0.44 GiB -> KV 5.52 GiB
+[engine] captured 13 target + 0 draft CUDA graphs (target strides [1]) in 1s
+[engine] hardware HardwareProfile(gpu_name='NVIDIA GeForce RTX 4090', vram_gb=23.5164794921875, hbm_bw_gbs=918.7064756935367, pcie_h2d_gbs=13.365191634781466, pcie_d2h_gbs=13.190791758025854, cpu_cores=32, ram_gb=124.9431266784668)
+[engine] KV capacity 45232 tokens (2827 blocks), policy=static
+/workspace/IITJ/engine/server.py:84: DeprecationWarning: 
+        on_event is deprecated, use lifespan event handlers instead.
+
+        Read more about it in the
+        [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+        
+  @app.on_event("startup")
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.

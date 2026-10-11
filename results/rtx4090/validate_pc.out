@@ -1,0 +1,4 @@
+[C0_nospec_pc] server healthy after 33s
+[C0_nospec_pc] W4 rate=inf rep=0: 1261/1261 ok | out 786.6 tok/s | TTFT p99 5.70s | TPOT p99 49.5ms | goodput 2.39 req/s
+[C0_nospec_pc] index rebuilt: 114 runs
+VALIDATE_DONE
