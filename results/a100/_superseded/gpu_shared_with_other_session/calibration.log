@@ -1,0 +1,9 @@
+[vllm-default_calibration] server healthy after 324s
+[vllm-default_calibration] mixed-bursty rate=inf rep=0: 300/300 ok | out 462.3 tok/s | TTFT p99 34.37s | TPOT p99 271.3ms | goodput 0.28 req/s
+[vllm-default_calibration] index rebuilt: 164 runs
+ace/IITJ/results/a100/vllm-default/server.log:
+    raise RuntimeError(
+RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}
+=== 2026-10-12T20:15:26Z END vllm-default (exit 1)
+=== 2026-10-12T20:15:26Z START ours-cooptimizer
+=== 2026-10-12T20:22:55Z START vllm-default

@@ -1,0 +1,4 @@
+[vllm-default_calibration] server healthy after 150s
+[vllm-default_calibration] mixed-bursty rate=inf rep=0: 300/300 ok | out 462.4 tok/s | TTFT p99 34.21s | TPOT p99 280.7ms | goodput 0.28 req/s
+[vllm-default_calibration] index rebuilt: 164 runs
+=== CALIBRATION DONE

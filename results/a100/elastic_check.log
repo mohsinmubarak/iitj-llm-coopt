@@ -1,0 +1,8 @@
+[elastic] target blocks base 1636 (+1588 when the drafter is parked) | drafter weights 2.30 GiB + draft KV 0.80 GiB in the tail | block 2.0 MiB
+[engine] captured 65 target + 26 draft CUDA graphs (target strides [1, 2, 3, 4, 5]) in 7s
+base pool 26176 tokens, parked pool 51584, workload needs 34010
+events: {'parked_at': 8, 'tail_blocks_in_use_before_unpark': 255, 'unparked_at': 84, 'migrated': 394}
+speculation: acceptance 0.532 over 1276 draft tokens
+token agreement with the parked reference 0.8161 (informative only: bf16 near-ties diverge)
+confidently-wrong tokens: reference 0/6144, elastic 0/6144
+ELASTIC CHECK PASS

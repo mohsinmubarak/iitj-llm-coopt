@@ -11,7 +11,7 @@ cd /workspace/IITJ
 set -a; . /workspace/.env; set +a
 . /root/venv/bin/activate
 export HF_HOME=/workspace/hf_cache VLLM_CACHE_ROOT=/workspace/vllm_cache PYTHONPATH=/workspace/IITJ \
-       WANDB_SILENT=true PYTHONUNBUFFERED=1
+       WANDB_SILENT=true PYTHONUNBUFFERED=1 OMP_NUM_THREADS=${OMP_NUM_THREADS:-8}
 mkdir -p results/$PROFILE
 LOG=results/$PROFILE/queue.log
 sed -i '/QUEUE DONE/d' $LOG 2>/dev/null || true   # a resumed queue must not stop the new pod logger

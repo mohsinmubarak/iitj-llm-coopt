@@ -1,0 +1,396 @@
+[podlog] cannot watch /workspace/IITJ/results/a100/pod_76c96b701deb/*: Glob may not start with '*' relative to the base path
+=== 2026-10-12T20:33:04Z START [1a] vllm-default on a100-22gb --repeats 1
+[vllm-default] server healthy after 207s
+[vllm-default] chat rate=1 rep=0: 200/200 ok | out 244.7 tok/s | TTFT p99 0.09s | TPOT p99 11.4ms | goodput 0.94 req/s
+[vllm-default] chat rate=4 rep=0: 200/200 ok | out 905.8 tok/s | TTFT p99 0.10s | TPOT p99 13.9ms | goodput 3.48 req/s
+[vllm-default] chat rate=16 rep=0: 200/200 ok | out 2570.3 tok/s | TTFT p99 0.18s | TPOT p99 24.4ms | goodput 9.87 req/s
+[vllm-default] chat rate=inf rep=0: 200/200 ok | out 4626.7 tok/s | TTFT p99 1.30s | TPOT p99 48.1ms | goodput 13.14 req/s
+[vllm-default] long-context rate=inf rep=0: 43/43 ok | out 111.3 tok/s | TTFT p99 33.99s | TPOT p99 24.3ms | goodput 0.06 req/s
+[vllm-default] mixed-bursty rate=inf rep=0: 288/288 ok | out 378.9 tok/s | TTFT p99 23.30s | TPOT p99 46.1ms | goodput 0.65 req/s
+[vllm-default] phase-shift rate=inf rep=0: 1261/1261 ok | out 1126.3 tok/s | TTFT p99 7.16s | TPOT p99 40.3ms | goodput 3.18 req/s
+[vllm-default] index rebuilt: 171 runs
+=== 2026-10-12T20:52:07Z END [1a] vllm-default (exit 0)
+=== 2026-10-12T20:52:07Z START [1a] ours-cooptimizer on a100-22gb --repeats 1
+[ours-cooptimizer] server healthy after 171s
+[ours-cooptimizer] chat rate=1 rep=0: 200/200 ok | out 247.5 tok/s | TTFT p99 0.11s | TPOT p99 10.4ms | goodput 0.95 req/s
+[ours-cooptimizer] chat rate=4 rep=0: 200/200 ok | out 944.4 tok/s | TTFT p99 0.13s | TPOT p99 15.9ms | goodput 3.63 req/s
+[ours-cooptimizer] chat rate=16 rep=0: 200/200 ok | out 2491.7 tok/s | TTFT p99 0.19s | TPOT p99 36.5ms | goodput 9.56 req/s
+[ours-cooptimizer] chat rate=inf rep=0: 200/200 ok | out 3852.7 tok/s | TTFT p99 1.87s | TPOT p99 66.1ms | goodput 10.80 req/s
+[ours-cooptimizer] long-context rate=inf rep=0: 43/43 ok | out 106.6 tok/s | TTFT p99 42.12s | TPOT p99 36.8ms | goodput 0.06 req/s
+[ours-cooptimizer] mixed-bursty rate=inf rep=0: 288/288 ok | out 359.9 tok/s | TTFT p99 38.83s | TPOT p99 51.3ms | goodput 0.53 req/s
+[ours-cooptimizer] phase-shift rate=inf rep=0: 1261/1261 ok | out 1132.9 tok/s | TTFT p99 11.24s | TPOT p99 42.0ms | goodput 2.98 req/s
+[ours-cooptimizer] index rebuilt: 178 runs
+=== 2026-10-12T21:10:50Z END [1a] ours-cooptimizer (exit 0)
+=== 2026-10-12T21:10:50Z START [1a] ours-independent-controllers on a100-22gb --repeats 1
+[ours-independent-controllers] server healthy after 168s
+[ours-independent-controllers] chat rate=1 rep=0: 200/200 ok | out 248.0 tok/s | TTFT p99 0.13s | TPOT p99 9.7ms | goodput 0.95 req/s
+[ours-independent-controllers] chat rate=4 rep=0: 200/200 ok | out 950.7 tok/s | TTFT p99 0.12s | TPOT p99 13.2ms | goodput 3.65 req/s
+[ours-independent-controllers] chat rate=16 rep=0: 200/200 ok | out 2392.7 tok/s | TTFT p99 1.69s | TPOT p99 45.3ms | goodput 7.99 req/s
+[ours-independent-controllers] chat rate=inf rep=0: 200/200 ok | out 2735.5 tok/s | TTFT p99 10.31s | TPOT p99 113.7ms | goodput 7.56 req/s
+[ours-independent-controllers] long-context rate=inf rep=0: 43/43 ok | out 106.8 tok/s | TTFT p99 41.65s | TPOT p99 28.9ms | goodput 0.05 req/s
+[ours-independent-controllers] mixed-bursty rate=inf rep=0: 288/288 ok | out 359.3 tok/s | TTFT p99 39.44s | TPOT p99 54.3ms | goodput 0.59 req/s
+[ours-independent-controllers] phase-shift rate=inf rep=0: 1261/1261 ok | out 1132.5 tok/s | TTFT p99 15.36s | TPOT p99 53.3ms | goodput 2.31 req/s
+[ours-independent-controllers] index rebuilt: 185 runs
+=== 2026-10-12T21:29:38Z END [1a] ours-independent-controllers (exit 0)
+=== 2026-10-12T21:29:38Z START [1b] vllm-default on a100-22gb --repeats 3
+[vllm-default] server healthy after 177s
+[vllm-default] chat rate=1 rep=1: 200/200 ok | out 272.8 tok/s | TTFT p99 0.09s | TPOT p99 11.8ms | goodput 1.05 req/s
+[vllm-default] chat rate=1 rep=2: 200/200 ok | out 251.3 tok/s | TTFT p99 0.09s | TPOT p99 12.6ms | goodput 0.96 req/s
+[vllm-default] chat rate=4 rep=1: 200/200 ok | out 1002.0 tok/s | TTFT p99 0.10s | TPOT p99 15.2ms | goodput 3.85 req/s
+[vllm-default] chat rate=4 rep=2: 200/200 ok | out 928.2 tok/s | TTFT p99 0.11s | TPOT p99 14.7ms | goodput 3.56 req/s
+[vllm-default] chat rate=16 rep=1: 200/200 ok | out 2747.7 tok/s | TTFT p99 0.19s | TPOT p99 25.3ms | goodput 10.55 req/s
+[vllm-default] chat rate=16 rep=2: 200/200 ok | out 2602.1 tok/s | TTFT p99 0.19s | TPOT p99 23.9ms | goodput 9.99 req/s
+[vllm-default] chat rate=inf rep=1: 200/200 ok | out 4682.5 tok/s | TTFT p99 1.13s | TPOT p99 38.4ms | goodput 13.48 req/s
+[vllm-default] chat rate=inf rep=2: 200/200 ok | out 4591.7 tok/s | TTFT p99 1.35s | TPOT p99 48.2ms | goodput 13.48 req/s
+[vllm-default] long-context rate=inf rep=1: 43/43 ok | out 117.9 tok/s | TTFT p99 31.25s | TPOT p99 32.5ms | goodput 0.06 req/s
+[vllm-default] long-context rate=inf rep=2: 43/43 ok | out 117.6 tok/s | TTFT p99 32.16s | TPOT p99 32.5ms | goodput 0.05 req/s
+[vllm-default] mixed-bursty rate=inf rep=1: 288/288 ok | out 382.2 tok/s | TTFT p99 21.65s | TPOT p99 55.8ms | goodput 0.74 req/s
+[vllm-default] mixed-bursty rate=inf rep=2: 288/288 ok | out 382.2 tok/s | TTFT p99 21.62s | TPOT p99 55.9ms | goodput 0.75 req/s
+[vllm-default] phase-shift rate=inf rep=1: 1259/1261 ok | out 1124.6 tok/s | TTFT p99 5.58s | TPOT p99 44.3ms | goodput 3.41 req/s
+[vllm-default] phase-shift rate=inf rep=2: 1261/1261 ok | out 1126.3 tok/s | TTFT p99 5.80s | TPOT p99 43.3ms | goodput 3.42 req/s
+[vllm-default] index rebuilt: 199 runs
+=== 2026-10-12T22:02:55Z END [1b] vllm-default (exit 0)
+=== 2026-10-12T22:02:55Z START [1b] ours-cooptimizer on a100-22gb --repeats 3
+[ours-cooptimizer] server healthy after 165s
+[ours-cooptimizer] chat rate=1 rep=1: 200/200 ok | out 276.1 tok/s | TTFT p99 0.13s | TPOT p99 10.8ms | goodput 1.06 req/s
+[ours-cooptimizer] chat rate=1 rep=2: 200/200 ok | out 254.1 tok/s | TTFT p99 0.11s | TPOT p99 10.8ms | goodput 0.98 req/s
+[ours-cooptimizer] chat rate=4 rep=1: 200/200 ok | out 1050.5 tok/s | TTFT p99 0.14s | TPOT p99 17.0ms | goodput 4.03 req/s
+[ours-cooptimizer] chat rate=4 rep=2: 200/200 ok | out 972.4 tok/s | TTFT p99 0.14s | TPOT p99 15.7ms | goodput 3.73 req/s
+[ours-cooptimizer] chat rate=16 rep=1: 200/200 ok | out 2573.0 tok/s | TTFT p99 0.59s | TPOT p99 37.4ms | goodput 9.88 req/s
+[ours-cooptimizer] chat rate=16 rep=2: 200/200 ok | out 2461.0 tok/s | TTFT p99 0.51s | TPOT p99 35.1ms | goodput 9.45 req/s
+[ours-cooptimizer] chat rate=inf rep=1: 200/200 ok | out 3595.1 tok/s | TTFT p99 2.80s | TPOT p99 54.2ms | goodput 10.21 req/s
+[ours-cooptimizer] chat rate=inf rep=2: 200/200 ok | out 3450.0 tok/s | TTFT p99 4.46s | TPOT p99 69.3ms | goodput 10.99 req/s
+[ours-cooptimizer] long-context rate=inf rep=1: 43/43 ok | out 105.9 tok/s | TTFT p99 43.56s | TPOT p99 29.5ms | goodput 0.06 req/s
+[ours-cooptimizer] long-context rate=inf rep=2: 43/43 ok | out 106.6 tok/s | TTFT p99 42.61s | TPOT p99 34.1ms | goodput 0.07 req/s
+[ours-cooptimizer] mixed-bursty rate=inf rep=1: 288/288 ok | out 355.0 tok/s | TTFT p99 41.42s | TPOT p99 57.7ms | goodput 0.54 req/s
+[ours-cooptimizer] mixed-bursty rate=inf rep=2: 288/288 ok | out 354.9 tok/s | TTFT p99 41.77s | TPOT p99 60.7ms | goodput 0.52 req/s
+[ours-cooptimizer] phase-shift rate=inf rep=1: 1261/1261 ok | out 1132.3 tok/s | TTFT p99 11.36s | TPOT p99 42.0ms | goodput 3.04 req/s
+[ours-cooptimizer] phase-shift rate=inf rep=2: 1261/1261 ok | out 1132.0 tok/s | TTFT p99 11.66s | TPOT p99 43.1ms | goodput 2.86 req/s
+[ours-cooptimizer] index rebuilt: 213 runs
+=== 2026-10-12T22:37:04Z END [1b] ours-cooptimizer (exit 0)
+=== 2026-10-12T22:37:04Z START [1b] ours-independent-controllers on a100-22gb --repeats 3
+[ours-independent-controllers] server healthy after 168s
+[ours-independent-controllers] chat rate=1 rep=1: 200/200 ok | out 276.2 tok/s | TTFT p99 0.11s | TPOT p99 10.3ms | goodput 1.06 req/s
+[ours-independent-controllers] chat rate=1 rep=2: 200/200 ok | out 255.1 tok/s | TTFT p99 0.11s | TPOT p99 10.8ms | goodput 0.98 req/s
+[ours-independent-controllers] chat rate=4 rep=1: 200/200 ok | out 1050.6 tok/s | TTFT p99 0.12s | TPOT p99 14.2ms | goodput 4.03 req/s
+[ours-independent-controllers] chat rate=4 rep=2: 200/200 ok | out 972.8 tok/s | TTFT p99 0.14s | TPOT p99 15.9ms | goodput 3.73 req/s
+[ours-independent-controllers] chat rate=16 rep=1: 200/200 ok | out 2496.7 tok/s | TTFT p99 2.16s | TPOT p99 44.6ms | goodput 8.48 req/s
+[ours-independent-controllers] chat rate=16 rep=2: 200/200 ok | out 2452.0 tok/s | TTFT p99 1.86s | TPOT p99 41.5ms | goodput 8.89 req/s
+[ours-independent-controllers] chat rate=inf rep=1: 200/200 ok | out 2775.6 tok/s | TTFT p99 9.62s | TPOT p99 61.2ms | goodput 7.67 req/s
+[ours-independent-controllers] chat rate=inf rep=2: 200/200 ok | out 3088.1 tok/s | TTFT p99 6.47s | TPOT p99 58.3ms | goodput 8.00 req/s
+[ours-independent-controllers] long-context rate=inf rep=1: 43/43 ok | out 105.5 tok/s | TTFT p99 42.92s | TPOT p99 31.8ms | goodput 0.06 req/s
+[ours-independent-controllers] long-context rate=inf rep=2: 43/43 ok | out 106.9 tok/s | TTFT p99 42.18s | TPOT p99 34.0ms | goodput 0.07 req/s
+[ours-independent-controllers] mixed-bursty rate=inf rep=1: 288/288 ok | out 354.0 tok/s | TTFT p99 41.45s | TPOT p99 64.3ms | goodput 0.57 req/s
+[ours-independent-controllers] mixed-bursty rate=inf rep=2: 287/288 ok | out 355.0 tok/s | TTFT p99 40.94s | TPOT p99 58.0ms | goodput 0.45 req/s
+[ours-independent-controllers] phase-shift rate=inf rep=1: 1261/1261 ok | out 1132.5 tok/s | TTFT p99 18.98s | TPOT p99 47.5ms | goodput 2.33 req/s
+[ours-independent-controllers] phase-shift rate=inf rep=2: 1261/1261 ok | out 1131.7 tok/s | TTFT p99 14.31s | TPOT p99 58.3ms | goodput 2.32 req/s
+[ours-independent-controllers] index rebuilt: 227 runs
+=== 2026-10-12T23:11:17Z END [1b] ours-independent-controllers (exit 0)
+=== 2026-10-12T23:11:17Z START [1c] ours-nightjar-like on a100-22gb --repeats 1
+[ours-nightjar-like] server healthy after 78s
+[ours-nightjar-like] chat rate=1 rep=0: 200/200 ok | out 248.0 tok/s | TTFT p99 0.13s | TPOT p99 11.1ms | goodput 0.95 req/s
+[ours-nightjar-like] chat rate=4 rep=0: 200/200 ok | out 948.5 tok/s | TTFT p99 0.13s | TPOT p99 13.4ms | goodput 3.64 req/s
+[ours-nightjar-like] chat rate=16 rep=0: 200/200 ok | out 2456.2 tok/s | TTFT p99 0.22s | TPOT p99 36.0ms | goodput 9.43 req/s
+[ours-nightjar-like] chat rate=inf rep=0: 200/200 ok | out 3726.7 tok/s | TTFT p99 2.36s | TPOT p99 66.7ms | goodput 4.22 req/s
+[ours-nightjar-like] long-context rate=inf rep=0: 43/43 ok | out 99.1 tok/s | TTFT p99 38.71s | TPOT p99 34.8ms | goodput 0.05 req/s
+[ours-nightjar-like] mixed-bursty rate=inf rep=0: 288/288 ok | out 347.9 tok/s | TTFT p99 39.58s | TPOT p99 52.7ms | goodput 0.47 req/s
+[ours-nightjar-like] phase-shift rate=inf rep=0: 1261/1261 ok | out 1131.5 tok/s | TTFT p99 9.51s | TPOT p99 46.8ms | goodput 3.12 req/s
+[ours-nightjar-like] index rebuilt: 234 runs
+=== 2026-10-12T23:28:51Z END [1c] ours-nightjar-like (exit 0)
+=== 2026-10-12T23:28:51Z START [1c] vllm-adaptive-spec-schedule on a100-22gb --repeats 1
+[vllm-adaptive-spec-schedule] server healthy after 195s
+[vllm-adaptive-spec-schedule] chat rate=1 rep=0: 200/200 ok | out 247.1 tok/s | TTFT p99 0.73s | TPOT p99 16.1ms | goodput 0.94 req/s
+[vllm-adaptive-spec-schedule] chat rate=4 rep=0: 200/200 ok | out 937.3 tok/s | TTFT p99 0.12s | TPOT p99 13.6ms | goodput 3.60 req/s
+[vllm-adaptive-spec-schedule] chat rate=16 rep=0: 200/200 ok | out 2608.6 tok/s | TTFT p99 0.18s | TPOT p99 25.6ms | goodput 10.01 req/s
+[vllm-adaptive-spec-schedule] chat rate=inf rep=0: 200/200 ok | out 2863.5 tok/s | TTFT p99 0.59s | TPOT p99 54.3ms | goodput 10.99 req/s
+[vllm-adaptive-spec-schedule] long-context rate=inf rep=0: 43/43 ok | out 146.2 tok/s | TTFT p99 24.45s | TPOT p99 103.8ms | goodput 0.36 req/s
+[vllm-adaptive-spec-schedule] mixed-bursty rate=inf rep=0: 288/288 ok | out 395.0 tok/s | TTFT p99 11.41s | TPOT p99 127.5ms | goodput 1.02 req/s
+[vllm-adaptive-spec-schedule] phase-shift rate=inf rep=0: 1260/1261 ok | out 1128.0 tok/s | TTFT p99 17.03s | TPOT p99 92.1ms | goodput 3.34 req/s
+[vllm-adaptive-spec-schedule] index rebuilt: 241 runs
+=== 2026-10-12T23:47:14Z END [1c] vllm-adaptive-spec-schedule (exit 0)
+=== 2026-10-12T23:47:14Z START [1d] vllm-default on a100 --repeats 1
+[vllm-default] server healthy after 186s
+[vllm-default] chat rate=1 rep=0: 200/200 ok | out 244.7 tok/s | TTFT p99 0.09s | TPOT p99 11.4ms | goodput 0.94 req/s
+[vllm-default] chat rate=4 rep=0: 200/200 ok | out 906.7 tok/s | TTFT p99 0.05s | TPOT p99 13.1ms | goodput 3.48 req/s
+[vllm-default] chat rate=16 rep=0: 200/200 ok | out 2605.0 tok/s | TTFT p99 0.07s | TPOT p99 19.6ms | goodput 10.00 req/s
+[vllm-default] chat rate=inf rep=0: 200/200 ok | out 4955.7 tok/s | TTFT p99 0.46s | TPOT p99 27.4ms | goodput 19.02 req/s
+[vllm-default] long-context rate=inf rep=0: 60/60 ok | out 132.5 tok/s | TTFT p99 26.15s | TPOT p99 118.1ms | goodput 0.14 req/s
+[vllm-default] mixed-bursty rate=inf rep=0: 300/300 ok | out 406.0 tok/s | TTFT p99 11.35s | TPOT p99 227.6ms | goodput 0.62 req/s
+[vllm-default] phase-shift rate=inf rep=0: 1261/1261 ok | out 1126.3 tok/s | TTFT p99 0.56s | TPOT p99 46.9ms | goodput 4.46 req/s
+[vllm-default] index rebuilt: 248 runs
+=== 2026-10-13T00:06:10Z END [1d] vllm-default (exit 0)
+=== 2026-10-13T00:06:10Z START [1d] ours-cooptimizer on a100 --repeats 1
+[ours-cooptimizer] server healthy after 174s
+[ours-cooptimizer] chat rate=1 rep=0: 200/200 ok | out 247.5 tok/s | TTFT p99 0.13s | TPOT p99 10.7ms | goodput 0.95 req/s
+[ours-cooptimizer] chat rate=4 rep=0: 200/200 ok | out 946.8 tok/s | TTFT p99 0.07s | TPOT p99 12.4ms | goodput 3.63 req/s
+[ours-cooptimizer] chat rate=16 rep=0: 200/200 ok | out 2690.8 tok/s | TTFT p99 0.20s | TPOT p99 29.3ms | goodput 10.33 req/s
+[ours-cooptimizer] chat rate=inf rep=0: 200/200 ok | out 3795.1 tok/s | TTFT p99 0.45s | TPOT p99 69.2ms | goodput 14.57 req/s
+[ours-cooptimizer] long-context rate=inf rep=0: 60/60 ok | out 107.3 tok/s | TTFT p99 30.94s | TPOT p99 175.9ms | goodput 0.11 req/s
+[ours-cooptimizer] mixed-bursty rate=inf rep=0: 300/300 ok | out 392.4 tok/s | TTFT p99 26.72s | TPOT p99 130.6ms | goodput 0.59 req/s
+[ours-cooptimizer] phase-shift rate=inf rep=0: 1261/1261 ok | out 1131.7 tok/s | TTFT p99 4.60s | TPOT p99 68.9ms | goodput 3.82 req/s
+[ours-cooptimizer] index rebuilt: 255 runs
+=== 2026-10-13T00:25:27Z END [1d] ours-cooptimizer (exit 0)
+=== 2026-10-13T00:25:27Z START [1d] ours-independent-controllers on a100 --repeats 1
+[ours-independent-controllers] server healthy after 165s
+[ours-independent-controllers] chat rate=1 rep=0: 200/200 ok | out 247.8 tok/s | TTFT p99 0.11s | TPOT p99 9.8ms | goodput 0.95 req/s
+[ours-independent-controllers] chat rate=4 rep=0: 200/200 ok | out 949.8 tok/s | TTFT p99 0.07s | TPOT p99 13.3ms | goodput 3.65 req/s
+[ours-independent-controllers] chat rate=16 rep=0: 200/200 ok | out 2697.6 tok/s | TTFT p99 0.20s | TPOT p99 32.2ms | goodput 10.36 req/s
+[ours-independent-controllers] chat rate=inf rep=0: 200/200 ok | out 3823.9 tok/s | TTFT p99 0.44s | TPOT p99 72.5ms | goodput 14.68 req/s
+[ours-independent-controllers] long-context rate=inf rep=0: 60/60 ok | out 109.5 tok/s | TTFT p99 30.85s | TPOT p99 165.3ms | goodput 0.12 req/s
+[ours-independent-controllers] mixed-bursty rate=inf rep=0: 300/300 ok | out 394.5 tok/s | TTFT p99 25.50s | TPOT p99 138.4ms | goodput 0.61 req/s
+[ours-independent-controllers] phase-shift rate=inf rep=0: 1261/1261 ok | out 1132.1 tok/s | TTFT p99 6.86s | TPOT p99 67.9ms | goodput 3.72 req/s
+[ours-independent-controllers] index rebuilt: 262 runs
+=== 2026-10-13T00:44:36Z END [1d] ours-independent-controllers (exit 0)
+=== 2026-10-13T00:44:36Z START [1d] ours-nightjar-like on a100 --repeats 1
+[ours-nightjar-like] server healthy after 162s
+[ours-nightjar-like] chat rate=1 rep=0: 200/200 ok | out 247.6 tok/s | TTFT p99 0.12s | TPOT p99 10.5ms | goodput 0.95 req/s
+[ours-nightjar-like] chat rate=4 rep=0: 200/200 ok | out 946.4 tok/s | TTFT p99 0.07s | TPOT p99 11.5ms | goodput 3.63 req/s
+[ours-nightjar-like] chat rate=16 rep=0: 200/200 ok | out 2735.0 tok/s | TTFT p99 0.19s | TPOT p99 29.5ms | goodput 10.50 req/s
+[ours-nightjar-like] chat rate=inf rep=0: 200/200 ok | out 3743.0 tok/s | TTFT p99 0.47s | TPOT p99 74.6ms | goodput 14.37 req/s
+[ours-nightjar-like] long-context rate=inf rep=0: 60/60 ok | out 114.5 tok/s | TTFT p99 33.82s | TPOT p99 157.5ms | goodput 0.16 req/s
+[ours-nightjar-like] mixed-bursty rate=inf rep=0: 300/300 ok | out 390.8 tok/s | TTFT p99 15.81s | TPOT p99 227.4ms | goodput 0.51 req/s
+[ours-nightjar-like] phase-shift rate=inf rep=0: 1261/1261 ok | out 1132.2 tok/s | TTFT p99 5.39s | TPOT p99 76.8ms | goodput 3.50 req/s
+[ours-nightjar-like] index rebuilt: 269 runs
+=== 2026-10-13T01:03:31Z END [1d] ours-nightjar-like (exit 0)
+=== 2026-10-13T01:03:31Z START [1d] vllm-adaptive-spec-schedule on a100 --repeats 1
+[vllm-adaptive-spec-schedule] server healthy after 204s
+[vllm-adaptive-spec-schedule] chat rate=1 rep=0: 200/200 ok | out 247.2 tok/s | TTFT p99 0.86s | TPOT p99 17.3ms | goodput 0.94 req/s
+[vllm-adaptive-spec-schedule] chat rate=4 rep=0: 200/200 ok | out 934.2 tok/s | TTFT p99 0.12s | TPOT p99 13.5ms | goodput 3.59 req/s
+[vllm-adaptive-spec-schedule] chat rate=16 rep=0: 200/200 ok | out 2593.8 tok/s | TTFT p99 0.16s | TPOT p99 25.8ms | goodput 9.96 req/s
+[vllm-adaptive-spec-schedule] chat rate=inf rep=0: 200/200 ok | out 2835.5 tok/s | TTFT p99 0.61s | TPOT p99 54.0ms | goodput 10.88 req/s
+[vllm-adaptive-spec-schedule] long-context rate=inf rep=0: 60/60 ok | out 123.8 tok/s | TTFT p99 33.79s | TPOT p99 116.6ms | goodput 0.17 req/s
+[vllm-adaptive-spec-schedule] mixed-bursty rate=inf rep=0: 300/300 ok | out 386.0 tok/s | TTFT p99 23.56s | TPOT p99 149.1ms | goodput 0.44 req/s
+[vllm-adaptive-spec-schedule] phase-shift rate=inf rep=0: 1260/1261 ok | out 1127.6 tok/s | TTFT p99 16.99s | TPOT p99 91.7ms | goodput 3.34 req/s
+[vllm-adaptive-spec-schedule] index rebuilt: 276 runs
+=== 2026-10-13T01:23:04Z END [1d] vllm-adaptive-spec-schedule (exit 0)
+=== 2026-10-13T01:23:04Z START [2a] ours-gamma-controller-only on a100-22gb --repeats 1 --only chat --only phase-shift
+[ours-gamma-controller-only] server healthy after 69s
+[ours-gamma-controller-only] chat rate=1 rep=0: 200/200 ok | out 247.8 tok/s | TTFT p99 0.13s | TPOT p99 9.6ms | goodput 0.95 req/s
+[ours-gamma-controller-only] chat rate=4 rep=0: 200/200 ok | out 948.3 tok/s | TTFT p99 0.14s | TPOT p99 12.4ms | goodput 3.64 req/s
+[ours-gamma-controller-only] chat rate=16 rep=0: 200/200 ok | out 2341.1 tok/s | TTFT p99 4.79s | TPOT p99 35.7ms | goodput 6.87 req/s
+[ours-gamma-controller-only] chat rate=inf rep=0: 200/200 ok | out 2465.3 tok/s | TTFT p99 14.15s | TPOT p99 240.2ms | goodput 4.02 req/s
+[ours-gamma-controller-only] index rebuilt: 280 runs
+=== 2026-10-13T01:30:08Z END [2a] ours-gamma-controller-only (exit 0)
+=== 2026-10-13T01:30:08Z START [2a] ours-kv-controller-only on a100-22gb --repeats 1 --only chat --only phase-shift
+[ours-kv-controller-only] server healthy after 69s
+[ours-kv-controller-only] chat rate=1 rep=0: 200/200 ok | out 248.2 tok/s | TTFT p99 0.12s | TPOT p99 10.0ms | goodput 0.95 req/s
+[ours-kv-controller-only] chat rate=4 rep=0: 200/200 ok | out 952.9 tok/s | TTFT p99 0.12s | TPOT p99 13.3ms | goodput 3.66 req/s
+[ours-kv-controller-only] chat rate=16 rep=0: 200/200 ok | out 2491.7 tok/s | TTFT p99 0.24s | TPOT p99 36.7ms | goodput 9.56 req/s
+[ours-kv-controller-only] chat rate=inf rep=0: 200/200 ok | out 3802.5 tok/s | TTFT p99 2.32s | TPOT p99 64.9ms | goodput 4.31 req/s
+[ours-kv-controller-only] phase-shift rate=inf rep=0: 1261/1261 ok | out 1132.3 tok/s | TTFT p99 11.88s | TPOT p99 53.5ms | goodput 2.86 req/s
+[ours-kv-controller-only] index rebuilt: 285 runs
+=== 2026-10-13T01:41:53Z END [2a] ours-kv-controller-only (exit 0)
+=== 2026-10-13T01:41:53Z START [2a] ours-kv-controller-only-no-elastic on a100-22gb --repeats 1 --only chat --only phase-shift
+[ours-kv-controller-only-no-elastic] server healthy after 105s
+[ours-kv-controller-only-no-elastic] chat rate=1 rep=0: 200/200 ok | out 248.1 tok/s | TTFT p99 0.11s | TPOT p99 9.8ms | goodput 0.95 req/s
+[ours-kv-controller-only-no-elastic] chat rate=4 rep=0: 200/200 ok | out 953.1 tok/s | TTFT p99 0.12s | TPOT p99 13.3ms | goodput 3.66 req/s
+[ours-kv-controller-only-no-elastic] chat rate=16 rep=0: 200/200 ok | out 2232.9 tok/s | TTFT p99 5.99s | TPOT p99 46.3ms | goodput 6.56 req/s
+[ours-kv-controller-only-no-elastic] chat rate=inf rep=0: 200/200 ok | out 2293.2 tok/s | TTFT p99 16.13s | TPOT p99 205.1ms | goodput 2.68 req/s
+[ours-kv-controller-only-no-elastic] index rebuilt: 289 runs
+=== 2026-10-13T01:49:34Z END [2a] ours-kv-controller-only-no-elastic (exit 0)
+=== 2026-10-13T01:49:34Z START [2a] ours-scheduler-controller-only on a100-22gb --repeats 1 --only chat --only phase-shift
+[ours-scheduler-controller-only] server healthy after 123s
+[ours-scheduler-controller-only] chat rate=1 rep=0: 200/200 ok | out 248.1 tok/s | TTFT p99 0.12s | TPOT p99 9.9ms | goodput 0.95 req/s
+[ours-scheduler-controller-only] chat rate=4 rep=0: 200/200 ok | out 952.7 tok/s | TTFT p99 0.13s | TPOT p99 13.3ms | goodput 3.66 req/s
+[ours-scheduler-controller-only] chat rate=16 rep=0: 200/200 ok | out 2370.1 tok/s | TTFT p99 5.75s | TPOT p99 34.3ms | goodput 6.96 req/s
+[ours-scheduler-controller-only] chat rate=inf rep=0: 200/200 ok | out 2581.6 tok/s | TTFT p99 16.07s | TPOT p99 47.3ms | goodput 2.92 req/s
+[ours-scheduler-controller-only] index rebuilt: 293 runs
+=== 2026-10-13T01:57:35Z END [2a] ours-scheduler-controller-only (exit 0)
+=== 2026-10-13T01:57:35Z START [2a] ours-gamma-and-kv on a100-22gb --repeats 1 --only chat --only phase-shift
+[ours-gamma-and-kv] all results present, skipping
+=== 2026-10-13T01:57:36Z END [2a] ours-gamma-and-kv (exit 0)
+=== 2026-10-13T01:57:36Z START [2a] ours-gamma-and-scheduler on a100-22gb --repeats 1 --only chat --only phase-shift
+[ours-gamma-and-scheduler] all results present, skipping
+=== 2026-10-13T01:57:37Z END [2a] ours-gamma-and-scheduler (exit 0)
+=== 2026-10-13T01:57:37Z START [2a] ours-kv-and-scheduler on a100-22gb --repeats 1 --only chat --only phase-shift
+[ours-kv-and-scheduler] all results present, skipping
+=== 2026-10-13T01:57:38Z END [2a] ours-kv-and-scheduler (exit 0)
+=== 2026-10-13T01:57:38Z START [2a] ours-cooptimizer-no-elastic on a100-22gb --repeats 1 --only chat --only phase-shift
+[ours-cooptimizer-no-elastic] server healthy after 159s
+[ours-cooptimizer-no-elastic] chat rate=1 rep=0: 200/200 ok | out 247.8 tok/s | TTFT p99 0.13s | TPOT p99 9.6ms | goodput 0.95 req/s
+[ours-cooptimizer-no-elastic] chat rate=4 rep=0: 200/200 ok | out 950.2 tok/s | TTFT p99 0.15s | TPOT p99 14.0ms | goodput 3.65 req/s
+[ours-cooptimizer-no-elastic] chat rate=16 rep=0: 200/200 ok | out 2267.9 tok/s | TTFT p99 6.17s | TPOT p99 32.3ms | goodput 6.66 req/s
+[ours-cooptimizer-no-elastic] chat rate=inf rep=0: 200/200 ok | out 2587.5 tok/s | TTFT p99 16.10s | TPOT p99 41.8ms | goodput 3.58 req/s
+[ours-cooptimizer-no-elastic] phase-shift rate=inf rep=0: 1261/1261 ok | out 1132.6 tok/s | TTFT p99 32.89s | TPOT p99 35.3ms | goodput 2.08 req/s
+[ours-cooptimizer-no-elastic] index rebuilt: 298 runs
+=== 2026-10-13T02:11:03Z END [2a] ours-cooptimizer-no-elastic (exit 0)
+=== 2026-10-13T02:11:03Z START [2a] ours-independent-controllers-no-elastic on a100-22gb --repeats 1 --only chat --only phase-shift
+[ours-independent-controllers-no-elastic] server healthy after 159s
+[ours-independent-controllers-no-elastic] chat rate=1 rep=0: 200/200 ok | out 247.8 tok/s | TTFT p99 0.10s | TPOT p99 9.8ms | goodput 0.95 req/s
+[ours-independent-controllers-no-elastic] chat rate=4 rep=0: 200/200 ok | out 949.5 tok/s | TTFT p99 0.13s | TPOT p99 13.7ms | goodput 3.64 req/s
+[ours-independent-controllers-no-elastic] chat rate=16 rep=0: 200/200 ok | out 2316.7 tok/s | TTFT p99 6.20s | TPOT p99 38.7ms | goodput 6.85 req/s
+[ours-independent-controllers-no-elastic] chat rate=inf rep=0: 200/200 ok | out 2463.3 tok/s | TTFT p99 16.72s | TPOT p99 92.1ms | goodput 4.11 req/s
+[ours-independent-controllers-no-elastic] phase-shift rate=inf rep=0: 1260/1261 ok | out 1132.3 tok/s | TTFT p99 37.55s | TPOT p99 31.8ms | goodput 2.15 req/s
+[ours-independent-controllers-no-elastic] index rebuilt: 303 runs
+=== 2026-10-13T02:24:26Z END [2a] ours-independent-controllers-no-elastic (exit 0)
+=== 2026-10-13T02:24:27Z START [2b] ours-cooptimizer on a100 --repeats 1 --only chat --only phase-shift --tag gpu-memory-32gb --extra-args --gpu-memory-utilization 0.40
+[ours-cooptimizer_gpu-memory-32gb] server healthy after 159s
+[ours-cooptimizer_gpu-memory-32gb] chat rate=1 rep=0: 200/200 ok | out 247.5 tok/s | TTFT p99 0.12s | TPOT p99 10.0ms | goodput 0.95 req/s
+[ours-cooptimizer_gpu-memory-32gb] chat rate=4 rep=0: 200/200 ok | out 946.7 tok/s | TTFT p99 0.08s | TPOT p99 14.3ms | goodput 3.63 req/s
+[ours-cooptimizer_gpu-memory-32gb] chat rate=16 rep=0: 200/200 ok | out 2705.5 tok/s | TTFT p99 0.19s | TPOT p99 31.2ms | goodput 10.39 req/s
+[ours-cooptimizer_gpu-memory-32gb] chat rate=inf rep=0: 200/200 ok | out 3865.7 tok/s | TTFT p99 0.46s | TPOT p99 65.8ms | goodput 14.84 req/s
+[ours-cooptimizer_gpu-memory-32gb] phase-shift rate=inf rep=0: 1261/1261 ok | out 1131.7 tok/s | TTFT p99 5.00s | TPOT p99 62.8ms | goodput 3.78 req/s
+[ours-cooptimizer_gpu-memory-32gb] index rebuilt: 308 runs
+=== 2026-10-13T02:37:43Z END [2b] ours-cooptimizer (exit 0)
+=== 2026-10-13T02:37:43Z START [2b] ours-independent-controllers on a100 --repeats 1 --only chat --only phase-shift --tag gpu-memory-32gb --extra-args --gpu-memory-utilization 0.40
+[ours-independent-controllers_gpu-memory-32gb] server healthy after 159s
+[ours-independent-controllers_gpu-memory-32gb] chat rate=1 rep=0: 200/200 ok | out 247.9 tok/s | TTFT p99 0.12s | TPOT p99 9.6ms | goodput 0.95 req/s
+[ours-independent-controllers_gpu-memory-32gb] chat rate=4 rep=0: 200/200 ok | out 949.1 tok/s | TTFT p99 0.07s | TPOT p99 13.1ms | goodput 3.64 req/s
+[ours-independent-controllers_gpu-memory-32gb] chat rate=16 rep=0: 200/200 ok | out 2755.7 tok/s | TTFT p99 0.19s | TPOT p99 31.4ms | goodput 10.58 req/s
+[ours-independent-controllers_gpu-memory-32gb] chat rate=inf rep=0: 200/200 ok | out 3989.7 tok/s | TTFT p99 0.44s | TPOT p99 62.9ms | goodput 15.32 req/s
+[ours-independent-controllers_gpu-memory-32gb] phase-shift rate=inf rep=0: 1261/1261 ok | out 1132.1 tok/s | TTFT p99 5.98s | TPOT p99 68.4ms | goodput 3.75 req/s
+[ours-independent-controllers_gpu-memory-32gb] index rebuilt: 313 runs
+=== 2026-10-13T02:51:00Z END [2b] ours-independent-controllers (exit 0)
+=== 2026-10-13T02:51:00Z START [2b] vllm-default on a100 --repeats 1 --only chat --only phase-shift --tag gpu-memory-32gb --extra-args --gpu-memory-utilization 0.40
+[vllm-default_gpu-memory-32gb] server healthy after 186s
+[vllm-default_gpu-memory-32gb] chat rate=1 rep=0: 200/200 ok | out 244.7 tok/s | TTFT p99 0.09s | TPOT p99 11.4ms | goodput 0.94 req/s
+[vllm-default_gpu-memory-32gb] chat rate=4 rep=0: 200/200 ok | out 906.6 tok/s | TTFT p99 0.05s | TPOT p99 13.1ms | goodput 3.48 req/s
+[vllm-default_gpu-memory-32gb] chat rate=16 rep=0: 200/200 ok | out 2604.6 tok/s | TTFT p99 0.08s | TPOT p99 19.7ms | goodput 10.00 req/s
+[vllm-default_gpu-memory-32gb] chat rate=inf rep=0: 200/200 ok | out 4934.6 tok/s | TTFT p99 0.54s | TPOT p99 26.1ms | goodput 18.94 req/s
+[vllm-default_gpu-memory-32gb] phase-shift rate=inf rep=0: 1261/1261 ok | out 1126.3 tok/s | TTFT p99 0.65s | TPOT p99 48.9ms | goodput 4.46 req/s
+[vllm-default_gpu-memory-32gb] index rebuilt: 318 runs
+=== 2026-10-13T03:04:43Z END [2b] vllm-default (exit 0)
+=== 2026-10-13T03:04:43Z START [2c] vllm-context-length-sweep on a100 --repeats 1
+[vllm-context-length-sweep] server healthy after 162s
+[vllm-context-length-sweep] prompt-1k rate=inf rep=0: 32/32 ok | out 514.1 tok/s | TTFT p99 0.58s | TPOT p99 14.8ms | goodput 4.02 req/s
+[vllm-context-length-sweep] prompt-4k rate=inf rep=0: 32/32 ok | out 259.8 tok/s | TTFT p99 2.32s | TPOT p99 28.0ms | goodput 2.03 req/s
+[vllm-context-length-sweep] prompt-8k rate=inf rep=0: 32/32 ok | out 145.4 tok/s | TTFT p99 5.07s | TPOT p99 49.3ms | goodput 1.14 req/s
+[vllm-context-length-sweep] prompt-16k rate=inf rep=0: 32/32 ok | out 68.6 tok/s | TTFT p99 12.07s | TPOT p99 103.7ms | goodput 0.39 req/s
+[vllm-context-length-sweep] prompt-32k rate=inf rep=0: 32/32 ok | out 28.7 tok/s | TTFT p99 30.73s | TPOT p99 248.5ms | goodput 0.02 req/s
+[vllm-context-length-sweep] index rebuilt: 323 runs
+=== 2026-10-13T03:12:36Z END [2c] vllm-context-length-sweep (exit 0)
+=== 2026-10-13T03:12:36Z START [3a] vllm-draft-spec-gamma1 on a100-22gb --repeats 1 --only chat
+[vllm-draft-spec-gamma1] server healthy after 267s
+[vllm-draft-spec-gamma1] chat rate=1 rep=0: 200/200 ok | out 246.9 tok/s | TTFT p99 0.61s | TPOT p99 10.1ms | goodput 0.94 req/s
+[vllm-draft-spec-gamma1] chat rate=4 rep=0: 200/200 ok | out 935.6 tok/s | TTFT p99 0.11s | TPOT p99 11.5ms | goodput 3.59 req/s
+[vllm-draft-spec-gamma1] chat rate=16 rep=0: 200/200 ok | out 2434.4 tok/s | TTFT p99 3.75s | TPOT p99 26.3ms | goodput 7.29 req/s
+[vllm-draft-spec-gamma1] chat rate=inf rep=0: 200/200 ok | out 2852.1 tok/s | TTFT p99 11.98s | TPOT p99 137.2ms | goodput 3.28 req/s
+[vllm-draft-spec-gamma1] index rebuilt: 327 runs
+=== 2026-10-13T03:22:58Z END [3a] vllm-draft-spec-gamma1 (exit 0)
+=== 2026-10-13T03:22:58Z START [3a] vllm-draft-spec-gamma2 on a100-22gb --repeats 1 --only chat
+[vllm-draft-spec-gamma2] server healthy after 183s
+[vllm-draft-spec-gamma2] chat rate=1 rep=0: 200/200 ok | out 247.6 tok/s | TTFT p99 0.56s | TPOT p99 10.3ms | goodput 0.94 req/s
+[vllm-draft-spec-gamma2] chat rate=4 rep=0: 200/200 ok | out 946.5 tok/s | TTFT p99 0.12s | TPOT p99 10.8ms | goodput 3.63 req/s
+[vllm-draft-spec-gamma2] chat rate=16 rep=0: 200/200 ok | out 2565.7 tok/s | TTFT p99 3.34s | TPOT p99 21.6ms | goodput 7.68 req/s
+[vllm-draft-spec-gamma2] chat rate=inf rep=0: 200/200 ok | out 2953.2 tok/s | TTFT p99 11.67s | TPOT p99 134.2ms | goodput 5.16 req/s
+[vllm-draft-spec-gamma2] index rebuilt: 331 runs
+=== 2026-10-13T03:31:50Z END [3a] vllm-draft-spec-gamma2 (exit 0)
+=== 2026-10-13T03:31:51Z START [3a] vllm-draft-spec-gamma4 on a100-22gb --repeats 1 --only chat
+[vllm-draft-spec-gamma4] server healthy after 183s
+[vllm-draft-spec-gamma4] chat rate=1 rep=0: 200/200 ok | out 246.8 tok/s | TTFT p99 1.38s | TPOT p99 15.9ms | goodput 0.93 req/s
+[vllm-draft-spec-gamma4] chat rate=4 rep=0: 200/200 ok | out 939.0 tok/s | TTFT p99 0.15s | TPOT p99 13.4ms | goodput 3.60 req/s
+[vllm-draft-spec-gamma4] chat rate=16 rep=0: 200/200 ok | out 2532.4 tok/s | TTFT p99 3.33s | TPOT p99 25.7ms | goodput 7.58 req/s
+[vllm-draft-spec-gamma4] chat rate=inf rep=0: 200/200 ok | out 2829.0 tok/s | TTFT p99 12.33s | TPOT p99 144.4ms | goodput 2.82 req/s
+[vllm-draft-spec-gamma4] index rebuilt: 335 runs
+=== 2026-10-13T03:40:44Z END [3a] vllm-draft-spec-gamma4 (exit 0)
+=== 2026-10-13T03:40:44Z START [3a] vllm-draft-spec-gamma6 on a100-22gb --repeats 1 --only chat
+[vllm-draft-spec-gamma6] server healthy after 210s
+[vllm-draft-spec-gamma6] chat rate=1 rep=0: 200/200 ok | out 246.4 tok/s | TTFT p99 0.64s | TPOT p99 23.1ms | goodput 0.94 req/s
+[vllm-draft-spec-gamma6] chat rate=4 rep=0: 200/200 ok | out 929.5 tok/s | TTFT p99 0.17s | TPOT p99 17.7ms | goodput 3.57 req/s
+[vllm-draft-spec-gamma6] chat rate=16 rep=0: 200/200 ok | out 2634.9 tok/s | TTFT p99 0.25s | TPOT p99 31.8ms | goodput 10.11 req/s
+[vllm-draft-spec-gamma6] chat rate=inf rep=0: 200/200 ok | out 3434.8 tok/s | TTFT p99 0.69s | TPOT p99 53.2ms | goodput 13.19 req/s
+[vllm-draft-spec-gamma6] index rebuilt: 339 runs
+=== 2026-10-13T03:50:03Z END [3a] vllm-draft-spec-gamma6 (exit 0)
+=== 2026-10-13T03:50:03Z START [3a] vllm-draft-spec-gamma8 on a100-22gb --repeats 1 --only chat
+[vllm-draft-spec-gamma8] server healthy after 138s
+[vllm-draft-spec-gamma8] chat rate=1 rep=0: 200/200 ok | out 246.2 tok/s | TTFT p99 0.28s | TPOT p99 24.5ms | goodput 0.94 req/s
+[vllm-draft-spec-gamma8] chat rate=4 rep=0: 200/200 ok | out 929.0 tok/s | TTFT p99 0.20s | TPOT p99 20.5ms | goodput 3.57 req/s
+[vllm-draft-spec-gamma8] chat rate=16 rep=0: 200/200 ok | out 2526.5 tok/s | TTFT p99 0.42s | TPOT p99 43.5ms | goodput 9.70 req/s
+[vllm-draft-spec-gamma8] chat rate=inf rep=0: 200/200 ok | out 3181.4 tok/s | TTFT p99 0.80s | TPOT p99 66.5ms | goodput 12.21 req/s
+[vllm-draft-spec-gamma8] index rebuilt: 343 runs
+=== 2026-10-13T03:58:09Z END [3a] vllm-draft-spec-gamma8 (exit 0)
+=== 2026-10-13T03:58:09Z START [3b] vllm-default-overload on a100-22gb --repeats 1
+[vllm-default-overload] server healthy after 102s
+[vllm-default-overload] mixed-bursty rate=inf rep=0: 288/288 ok | out 452.1 tok/s | TTFT p99 73.47s | TPOT p99 60.6ms | goodput 0.44 req/s
+[vllm-default-overload] phase-shift rate=inf rep=0: 1259/1261 ok | out 2216.0 tok/s | TTFT p99 20.19s | TPOT p99 77.2ms | goodput 4.15 req/s
+[vllm-default-overload] index rebuilt: 345 runs
+=== 2026-10-13T04:05:33Z END [3b] vllm-default-overload (exit 0)
+=== 2026-10-13T04:05:34Z START [3b] ours-cooptimizer-overload on a100-22gb --repeats 1
+[ours-cooptimizer-overload] server healthy after 96s
+[ours-cooptimizer-overload] mixed-bursty rate=inf rep=0: 288/288 ok | out 425.9 tok/s | TTFT p99 90.88s | TPOT p99 60.3ms | goodput 0.42 req/s
+[ours-cooptimizer-overload] phase-shift rate=inf rep=0: 1261/1261 ok | out 2147.7 tok/s | TTFT p99 26.09s | TPOT p99 44.9ms | goodput 3.54 req/s
+[ours-cooptimizer-overload] index rebuilt: 347 runs
+=== 2026-10-13T04:13:14Z END [3b] ours-cooptimizer-overload (exit 0)
+=== 2026-10-13T04:13:14Z START [3c] vllm-cpu-kv-offload on a100-22gb --repeats 1
+[vllm-cpu-kv-offload] server healthy after 165s
+[vllm-cpu-kv-offload] chat rate=1 rep=0: 200/200 ok | out 244.7 tok/s | TTFT p99 0.10s | TPOT p99 11.4ms | goodput 0.94 req/s
+[vllm-cpu-kv-offload] chat rate=4 rep=0: 200/200 ok | out 905.3 tok/s | TTFT p99 0.12s | TPOT p99 13.2ms | goodput 3.48 req/s
+[vllm-cpu-kv-offload] chat rate=16 rep=0: 200/200 ok | out 2584.7 tok/s | TTFT p99 0.17s | TPOT p99 20.3ms | goodput 9.92 req/s
+[vllm-cpu-kv-offload] chat rate=inf rep=0: 200/200 ok | out 4834.3 tok/s | TTFT p99 0.77s | TPOT p99 27.7ms | goodput 18.56 req/s
+[vllm-cpu-kv-offload] long-context rate=inf rep=0: 43/43 ok | out 111.7 tok/s | TTFT p99 33.79s | TPOT p99 24.4ms | goodput 0.05 req/s
+[vllm-cpu-kv-offload] mixed-bursty rate=inf rep=0: 288/288 ok | out 377.9 tok/s | TTFT p99 23.32s | TPOT p99 53.3ms | goodput 0.68 req/s
+[vllm-cpu-kv-offload] phase-shift rate=inf rep=0: 1261/1261 ok | out 1126.3 tok/s | TTFT p99 5.98s | TPOT p99 47.6ms | goodput 3.25 req/s
+[vllm-cpu-kv-offload] index rebuilt: 354 runs
+=== 2026-10-13T04:31:52Z END [3c] vllm-cpu-kv-offload (exit 0)
+index: 354 runs -> /workspace/IITJ/results/index.jsonl
+=== 2026-10-13T04:52:58Z START [4a] vllm-adaptive-spec-schedule on a100-22gb --repeats 1 --extra-args --gpu-memory-utilization 0.285
+[vllm-adaptive-spec-schedule] server healthy after 126s
+[vllm-adaptive-spec-schedule] chat rate=1 rep=0: 200/200 ok | out 247.2 tok/s | TTFT p99 0.14s | TPOT p99 13.6ms | goodput 0.95 req/s
+[vllm-adaptive-spec-schedule] chat rate=4 rep=0: 200/200 ok | out 935.8 tok/s | TTFT p99 0.15s | TPOT p99 15.0ms | goodput 3.59 req/s
+[vllm-adaptive-spec-schedule] chat rate=16 rep=0: 200/200 ok | out 2361.9 tok/s | TTFT p99 3.73s | TPOT p99 42.1ms | goodput 7.66 req/s
+[vllm-adaptive-spec-schedule] chat rate=inf rep=0: 200/200 ok | out 2412.5 tok/s | TTFT p99 15.29s | TPOT p99 206.9ms | goodput 2.64 req/s
+[vllm-adaptive-spec-schedule] long-context rate=inf rep=0: 43/43 ok | out 81.3 tok/s | TTFT p99 49.99s | TPOT p99 18.1ms | goodput 0.01 req/s
+[vllm-adaptive-spec-schedule] mixed-bursty rate=inf rep=0: 288/288 ok | out 327.1 tok/s | TTFT p99 57.34s | TPOT p99 33.0ms | goodput 0.33 req/s
+[vllm-adaptive-spec-schedule] phase-shift rate=inf rep=0: 1259/1261 ok | out 1125.4 tok/s | TTFT p99 24.91s | TPOT p99 91.2ms | goodput 2.31 req/s
+[vllm-adaptive-spec-schedule] index rebuilt: 346 runs
+=== 2026-10-13T05:12:01Z END [4a] vllm-adaptive-spec-schedule (exit 0)
+=== 2026-10-13T05:12:01Z START [4a] vllm-draft-spec-gamma6 on a100-22gb --repeats 1 --only chat --extra-args --gpu-memory-utilization 0.285
+[vllm-draft-spec-gamma6] server healthy after 171s
+[vllm-draft-spec-gamma6] chat rate=1 rep=0: 200/200 ok | out 246.4 tok/s | TTFT p99 0.18s | TPOT p99 16.7ms | goodput 0.95 req/s
+[vllm-draft-spec-gamma6] chat rate=4 rep=0: 200/200 ok | out 928.7 tok/s | TTFT p99 0.19s | TPOT p99 19.9ms | goodput 3.56 req/s
+[vllm-draft-spec-gamma6] chat rate=16 rep=0: 200/200 ok | out 2337.5 tok/s | TTFT p99 2.99s | TPOT p99 50.7ms | goodput 7.54 req/s
+[vllm-draft-spec-gamma6] chat rate=inf rep=0: 200/200 ok | out 2604.2 tok/s | TTFT p99 12.58s | TPOT p99 160.7ms | goodput 2.15 req/s
+[vllm-draft-spec-gamma6] index rebuilt: 350 runs
+=== 2026-10-13T05:20:52Z END [4a] vllm-draft-spec-gamma6 (exit 0)
+=== 2026-10-13T05:20:52Z START [4a] vllm-draft-spec-gamma8 on a100-22gb --repeats 1 --only chat --extra-args --gpu-memory-utilization 0.285
+[vllm-draft-spec-gamma8] server healthy after 216s
+[vllm-draft-spec-gamma8] chat rate=1 rep=0: 200/200 ok | out 246.0 tok/s | TTFT p99 0.77s | TPOT p99 28.1ms | goodput 0.93 req/s
+[vllm-draft-spec-gamma8] chat rate=4 rep=0: 200/200 ok | out 922.8 tok/s | TTFT p99 0.24s | TPOT p99 22.0ms | goodput 3.54 req/s
+[vllm-draft-spec-gamma8] chat rate=16 rep=0: 200/200 ok | out 2145.9 tok/s | TTFT p99 4.24s | TPOT p99 38.6ms | goodput 6.43 req/s
+[vllm-draft-spec-gamma8] chat rate=inf rep=0: 200/200 ok | out 2319.0 tok/s | TTFT p99 13.35s | TPOT p99 152.6ms | goodput 0.04 req/s
+[vllm-draft-spec-gamma8] index rebuilt: 354 runs
+=== 2026-10-13T05:30:31Z END [4a] vllm-draft-spec-gamma8 (exit 0)
+=== 2026-10-13T05:30:31Z START [4b] ours-gamma-and-kv on a100-22gb --repeats 1 --only chat --only phase-shift
+[ours-gamma-and-kv] server healthy after 66s
+[ours-gamma-and-kv] chat rate=1 rep=0: 200/200 ok | out 247.5 tok/s | TTFT p99 0.11s | TPOT p99 10.2ms | goodput 0.95 req/s
+[ours-gamma-and-kv] chat rate=4 rep=0: 200/200 ok | out 944.1 tok/s | TTFT p99 0.13s | TPOT p99 13.0ms | goodput 3.62 req/s
+[ours-gamma-and-kv] chat rate=16 rep=0: 200/200 ok | out 2206.7 tok/s | TTFT p99 5.94s | TPOT p99 40.6ms | goodput 6.48 req/s
+[ours-gamma-and-kv] chat rate=inf rep=0: 200/200 ok | out 2388.3 tok/s | TTFT p99 15.09s | TPOT p99 187.3ms | goodput 3.71 req/s
+[ours-gamma-and-kv] phase-shift rate=inf rep=0: 1261/1261 ok | out 1132.9 tok/s | TTFT p99 34.92s | TPOT p99 50.3ms | goodput 2.16 req/s
+[ours-gamma-and-kv] index rebuilt: 359 runs
+=== 2026-10-13T05:42:28Z END [4b] ours-gamma-and-kv (exit 0)
+=== 2026-10-13T05:42:28Z START [4b] ours-gamma-and-scheduler on a100-22gb --repeats 1 --only chat --only phase-shift
+[ours-gamma-and-scheduler] server healthy after 69s
+[ours-gamma-and-scheduler] chat rate=1 rep=0: 200/200 ok | out 248.1 tok/s | TTFT p99 0.11s | TPOT p99 9.3ms | goodput 0.95 req/s
+[ours-gamma-and-scheduler] chat rate=4 rep=0: 200/200 ok | out 952.2 tok/s | TTFT p99 0.13s | TPOT p99 13.7ms | goodput 3.66 req/s
+[ours-gamma-and-scheduler] chat rate=16 rep=0: 200/200 ok | out 2403.9 tok/s | TTFT p99 5.09s | TPOT p99 31.1ms | goodput 7.24 req/s
+[ours-gamma-and-scheduler] chat rate=inf rep=0: 200/200 ok | out 2599.1 tok/s | TTFT p99 15.91s | TPOT p99 36.7ms | goodput 3.54 req/s
+[ours-gamma-and-scheduler] phase-shift rate=inf rep=0: 1261/1261 ok | out 1131.7 tok/s | TTFT p99 27.77s | TPOT p99 35.7ms | goodput 2.11 req/s
+[ours-gamma-and-scheduler] index rebuilt: 364 runs
+=== 2026-10-13T05:54:25Z END [4b] ours-gamma-and-scheduler (exit 0)
+=== 2026-10-13T05:54:25Z START [4b] ours-kv-and-scheduler on a100-22gb --repeats 1 --only chat --only phase-shift
+[ours-kv-and-scheduler] server healthy after 69s
+[ours-kv-and-scheduler] chat rate=1 rep=0: 200/200 ok | out 248.1 tok/s | TTFT p99 0.13s | TPOT p99 9.8ms | goodput 0.95 req/s
+[ours-kv-and-scheduler] chat rate=4 rep=0: 200/200 ok | out 951.2 tok/s | TTFT p99 0.13s | TPOT p99 13.4ms | goodput 3.65 req/s
+[ours-kv-and-scheduler] chat rate=16 rep=0: 200/200 ok | out 2320.0 tok/s | TTFT p99 6.15s | TPOT p99 37.5ms | goodput 6.81 req/s
+[ours-kv-and-scheduler] chat rate=inf rep=0: 200/200 ok | out 2520.1 tok/s | TTFT p99 16.27s | TPOT p99 52.1ms | goodput 2.76 req/s
+[ours-kv-and-scheduler] phase-shift rate=inf rep=0: 1261/1261 ok | out 1132.7 tok/s | TTFT p99 32.26s | TPOT p99 35.2ms | goodput 2.10 req/s
+[ours-kv-and-scheduler] index rebuilt: 369 runs
+=== 2026-10-13T06:06:28Z END [4b] ours-kv-and-scheduler (exit 0)
+=== 2026-10-13T06:06:28Z START [4b] ours-gamma-controller-only on a100-22gb --repeats 1 --only chat --only phase-shift
+[ours-gamma-controller-only] server healthy after 156s
+[ours-gamma-controller-only] phase-shift rate=inf rep=0: 1260/1261 ok | out 1131.7 tok/s | TTFT p99 33.88s | TPOT p99 56.6ms | goodput 2.07 req/s
+[ours-gamma-controller-only] index rebuilt: 370 runs
+=== 2026-10-13T06:14:29Z END [4b] ours-gamma-controller-only (exit 0)
+=== 2026-10-13T06:14:29Z START [4b] ours-kv-controller-only-no-elastic on a100-22gb --repeats 1 --only chat --only phase-shift
+[ours-kv-controller-only-no-elastic] server healthy after 165s
+[ours-kv-controller-only-no-elastic] phase-shift rate=inf rep=0: 1261/1261 ok | out 1132.7 tok/s | TTFT p99 32.42s | TPOT p99 61.6ms | goodput 2.17 req/s
+[ours-kv-controller-only-no-elastic] index rebuilt: 371 runs
+=== 2026-10-13T06:22:36Z END [4b] ours-kv-controller-only-no-elastic (exit 0)
+=== 2026-10-13T06:22:36Z START [4b] ours-scheduler-controller-only on a100-22gb --repeats 1 --only chat --only phase-shift
+[ours-scheduler-controller-only] server healthy after 159s
+[ours-scheduler-controller-only] phase-shift rate=inf rep=0: 1261/1261 ok | out 1132.6 tok/s | TTFT p99 26.60s | TPOT p99 34.3ms | goodput 2.17 req/s
+[ours-scheduler-controller-only] index rebuilt: 372 runs
+=== 2026-10-13T06:30:35Z END [4b] ours-scheduler-controller-only (exit 0)
+index: 372 runs -> /workspace/IITJ/results/index.jsonl
+=== 2026-10-13T06:30:51Z QUEUE DONE

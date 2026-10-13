@@ -1,8 +1,10 @@
-# Final-results profile: 1x A100 80 GB. Every number in the thesis comes from this profile.
+# Final-results profile: 1x A100 80 GB, natural memory (the whole GPU). Shows behaviour when memory is plentiful.
 name: a100
 max_model_len: 32768
 repeats: 3
 wandb_project: iitj-coopt-a100
 server_args: [--gpu-memory-utilization, 0.90]
-# Calibrate after the first A2 run on the A100 (target: A2 W3 duration ~ arrival span).
-arrival_time_scale: 1.0
+# Calibrated with vllm-default on mixed-bursty: at 1.0 the 115 s schedule took 163 s to serve (1.41x overload).
+# 1.4 matches the 4090's regime (230 s of arrivals served in 272 s, 1.18x): mean load near capacity,
+# only the bursts overload.
+arrival_time_scale: 1.4

@@ -20,6 +20,7 @@ export HF_HOME=$HF_HOME
 export VLLM_CACHE_ROOT=$WS/vllm_cache
 export PATH=/root/.local/bin:\$PATH
 export PYTHONPATH=$WS/IITJ:\${PYTHONPATH:-}
+export OMP_NUM_THREADS=8   # A100 hosts expose 255 cores; torch would spawn one thread per core
 [ -f $WS/.env ] && set -a && . $WS/.env && set +a
 [ -f /root/venv/bin/activate ] && . /root/venv/bin/activate
 cd $WS/IITJ 2>/dev/null || true

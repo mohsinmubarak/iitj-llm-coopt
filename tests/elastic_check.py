@@ -41,13 +41,16 @@ def run(engine, seqs, hook=None):
 def main():
     reqs = load_workload("prompt-1k")[:24] + load_workload("chat")[:40]
     prompts = [r["prompt_token_ids"] for r in reqs]
-    e = Engine(TARGET, DRAFT, policy=StaticPolicy(gamma=4, max_num_seqs=128), max_model_len=4096,
-               gpu_memory_utilization=0.92, elastic=True)
+    # A fixed KV budget, so the workload overflows the base pool on any GPU (on an A100 the measured
+    # budget holds ~350K tokens and the tail would never be used, leaving migration untested).
+    e = Engine(TARGET, DRAFT, policy=StaticPolicy(gamma=4, max_num_seqs=128), kv_gb=4.0, max_model_len=4096,
+               elastic=True)
     el = e.elastic
     base_tokens = el.base * el.block_size
     need = sum(len(p) + NEW for p in prompts)
     print(f"base pool {base_tokens} tokens, parked pool {(el.base + el.tail) * el.block_size}, "
           f"workload needs {need}", flush=True)
+    assert base_tokens < need, "the workload must overflow the base pool, or the tail is never exercised"
 
     # reference: drafter parked for the whole run
     el.park()

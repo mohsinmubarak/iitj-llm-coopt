@@ -1,0 +1,21 @@
+CMD: python -m engine.server --model unsloth/Meta-Llama-3.1-8B-Instruct --draft unsloth/Llama-3.2-1B-Instruct --port 8000 --seed 0 --gamma 4 --trace /workspace/IITJ/results/a100/ours-cooptimizer/trace.jsonl --policy coopt --controllers gamma,kv,sched --kv-cpu-gb 32 --elastic --gpu-memory-utilization 0.9 --max-model-len 32768
+
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 431.30it/s]
+Fetching 6 files:   0%|          | 0/6 [00:00<?, ?it/s]Fetching 6 files: 100%|██████████| 6/6 [00:00<00:00, 267.92it/s]
+[engine] memory: weights 17.41 GiB, prefill activations 0.37 GiB, graphs 0.93 GiB -> KV 52.37 GiB
+[W1012 20:17:26.367873080 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 58703478784 bytes (free: 49945116672, total: 85093777408).
+[W1012 20:17:26.370382662 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 58703478784 bytes (free: 49945116672, total: 85093777408).
+Traceback (most recent call last):
+  File "/workspace/IITJ/engine/worker.py", line 33, in engine_worker
+    engine = Engine(a.model, a.draft, policy=make_policy(a), kv_gb=a.kv_gb,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/IITJ/engine/engine.py", line 198, in __init__
+    self.elastic = ElasticKV(self, kv_bytes + draft_w, block_size)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/IITJ/engine/elastic.py", line 75, in __init__
+    self.buf = torch.empty(shape, dtype=dt, device="cuda")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 54.67 GiB. GPU 0 has a total capacity of 79.25 GiB of which 46.52 GiB is free. Process 4240 has 16.76 GiB memory in use. Including non-PyTorch memory, this process has 15.96 GiB memory in use. Of the allocated memory 15.14 GiB is allocated by PyTorch, and 333.37 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+
+/usr/lib/python3.12/multiprocessing/resource_tracker.py:254: UserWarning: resource_tracker: There appear to be 6 leaked semaphore objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '

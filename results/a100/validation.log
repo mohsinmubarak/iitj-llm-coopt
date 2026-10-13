@@ -1,0 +1,79 @@
+=== 19:59:07 python -m pytest -q tests/test_units.py
+................                                                         [100%]
+16 passed in 9.91s
+=== exit 0
+=== 19:59:18 python -m tests.m4_correctness --model unsloth/Meta-Llama-3.1-8B-Instruct --n 16 --new 64 --kv-gb 8 --profile a100
+Loading weights:   0%|          | 0/291 [00:00<?, ?it/s]Loading weights:  13%|█▎        | 38/291 [00:00<00:00, 377.22it/s]Loading weights:  26%|██▌       | 76/291 [00:00<00:00, 234.14it/s]Loading weights:  38%|███▊      | 112/291 [00:00<00:00, 270.60it/s]Loading weights:  49%|████▉     | 142/291 [00:00<00:00, 207.55it/s]Loading weights:  58%|█████▊    | 170/291 [00:00<00:00, 223.56it/s]Loading weights:  67%|██████▋   | 195/291 [00:00<00:00, 229.73it/s]Loading weights:  76%|███████▌  | 220/291 [00:01<00:00, 195.63it/s]Loading weights:  84%|████████▍ | 244/291 [00:01<00:00, 198.32it/s]Loading weights:  91%|█████████▏| 266/291 [00:01<00:00, 169.85it/s]Loading weights: 100%|██████████| 291/291 [00:01<00:00, 211.00it/s]
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 214.66it/s]
+{
+ "model": "unsloth/Meta-Llama-3.1-8B-Instruct",
+ "prompts": 16,
+ "new_tokens": 64,
+ "teacher_forced_agreement": 0.9915700737618546,
+ "last_logit_max_abs_diff": 0.59375,
+ "last_logit_top1_agreement": 1.0,
+ "single_exact_match_rate": 0.5625,
+ "single_mean_matched_prefix": 48.4375,
+ "batched_exact_match_rate": 0.5625,
+ "batched_mean_matched_prefix": 47.0625,
+ "batched_equals_single": 0.5625,
+ "hf_eager_vs_sdpa_agreement": 0.9915700737618546,
+ "disagreements": 8,
+ "last_token_disagreement_hf_margins": [],
+ "disagreement_hf_margin_max": 0.25,
+ "disagreement_hf_margin_median": 0.125,
+ "pass": true
+}
+=== exit 0
+=== 20:04:06 python -m tests.graph_check --model unsloth/Meta-Llama-3.1-8B-Instruct
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 367.58it/s]
+captured 18 graphs in 1.4s
+B= 1 q<=1: argmax agree 1/1, max|dlogit| 0.000 | eager 11.69 ms -> graph 10.94 ms (1.1x)
+B= 1 q<=2: argmax agree 1/1, max|dlogit| 0.000 | eager 11.71 ms -> graph 10.93 ms (1.1x)
+B= 1 q<=5: argmax agree 5/5, max|dlogit| 0.000 | eager 11.53 ms -> graph 10.71 ms (1.1x)
+B= 3 q<=1: argmax agree 3/3, max|dlogit| 0.000 | eager 12.06 ms -> graph 11.04 ms (1.1x)
+B= 3 q<=2: argmax agree 4/4, max|dlogit| 0.000 | eager 11.64 ms -> graph 11.11 ms (1.0x)
+B= 3 q<=5: argmax agree 14/14, max|dlogit| 0.125 | eager 11.93 ms -> graph 12.33 ms (1.0x)
+B= 8 q<=1: argmax agree 8/8, max|dlogit| 0.000 | eager 12.51 ms -> graph 11.26 ms (1.1x)
+B= 8 q<=2: argmax agree 12/12, max|dlogit| 0.000 | eager 13.19 ms -> graph 11.55 ms (1.1x)
+B= 8 q<=5: argmax agree 24/24, max|dlogit| 0.156 | eager 13.75 ms -> graph 12.31 ms (1.1x)
+B=32 q<=1: argmax agree 32/32, max|dlogit| 0.000 | eager 15.32 ms -> graph 13.26 ms (1.2x)
+B=32 q<=2: argmax agree 46/46, max|dlogit| 0.238 | eager 17.69 ms -> graph 15.92 ms (1.1x)
+B=32 q<=5: argmax agree 87/89, max|dlogit| 0.219 | eager 19.14 ms -> graph 21.80 ms (0.9x)
+=== exit 0
+=== 20:06:17 python -m tests.elastic_check
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 332.29it/s]
+Fetching 6 files:   0%|          | 0/6 [00:00<?, ?it/s]Fetching 6 files: 100%|██████████| 6/6 [00:00<00:00, 286.06it/s]
+[engine] memory: weights 17.41 GiB, prefill activations 1.45 GiB, graphs 0.93 GiB -> KV 52.88 GiB
+[elastic] target blocks base 21656 (+6593 when the drafter is parked) | drafter weights 2.30 GiB + draft KV 10.57 GiB in the tail | block 2.0 MiB
+[engine] captured 65 target + 26 draft CUDA graphs (target strides [1, 2, 3, 4, 5]) in 6s
+base pool 346496 tokens, parked pool 451984, workload needs 34010
+events: {'parked_at': 8, 'tail_blocks_in_use_before_unpark': 0, 'unparked_at': 40, 'migrated': 0}
+speculation: acceptance 0.526 over 4680 draft tokens
+token agreement with the parked reference 0.6965 (informative only: bf16 near-ties diverge)
+confidently-wrong tokens: reference 0/6144, elastic 0/6144
+ELASTIC CHECK FAIL
+=== exit 1
+=== VALIDATION DONE
+=== 20:09:37 python -m tests.elastic_check --kv-gb 5
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 204.03it/s]
+Fetching 6 files:   0%|          | 0/6 [00:00<?, ?it/s]Fetching 6 files: 100%|██████████| 6/6 [00:00<00:00, 411.11it/s]
+[engine] memory: weights 17.41 GiB, prefill activations 1.45 GiB, graphs 0.93 GiB -> KV 52.88 GiB
+[W1012 20:13:45.140217112 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 59244544000 bytes (free: 43049680896, total: 85093777408).
+[W1012 20:13:45.142744084 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 0 while trying to allocate 59244544000 bytes (free: 43049680896, total: 85093777408).
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/IITJ/tests/elastic_check.py", line 105, in <module>
+    
+  File "/workspace/IITJ/tests/elastic_check.py", line 44, in main
+    # A fixed KV budget, so the workload overflows the base pool on any GPU (on an A100 the measured
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/IITJ/engine/engine.py", line 198, in __init__
+    self.elastic = ElasticKV(self, kv_bytes + draft_w, block_size)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/IITJ/engine/elastic.py", line 75, in __init__
+    self.buf = torch.empty(shape, dtype=dt, device="cuda")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 55.18 GiB. GPU 0 has a total capacity of 79.25 GiB of which 40.09 GiB is free. Including non-PyTorch memory, this process has 15.96 GiB memory in use. Process 3606 has 23.17 GiB memory in use. Of the allocated memory 15.14 GiB is allocated by PyTorch, and 333.37 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+=== note: the --kv-gb 5 OOM above happened while another process held 23 GB of the GPU; elastic_check.log has the clean PASS (kv_gb=4.0)
