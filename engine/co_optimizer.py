@@ -189,9 +189,21 @@ class SchedulerController:
     chunk_large: int = 16384
     long_ctx: int = 4096
     aging_s: float = 5.0             # a request waiting this long is admitted regardless of size
+    # "pressure": back off on preemptions or a full GPU, grow only when calm (the original rule; in
+    # bursts it pins the cap near min_seqs, since a full KV cache is the normal state there).
+    # "preempt": back off only on preemptions (the block manager already stops admission when KV
+    # is full), grow whenever requests wait, and drop the cap when nothing waits.
+    backoff: str = "pressure"
 
     def update(self, snap, pressure, policy):
-        if snap.preemption_rate > 0.05 or pressure == 3:
+        if self.backoff == "preempt":
+            if snap.preemption_rate > 0.05:
+                policy.max_num_seqs = max(self.min_seqs, int(policy.max_num_seqs * 0.75))
+            elif snap.queue_depth == 0:
+                policy.max_num_seqs = self.max_seqs
+            else:
+                policy.max_num_seqs = min(self.max_seqs, policy.max_num_seqs + 8)
+        elif snap.preemption_rate > 0.05 or pressure == 3:
             policy.max_num_seqs = max(self.min_seqs, int(policy.max_num_seqs * 0.75))
         elif snap.queue_depth > 0 and (pressure is None or pressure <= 1):
             policy.max_num_seqs = min(self.max_seqs, policy.max_num_seqs + 8)
@@ -233,6 +245,7 @@ class CoOptimizer(StaticPolicy):
     enable_sched: bool = True
     coupled: bool = True
     gamma_max: int = 8
+    sched_backoff: str = "pressure"
     name = "coopt"
 
     def __post_init__(self):
@@ -241,7 +254,8 @@ class CoOptimizer(StaticPolicy):
         # The engine sizes its activation headroom for the configured max_batched_tokens, so the
         # controller may shrink prefill chunks under decode pressure but never grow them past it.
         self.sc = SchedulerController(chunk_default=self.max_batched_tokens, chunk_large=self.max_batched_tokens,
-                                      chunk_small=max(256, self.max_batched_tokens // 4))
+                                      chunk_small=max(256, self.max_batched_tokens // 4),
+                                      max_seqs=self.max_num_seqs, backoff=self.sched_backoff)
         self.kv_swap = self.enable_kv
         self.engine = None
         self.snap = None

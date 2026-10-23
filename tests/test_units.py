@@ -155,6 +155,21 @@ def test_independent_mode_has_no_shared_pressure():
     assert coupled.pressure == 3 and coupled.dl.cap <= 1
 
 
+def test_preempt_backoff_ignores_full_memory_and_recovers_when_idle():
+    old, new = CoOptimizer(), CoOptimizer(sched_backoff="preempt")
+    for co in (old, new):
+        co.engine = FakeEngine
+        for _ in range(20):                  # a burst: KV full, queue growing, no preemptions
+            co.tick(snap(p_gpu=0.99, queue_depth=50))
+    assert old.max_num_seqs == old.sc.min_seqs           # original rule: pinned at the floor
+    assert new.max_num_seqs == new.sc.max_seqs           # full memory alone is not a reason to back off
+    for _ in range(5):
+        new.tick(snap(p_gpu=0.99, queue_depth=50, preemption_rate=0.2))
+    assert new.max_num_seqs < new.sc.max_seqs            # preemptions are
+    new.tick(snap(p_gpu=0.3, queue_depth=0))
+    assert new.max_num_seqs == new.sc.max_seqs           # nothing waiting: the cap is released
+
+
 # ---- memory-elastic speculation ---------------------------------------------------------------
 def test_block_manager_grows_and_shrinks():
     bm = BlockManager(num_blocks=4, block_size=16)

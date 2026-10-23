@@ -166,7 +166,7 @@ def make_policy(args):
         on = set(args.controllers.split(","))
         return CoOptimizer(**common, enable_gamma="gamma" in on, enable_kv="kv" in on,
                            enable_sched="sched" in on, coupled=not args.independent,
-                           gamma_max=args.gamma_max)
+                           gamma_max=args.gamma_max, sched_backoff=args.sched_backoff)
     raise ValueError(f"unknown policy {args.policy}")
 
 
@@ -179,6 +179,8 @@ def main():
     ap.add_argument("--gamma-max", type=int, default=8)
     ap.add_argument("--controllers", default="gamma,kv,sched", help="coopt: which controllers are on")
     ap.add_argument("--independent", action="store_true", help="coopt: no shared snapshot (C6)")
+    ap.add_argument("--sched-backoff", default="pressure", choices=["pressure", "preempt"],
+                    help="coopt: batch-cap backoff on pressure (original) or on preemptions only")
     ap.add_argument("--tick-every", type=int, default=8)
     ap.add_argument("--kv-cpu-gb", type=float, default=0.0, help="CPU KV tier size; 0 disables tiering")
     ap.add_argument("--kv-bits", type=int, default=8, choices=[4, 8, 16])
