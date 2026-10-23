@@ -1,0 +1,18 @@
+# ours-independent-controllers with the same scheduler fix as ours-cooptimizer-preempt-backoff, so the
+# coordination ablation stays like-for-like after the fix.
+name: ours-independent-controllers-preempt-backoff
+description: "C6 + elastic drafter, batch cap backs off on preemptions only"
+server:
+  model: unsloth/Meta-Llama-3.1-8B-Instruct
+  cmd: [python, -m, engine.server, --model, unsloth/Meta-Llama-3.1-8B-Instruct, --draft, unsloth/Llama-3.2-1B-Instruct]
+  args: [--seed, 0, --gamma, 4, --trace, "{out_dir}/trace.jsonl", --policy, coopt, --controllers, 'gamma,kv,sched', --kv-cpu-gb, 32, --elastic, --independent, --sched-backoff, preempt]
+runs:
+  - workload: chat
+    request_rates: [1, 4, 16, inf]
+  - workload: long-context
+    request_rates: [inf]
+    max_concurrency: 16
+  - workload: mixed-bursty
+    arrivals: file
+  - workload: phase-shift          # L3 phase shift: chat -> long -> burst -> recovery
+    arrivals: file
