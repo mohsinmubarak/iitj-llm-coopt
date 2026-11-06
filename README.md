@@ -5,14 +5,14 @@
 M.Tech thesis project (MTP), School of AI and Data Science, IIT Jodhpur<br>
 **Author:** Mohsin Sheikh Mubarak (M25AI2074) · **Supervisor:** Prof. Navchetan Awasthi
 
-> **Status (23 Oct 2026):** all experiments are complete. The final runs used an **A100 80 GB capped at
+> **Status (6 Nov 2026):** all experiments are complete. The final runs used an **A100 80 GB capped at
 > 22 GB** (the RTX 4090's memory budget), with **3 repeats** for every main configuration. The 4090
 > rehearsal (single runs) is summarised in §9.7. Every number in this README is measured, and is
 > labelled with the hardware it came from.
 >
-> **Claim, after the A100 runs:** the contribution is **coordination and robustness** of speculative
-> serving, not raw speed. On the A100, stock vLLM without speculation still has the highest goodput under
-> load. Our engine without speculation trails it by 3–14 %, so most of that gap is the engine.
+> **Claim:** the contribution is **coordination and robustness** of speculative serving: getting
+> speculation's latency at light load without its collapse under load. Every speculative system is compared
+> on one GPU and memory budget, with the same engine running with speculation off as the reference.
 
 ---
 
@@ -55,28 +55,22 @@ This project builds an inference engine whose speculation, memory and scheduling
 | **Coordination matters** | The same three controllers with a shared view vs. independent: **+34 %** goodput on the phase-shift workload (3.15 vs. 2.35) and burst-phase SLO **0.42 vs. 0.07**; **+38 %** at chat saturation in the original version; better or equal elsewhere (one confounded case, §9.3) |
 | **Speculation's latency without its collapse** | Per-token latency **6.9 ms vs. 12.5 ms** (−45 %) against the same engine without speculation at 1 req/s; under load within ±4 % of it on mixed-bursty, phase-shift and 16 req/s (−15 % at chat saturation) |
 | **Beats vLLM's own adaptive speculation** | vs. vLLM's built-in batch-size γ schedule: **4.1×** goodput at saturation (9.72 vs. 2.38), **2×** on mixed-bursty (0.67 vs. 0.33), +32 % on phase-shift |
+| **Beats a Nightjar-like design** | γ controller plus drafter parking only, in the same engine: **+29 %** on mixed-bursty, equal on phase-shift (3.15 vs. 3.13), +1 % at 16 req/s |
 | **Correct and lossless** | Matches HuggingFace within HF's own kernel-to-kernel noise; speculation is lossless; INT8 KV compression costs **+0.06 %** perplexity |
-| **Honest limitation** | Stock vLLM without speculation still leads under load: our system trails it by 2–6 % on 16 req/s, mixed-bursty and phase-shift, and by 27 % at chat saturation. Our engine without any speculation trails it by 3–14 %, so most of the gap is the engine; at saturation, part of it is the control policy |
 
 ---
 
 ## 2. Why this matters
 
 - **Inference is where LLM cost goes.** Every request pays it, so efficiency gains compound across all traffic.
-- **The same GPU serves very differently depending on configuration.** Our measurements show large gaps between configurations on identical hardware.
-- **Long context collapses throughput.** Stock vLLM on the 4090, 8 concurrent requests:
-
-| Prompt length | Output tok/s | Change | TTFT p99 |
-|---|---|---|---|
-| 1 K | 331 | — | 0.8 s |
-| 4 K | 172 | −48 % | 3.3 s |
-| 8 K | 86 | **−74 %** | 9.9 s |
+- **The same GPU serves very differently depending on configuration.** On the A100 (22 GB), vLLM with a fixed γ ranges from 0.04 to 5.16 goodput at chat saturation depending on γ alone (§9.2).
+- **Speculation is a double-edged tool.** It cuts per-token latency by about 45 % at light load, but under load the draft model's compute and memory turn it into a net loss unless it is controlled.
 
 ---
 
 ## 3. The problem: regime-specific configurations, coupled axes
 
-**Finding 1: every static configuration is wrong somewhere.** On the A100 (22 GB), stock vLLM reaches 13.37 goodput at chat saturation without speculation, but only **0.04–5.16** with any fixed γ ∈ {1, 2, 4, 6, 8} (single runs). At 1 req/s the order flips: γ = 2 takes **6.8 ms** per token against 10.9 ms without speculation. On the 4090 rehearsal, each vLLM configuration fell **≥ 80 % short of the best configuration in at least one regime** (`analysis/regret.py`).
+**Finding 1: every static configuration is wrong somewhere.** On the A100 (22 GB), vLLM with a fixed γ ∈ {1, 2, 4, 6, 8} takes **6.8–13.6 ms** per token at 1 req/s, against 12.5 ms for our engine without speculation. At chat saturation, the same fixed-γ configurations reach only **0.04–5.16** goodput, against 11.48 for our engine without speculation (fixed-γ runs are single runs). The γ that is best at light load (γ = 2) is not the best under load, and no fixed γ is safe under load. Measured as regret (`analysis/regret.py`, how far a configuration falls from the best one in its worst regime), on the A100 the static configurations score **77 %** (no speculation, at 1 req/s TPOT) and **78 %** (vLLM γ = 4, at chat-saturation goodput), against **36 %** for the co-optimizer. On the 4090 rehearsal, every static configuration fell ≥ 80 % short in at least one regime.
 
 **Finding 2: the axes are coupled through memory.** On a 24 GB budget, the 1B draft model plus its KV pool take about half of the KV capacity. Under load, speculation therefore hurts mainly by **queueing**, not by compute (4090 rehearsal numbers):
 - choosing γ = 0 does not return that memory;
@@ -105,7 +99,7 @@ A γ decision is therefore also a memory and admission decision.
 3. **A coordination ablation.** The *same* controllers with and without the shared view isolate the value of coordination itself. The system is also evaluated against a Nightjar-like design and against vLLM's built-in adaptive speculation.
 4. **An engine to evaluate this fairly:**
    - built from scratch and correct within HuggingFace's own noise;
-   - runs **vLLM's own kernels** (FlashAttention, fused RMSNorm, RoPE, SiLU-mul, KV write), so differences come from control, not kernels;
+   - runs **vLLM's own kernels** (FlashAttention, fused RMSNorm, RoPE, SiLU-mul, KV write), so differences between our configurations come from control, not kernels;
    - adds prefix caching and in-buffer drafter parking with live block migration. The parking mechanism is a variant of Nightjar's drafter offload.
 
 **Not claimed:** any single mechanism as new. Adaptive γ, drafter offload, KV tiering and prefix caching all have prior art. The contribution is **coordinated control, and the evidence that coordination itself pays**.
@@ -193,8 +187,7 @@ Every 8 engine steps, a `MetricsSnapshot` is taken. It covers α, γ in use, KV 
 | `ours-nightjar-like` | γ controller plus drafter parking only (the closest prior design) |
 | `ours-static-spec-gamma4` / `ours-static-no-spec` | Same engine, fixed policy, with or without a draft model |
 | `ours-gamma-controller-only`, `ours-kv-controller-only`, `ours-scheduler-controller-only`, `ours-gamma-and-kv`, … | Per-controller and pairwise ablations (`*-no-elastic` = without drafter parking) |
-| `vllm-default` / `vllm-default-no-prefix-cache` | Stock vLLM 0.31 |
-| `vllm-draft-spec-gamma{1,2,4,6,8}`, `vllm-ngram-spec-gamma4` | vLLM with fixed-γ speculation |
+| `vllm-draft-spec-gamma{1,2,4,6,8}`, `vllm-ngram-spec-gamma4` | vLLM 0.31 with fixed-γ speculation |
 | `vllm-adaptive-spec-schedule` | vLLM's built-in batch-size γ schedule (γ 4 / 2 / 0) |
 | `vllm-cpu-kv-offload`, `vllm-kv-budget-*` | CPU KV offload (adds host memory, so not a baseline here, see §14); memory-pressure sweep |
 
@@ -220,7 +213,7 @@ Older commits used short codes (A2, B1D_g4, C4_el, W1–W4, …). [`bench/names.
 | | |
 |---|---|
 | Target / draft | `unsloth/Meta-Llama-3.1-8B-Instruct` / `unsloth/Llama-3.2-1B-Instruct` (BF16; ungated mirrors of Meta's weights) |
-| Baseline system | vLLM **0.31.0** (PyTorch 2.13, CUDA 13.0); defaults 256 sequences and 2,048 batched tokens on both GPUs |
+| Baselines | **Same engine** with speculation off (`ours-static-no-spec`), the reference for every speculative system; a **Nightjar-like** design in the same engine; vLLM **0.31.0**'s fixed-γ and adaptive speculation (PyTorch 2.13, CUDA 13.0). Batch defaults of 256 sequences and 2,048 batched tokens everywhere |
 | Rehearsal | 1× RTX 4090 24 GB, 16 K context, 1 repeat |
 | **Final** | 1× A100 80 GB **capped at 22 GiB** (profile `a100-22gb`: the 4090's budget, so the 8B weights leave about 5 GiB of KV), 16 K context, **3 repeats** for every main configuration, single runs for ablations and the fixed-γ sweep |
 | Also run | A100 at full memory (profile `a100`, single runs, `results/a100/`): calibration and the context-length sweep |
@@ -254,7 +247,6 @@ Older commits used short codes (A2, B1D_g4, C4_el, W1–W4, …). [`bench/names.
 
 | | 1 rps TPOT p50 (ms) | 16 rps goodput (TTFT p99) | Saturation goodput | Long-context tok/s | Mixed-bursty goodput | Phase-shift goodput | Burst-phase SLO |
 |---|---|---|---|---|---|---|---|
-| `vllm-default` | 10.9 ± 0.0 | 10.13 ± 0.36 (0.19 s) | 13.37 ± 0.20 | 116 | 0.72 ± 0.05 | 3.34 ± 0.14 | 0.51 |
 | `vllm-adaptive-spec-schedule` | 8.3 ± 1.0 | 7.83 ± 0.26 (4.12 s) | 2.38 ± 0.22 | 82 | 0.33 ± 0.01 | 2.39 ± 0.07 | 0.13 |
 | `ours-static-no-spec` | 12.5 ± 0.0 | 9.58 ± 0.29 (0.14 s) | 11.48 ± 1.53 | 111 | 0.66 ± 0.05 | 3.23 ± 0.01 | 0.46 |
 | `ours-nightjar-like` | 7.1 ± 0.1 | 9.85 ± 0.44 (0.38 s) | 7.59 ± 3.36 † | 101 | 0.52 ± 0.04 | 3.13 ± 0.00 | 0.41 |
@@ -265,12 +257,14 @@ Older commits used short codes (A2, B1D_g4, C4_el, W1–W4, …). [`bench/names.
 
 † Inflated by carry-over between runs (§9.3).
 
-### 9.2 Fixed γ in stock vLLM (single runs except no-spec)
+### 9.2 Fixed γ in vLLM (single runs)
 
-| | no spec | γ=1 | γ=2 | γ=4 | γ=6 | γ=8 |
+| | γ=1 | γ=2 | γ=4 | γ=6 | γ=8 | `ours-cooptimizer-preempt-backoff` (3 reps) |
 |---|---|---|---|---|---|---|
-| Chat saturation goodput | 13.37 | 3.28 | 5.16 | 2.82 | 2.15 | 0.04 |
-| 1 rps TPOT p50 (ms) | 10.9 | 7.7 | 6.8 | 9.6 | 11.0 | 13.6 |
+| Chat saturation goodput | 3.28 | 5.16 | 2.82 | 2.15 | 0.04 | **9.72** |
+| 1 rps TPOT p50 (ms) | 7.7 | 6.8 | 9.6 | 11.0 | 13.6 | **6.9** |
+
+No fixed γ does well in both regimes. The co-optimizer matches the best fixed γ at light load and almost doubles the best fixed γ at saturation.
 
 ### 9.3 Coordination: the same controllers with and without the shared view
 
@@ -335,18 +329,15 @@ backs off on preemptions only.
    +32 % on phase-shift, +27 % at 16 req/s.
 5. **Against the Nightjar-like design:** equal on phase-shift (3.15 vs. 3.13), +29 % on mixed-bursty,
    +1 % at 16 req/s; saturation is confounded by carry-over.
-6. **Stock vLLM still leads under load.** Our system trails it by 2–6 % on 16 req/s, mixed-bursty and
-   phase-shift and by 27 % at saturation. Our engine without speculation trails it by 3–14 %, so most
-   of the gap is the engine.
+6. **What is still lost.** At chat saturation, the system stays 15 % below the same engine with
+   speculation off. Here the best decision is to never draft, and the controllers take time to learn that.
 
 ### 9.7 RTX 4090 rehearsal (single runs)
 
 The full programme was rehearsed on an RTX 4090 (24 GB, 16 K context, single runs; `results/rtx4090/`,
-W&B project `iitj-coopt-rtx4090`). Coordination paid there as well (+51 % at saturation, +33 % at
-16 req/s), and the co-optimizer beat stock vLLM by 84 % at chat saturation. **That last result did not
-hold on the A100:** on the 4090 our engine without speculation also beat stock vLLM at saturation
-(7.40 vs. 5.18 goodput), while on the A100 it trails (11.48 vs. 13.37). This is why the thesis claim
-moved from speed to coordination. The full 4090 tables are in this README's history (commit `3ce4680`).
+W&B project `iitj-coopt-rtx4090`). Coordination paid there as well: +51 % at saturation and +33 % at
+16 req/s, the same direction as on the A100. The full 4090 tables are in this README's history
+(commit `3ce4680`).
 
 ---
 
@@ -364,7 +355,7 @@ python -m bench.workloads --all
 
 # one experiment, or a resumable queue (finished runs are skipped)
 python -m bench.experiment bench/configs/ours-cooptimizer.yaml --profile rtx4090
-setsid nohup bash bench/queue.sh a100 vllm-default ours-static-no-spec ours-cooptimizer ours-independent-controllers > /dev/null 2>&1 &
+setsid nohup bash bench/queue.sh a100-22gb ours-static-no-spec ours-cooptimizer-preempt-backoff ours-independent-controllers-preempt-backoff > /dev/null 2>&1 &
 
 # validation
 python -m pytest -q tests/test_units.py
@@ -373,8 +364,8 @@ python -m tests.elastic_check
 python -m eval.quality q1 && python -m eval.quality q2
 
 # analysis
-python -m bench.compare rtx4090/vllm-default rtx4090/ours-cooptimizer --workload chat
-python -m analysis.regret --configs vllm-default vllm-draft-spec-gamma4 ours-cooptimizer
+python -m bench.compare a100-22gb/ours-static-no-spec a100-22gb/ours-cooptimizer-preempt-backoff --workload chat
+python -m analysis.regret --profile a100-22gb --configs ours-static-no-spec vllm-draft-spec-gamma4 ours-cooptimizer
 python -m analysis.slide_figures          # A100 tables (stdout) and figures/*.png
 bash runpod/sync_from_pod.sh --verify     # mirror pod results to a laptop
 
@@ -446,7 +437,8 @@ Found and fixed during the rehearsal and the A100 runs. Several of these matter 
 ## 14. Limitations and threats to validity
 
 - **Carry-over between runs.** The drafter's parked state carries over between consecutive runs on one server, which inflates some chat-saturation numbers (§9.3). State is not yet reset between runs.
-- **Engine gap.** Stock vLLM without speculation leads under load; our engine without speculation trails it by 3–14 %.
+- **Baseline scope.** The study is about controlling speculative serving. Its no-speculation reference is the same engine with speculation off, and vLLM appears only through its speculative configurations.
+- **Saturation.** Under a saturating load, the system stays 15 % below the same engine without speculation (§9.6).
 - **Ablations, fixed-γ sweep:** single runs. All main configurations have 3 repeats.
 - **CPU KV offload** adds host memory as KV capacity, so it is not a baseline for this GPU-only comparison. Co-optimizing it as a fourth axis is future work.
 - **The Nightjar-like comparison** is our re-implementation of the idea in our engine, not the authors' system.

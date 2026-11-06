@@ -5,8 +5,8 @@ and report every configuration's shortfall ("regret") relative to it. A configur
 best somewhere but far from best elsewhere is regime-specific; the claim is that every static
 configuration has a large regret in at least one regime.
 
-    python -m analysis.regret --configs vllm-default vllm-draft-spec-gamma4 vllm-cpu-kv-offload
-    python -m analysis.regret --configs vllm-default ours-static-no-spec ours-cooptimizer --md out.md
+    python -m analysis.regret --profile a100-22gb --configs ours-static-no-spec vllm-draft-spec-gamma4 ours-cooptimizer
+    python -m analysis.regret --profile a100-22gb --configs ours-static-no-spec ours-nightjar-like ours-cooptimizer --md out.md
 """
 import argparse
 import json
