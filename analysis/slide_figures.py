@@ -65,13 +65,13 @@ def bars(ax, labels, vals, colors, fmt="{:.2f}", horizontal=False):
 
 
 def fig_static_spec():
-    exps = ["vllm-default", "vllm-draft-spec-gamma1", "vllm-draft-spec-gamma2", "vllm-draft-spec-gamma4",
-            "vllm-draft-spec-gamma6", "vllm-draft-spec-gamma8"]
-    labels = ["no spec", "γ=1", "γ=2", "γ=4", "γ=6", "γ=8"]
+    exps = ["vllm-draft-spec-gamma1", "vllm-draft-spec-gamma2", "vllm-draft-spec-gamma4",
+            "vllm-draft-spec-gamma6", "vllm-draft-spec-gamma8", "ours-cooptimizer-preempt-backoff"]
+    labels = ["γ=1", "γ=2", "γ=4", "γ=6", "γ=8", "co-opt.\n+ fix"]
     sat = [metric(e, "chat", "saturation", "goodput_req_s") for e in exps]
     light = [metric(e, "chat", "1rps", "tpot_p50") for e in exps]
     light = [(m * 1000, s * 1000, n) for m, s, n in light]
-    colors = ["0.35"] + ["0.7"] * 5
+    colors = ["0.7"] * 5 + ["0.3"]
     fig, (a, b) = plt.subplots(1, 2, figsize=(11, 4.2))
     bars(a, labels, sat, colors)
     a.set_title("Chat, all 200 requests at once")
@@ -79,8 +79,8 @@ def fig_static_spec():
     bars(b, labels, light, colors, fmt="{:.1f}")
     b.set_title("Chat, 1 req/s")
     b.set_ylabel("time per output token, p50 (ms)")
-    fig.suptitle("Stock vLLM, A100: small γ is faster at light load, every γ collapses under load")
-    fig.text(0.99, 0.01, "hatched = single run", ha="right", fontsize=9, color="0.4")
+    fig.suptitle("Fixed γ in vLLM vs. the co-optimizer, A100: no fixed γ wins both regimes")
+    fig.text(0.99, 0.01, "hatched = single run; co-optimizer mean ± std of 3", ha="right", fontsize=9, color="0.4")
     save(fig, "1_static_spec_regimes.png")
 
 
@@ -178,7 +178,7 @@ def fig_phase_shift():
     save(fig, "5_phase_shift_trace.png")
 
     print("\nPhase-shift SLO attainment per phase (mean over repeats)")
-    for exp in ["vllm-default", "ours-static-no-spec", "vllm-adaptive-spec-schedule", "ours-nightjar-like",
+    for exp in ["ours-static-no-spec", "vllm-adaptive-spec-schedule", "ours-nightjar-like",
                 "ours-independent-controllers", "ours-cooptimizer", "ours-independent-controllers-preempt-backoff", "ours-cooptimizer-preempt-backoff"]:
         per = [phase_slo(r) for r in runs(exp, "phase-shift", "scheduled")]
         phases = sorted(per[0], key=lambda p: bounds[p][0])
@@ -188,7 +188,7 @@ def fig_phase_shift():
 
 def table_light_load():
     print("\nLight load, chat (TPOT p50 / p99 ms, mean over repeats)")
-    for exp in ["vllm-default", "ours-static-no-spec", "vllm-draft-spec-gamma4", "vllm-adaptive-spec-schedule",
+    for exp in ["ours-static-no-spec", "vllm-draft-spec-gamma4", "vllm-adaptive-spec-schedule",
                 "ours-independent-controllers", "ours-cooptimizer", "ours-independent-controllers-preempt-backoff", "ours-cooptimizer-preempt-backoff"]:
         cells = []
         for load in ["1rps", "4rps"]:
